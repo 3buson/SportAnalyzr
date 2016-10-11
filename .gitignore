@@ -90,3 +90,6 @@ ENV/
 
 # Pycharm
 .idea/
+
+# downloaded HTML files
+FileConqueror/html
