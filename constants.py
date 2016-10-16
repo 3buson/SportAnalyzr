@@ -1,4 +1,4 @@
-__author__ = 'matic'
+__author__ = '3buson'
 
 # --- VARIOUS CONSTANTS --- #
 currentSeason       = '16'
@@ -96,6 +96,36 @@ clubDictNHL['WSH'] = 'Washington Capitals'
 
 # NBA CLUBS DICT
 clubDictNBA        = dict()
+clubDictNBA['ATL'] = 'Atlanta Hawks'
+clubDictNBA['BOS'] = 'Boston Celtics'
+clubDictNBA['BRO'] = 'Brooklyn Nets'
+clubDictNBA['CHA'] = 'Charlotte Hornets'
+clubDictNBA['CHI'] = 'Chicago Bulls'
+clubDictNBA['CLE'] = 'Cleveland Cavaliers'
+clubDictNBA['DAL'] = 'Dallas Mavericks'
+clubDictNBA['DEN'] = 'Denver Nuggets'
+clubDictNBA['DET'] = 'Detroit Pistons'
+clubDictNBA['GSW'] = 'Golden State Warriors'
+clubDictNBA['HOU'] = 'Houston Rockets'
+clubDictNBA['IND'] = 'Indiana Pacers'
+clubDictNBA['LAC'] = 'Los Angeles Clippers'
+clubDictNBA['LAK'] = 'Los Angeles Lakers'
+clubDictNBA['MEM'] = 'Memphis Grizzlies'
+clubDictNBA['MIA'] = 'Miami Heat'
+clubDictNBA['MIN'] = 'Minnesota Timberwolves'
+clubDictNBA['MIL'] = 'Milwaukee Bucks'
+clubDictNBA['NOR'] = 'New Orleans Pelicans'
+clubDictNBA['NYK'] = 'New York Knicks'
+clubDictNBA['OAK'] = 'Oaklahoma City Thunder'
+clubDictNBA['ORL'] = 'Orlando Magic'
+clubDictNBA['PHI'] = 'Philadelphia 76ers'
+clubDictNBA['PHO'] = 'Phoenix Suns'
+clubDictNBA['POR'] = 'Portland Trail Blazers'
+clubDictNBA['SAC'] = 'Sacramento Kings'
+clubDictNBA['SAS'] = 'San Antonio Spurs'
+clubDictNBA['TOR'] = 'Toronto Raptors'
+clubDictNBA['UTA'] = 'Utah Jazz'
+clubDictNBA['WAS'] = 'Washington Wizards'
 
 # DICT OF CLUB DICTS
 clubs        = dict()

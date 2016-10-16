@@ -1,4 +1,4 @@
-__author__ = 'matic'
+__author__ = '3buson'
 
 import os
 import sys
@@ -11,7 +11,7 @@ import constants
 baseDirname = 'html/'
 
 def fetchHTMLFiles(clubDict, league, season='2016'):
-    # create CSV directory
+    # create csv directory
     dir = os.path.dirname(baseDirname)
     if not os.path.exists(dir):
         os.makedirs(dir)
