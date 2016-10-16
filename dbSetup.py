@@ -19,31 +19,31 @@ def main():
     # SEASONS
     cursor.execute('''
                      CREATE TABLE IF NOT EXISTS seasons (
-                        id INT,
-                        name VARCHAR(255),
-                        PRIMARY KEY (id)
+                        `id` INT NOT NULL,
+                        `name` VARCHAR(255),
+                        PRIMARY KEY (`id`)
                      );
                    ''')
 
     # LEAGUES
     cursor.execute('''
                      CREATE TABLE IF NOT EXISTS leagues (
-                        id INT,
-                        acronym VARCHAR(45),
-                        name VARCHAR(255),
-                        PRIMARY KEY (id)
+                        `id` INT NOT NULL AUTO_INCREMENT,
+                        `acronym` VARCHAR(45),
+                        `name` VARCHAR(255),
+                        PRIMARY KEY (`id`)
                      );
                    ''')
 
     # CLUBS
     cursor.execute('''
                      CREATE TABLE IF NOT EXISTS clubs (
-                        id INT,
-                        acronym VARCHAR(45),
-                        name VARCHAR(255),
-                        league_id INT,
-                        PRIMARY KEY (id),
-                        CONSTRAINT fk_league_id FOREIGN KEY (league_id) REFERENCES leagues(id)
+                        `id` INT NOT NULL AUTO_INCREMENT,
+                        `acronym` VARCHAR(45),
+                        `name` VARCHAR(255),
+                        `league_id` INT,
+                        PRIMARY KEY (`id`),
+                        CONSTRAINT fk_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`)
                      );
                    ''')
 
@@ -63,25 +63,22 @@ def main():
             print "[DB Setup]  ERROR - DatabaseError", e
             traceback.print_exc()
 
-    connection.commit()
-
 
     # LEAGUES
     print "[DB Setup]  Inserting leagues"
 
-    id = 0
     for leagueAcronym, leagueName in constants.leagues.iteritems():
         try:
             cursor.execute('''
-                             INSERT IGNORE INTO leagues(id, acronym, name)
-                             VALUES (?, ?, ?)
+                             INSERT IGNORE INTO leagues(acronym, name)
+                             VALUES (?, ?)
                            ''',
-                           id, leagueAcronym, leagueName)
+                           leagueAcronym, leagueName)
         except pyodbc.DatabaseError, e:
             print "[DB Setup]  ERROR - DatabaseError", e
             traceback.print_exc()
 
-        id += 1
+    connection.commit()
 
 
     # CLUBS
@@ -90,7 +87,6 @@ def main():
     for league, clubsDict in constants.clubs.iteritems():
         print "[DB Setup]  Inserting %s clubs" % league
 
-        id = 0
         for club, clubName in clubsDict.iteritems():
             try:
                 cursor.execute('''
@@ -102,15 +98,13 @@ def main():
                 leagueId = cursor.fetchall()[0][0]
 
                 cursor.execute('''
-                                 INSERT IGNORE INTO clubs(id, acronym, name, league_id)
-                                 VALUES (?, ?, ?, ?)
+                                 INSERT IGNORE INTO clubs(acronym, name, league_id)
+                                 VALUES (?, ?, ?)
                                ''',
-                               id, club, clubName, leagueId)
+                               club, clubName, leagueId)
             except pyodbc.DatabaseError, e:
                 print "[DB Setup]  ERROR - DatabaseError", e
                 traceback.print_exc()
-
-            id += 1
 
     connection.commit()
 
