@@ -43,7 +43,32 @@ def main():
                         `name` VARCHAR(255),
                         `league_id` INT,
                         PRIMARY KEY (`id`),
-                        CONSTRAINT fk_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`)
+                        CONSTRAINT fk_clubs_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`)
+                     );
+                   ''')
+
+    # MATCHES
+    cursor.execute('''
+                     CREATE TABLE IF NOT EXISTS matches (
+                        `id` INT NOT NULL AUTO_INCREMENT,
+                        `season_id` INT,
+                        `league_id` INT,
+                        `date` DATE,
+                        `home_club_id` INT,
+                        `away_club_id` INT,
+                        `home_score` INT,
+                        `away_score` INT,
+                        `home_odds` FLOAT,
+                        `away_odds` FLOAT,
+                        `home_odds_prog` FLOAT,
+                        `away_odds_prog` FLOAT,
+                        `extra_time` TINYINT,
+                        PRIMARY KEY (`id`),
+                        INDEX `k_matches_extra_time` (`extra_time`),
+                        CONSTRAINT fk_matches_season_id FOREIGN KEY (`season_id`) REFERENCES `seasons`(`id`),
+                        CONSTRAINT fk_matches_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`),
+                        CONSTRAINT fk_matches_home_club_id FOREIGN KEY (`home_club_id`) REFERENCES `clubs`(`id`),
+                        CONSTRAINT fk_matches_away_club_id FOREIGN KEY (`away_club_id`) REFERENCES `clubs`(`id`)
                      );
                    ''')
 
