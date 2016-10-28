@@ -25,19 +25,19 @@ def getAllMatches(connection, leagueId, seasonIds='all'):
     else:
         cursor.execute('''
                         SELECT
-                            seasonId, date, home_club_id, away_club_id,
+                            season_id, date, home_club_id, away_club_id,
                             home_score, away_score, home_odds, away_odds,
                             home_odds_prog, away_odds_prog, extra_time
                         FROM
                             matches
                         WHERE
-                            leagueId = %s
+                            league_id = %s
                         AND
-                            seasonId IN (%s)
+                            season_id IN (%s)
                         ''' %
                        (leagueId, seasonIds))
 
-    return cursor.fetchAll()
+    return cursor.fetchall()
 
 def getAllClubs(connection, leagueId):
     cursor = connection.cursor
