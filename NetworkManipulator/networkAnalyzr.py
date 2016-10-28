@@ -13,11 +13,13 @@ import networkBuilder
 def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
     clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, directed, weighted)
 
-    print
+    print "[Network Analyzr]  Network successfully created"
+    print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
+    print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
 
 
 def main():
-    leagueId = 1
+    leagueId = 2
 
     seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
     directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
@@ -219,6 +221,8 @@ def calculateBridgenessCentrality(graph):
     print "[Network Analyzr]  Bridgeness calculation done, time spent: %f s\n" % timeSpent
 
     return cb
+
+# SNAP analyzers
 
 def analyzeDegrees(FNGraph):
     timeStart = time.time()

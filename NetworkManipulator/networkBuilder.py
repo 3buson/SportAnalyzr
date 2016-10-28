@@ -29,13 +29,13 @@ def buildNetwork(leagueId, seasonId, directed=True, weighted=True):
     matchesData = databaseBridger.getAllMatches(connection, leagueId, seasonId)
 
     for matchRecord in matchesData:
-        homeClub = matchRecord[3]
-        awayClub = matchRecord[4]
+        homeClub = matchRecord[2]
+        awayClub = matchRecord[3]
 
-        homeScore = matchRecord[5]
-        awayScore = matchRecord[6]
+        homeScore = matchRecord[4]
+        awayScore = matchRecord[5]
 
-        extraTime = matchRecord[11]
+        extraTime = matchRecord[10]
 
         weight = 1
 
