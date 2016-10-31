@@ -10,36 +10,82 @@ from collections import deque
 import networkBuilder
 
 
-def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
-    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, directed, weighted)
-
-    print "[Network Analyzr]  Network successfully created"
-    print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
-    print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
-
-
-def main():
-    leagueId = 2
-
-    seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
-    directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
-    weightedInput = raw_input('Do you want to analyze a weighted network? (0/1): ')
-
-    if(seasonsInput.lower() == 'all'):
-        seasons = seasonsInput
-    else:
-        seasons = seasonsInput.split(',')
-        seasons = [int(season) for season in seasons]
-
-    for seasonId in seasons:
-        createAndAnalyzeNetwork(leagueId, seasonId, bool(directedInput), bool(weightedInput))
-
-
-if __name__ == "__main__":
-    main()
-
-
 ### ---- NETWORK ANALYSIS FUNCTIONS ---- ###
+
+# networkx analyzers
+
+def analyzeBasicNetworkProperties(graph, directed):
+    print("[Network Analyzr]  Radius: %d"       % nx.radius(graph))
+    print("[Network Analyzr]  Diameter: %d"     % nx.diameter(graph))
+    print("[Network Analyzr]  Eccentricity: %s" % nx.eccentricity(graph))
+    print("[Network Analyzr]  Center: %s"       % nx.center(graph))
+    print("[Network Analyzr]  Periphery: %s"    % nx.periphery(graph))
+    print("[Network Analyzr]  Density: %s"      % nx.density(graph))
+
+    # Degrees
+    degrees       = graph.degree()
+    averageDegree = sum(degrees.values()) / float(len(degrees.values()))
+    print "[Network Analyzr]  Average degree: %f" % averageDegree
+
+    if(directed):
+        inDegrees        = graph.in_degree()
+        outDegrees       = graph.out_degree()
+        averageInDegree  = sum(inDegrees.values())  / float(len(inDegrees.values()))
+        averageOutDegree = sum(outDegrees.values()) / float(len(outDegrees.values()))
+        print "[Network Analyzr]  Average in degree: %f"  % averageInDegree
+        print "[Network Analyzr]  Average out degree: %f" % averageOutDegree
+
+    # LCC
+    numOfNodes = graph.number_of_nodes()
+    if(directed):
+        lcc     = max(nx.strongly_connected_component_subgraphs(graph), key=len)
+        lccSize = len(lcc)
+    else:
+        lcc     = max(nx.connected_component_subgraphs(graph), key=len)
+        lccSize = len(lcc)
+    print "[Network Analyzr]  Percentage of nodes in LCC: %f" % (lccSize / float(numOfNodes))
+
+    # Average distance
+    averageDistance = nx.average_shortest_path_length(lcc)
+    print "[Network Analyzr]  Average distance: %f" % averageDistance
+
+    # Diameter
+    if(not directed):
+        print "[Analyzer]  Calculating average clustering..."
+        averageClustering = nx.average_clustering(graph)
+        print "[Analyzer]  Average clustering: %f" % averageClustering
+
+        print "[Analyzer]  Calculating diameter..."
+        diameter = nx.diameter(lcc)
+        print "[Analyzer]  Diameter: %d" % diameter
+
+    # Average Shortest Path Length
+    pathLengths = []
+
+    for node in graph.nodes():
+        spl = nx.single_source_shortest_path_length(graph, node)
+
+        for path in spl.values():
+            pathLengths.append(path)
+
+    avgSPL = sum(pathLengths) / float(len(pathLengths))
+
+    print("[Network Analyzr]  Average shortest path length: %s" % avgSPL)
+
+    # Histogram of path lengths
+    dist = {}
+    for p in pathLengths:
+        if p in dist:
+            dist[p] += 1
+        else:
+            dist[p] = 1
+
+    print("[Network Analyzr]  Length\t#Paths")
+
+    vertices = dist.keys()
+    for d in sorted(vertices):
+        print('[Network Analyzr]  \t%s\t\t%d' % (d,dist[d]))
+
 
 def calculatePageRank(graph):
     print "\n[Network Analyzr]  calculating PageRank scores"
@@ -301,3 +347,45 @@ def analyzeMisc(FNGraph):
     timeSpent = time.time() - tStart
 
     print "\n[Network Analyzr]  Finished calculating in %f seconds\n" % timeSpent
+
+
+def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
+    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, directed, weighted)
+
+    numberOfNodes = clubsNetwork.number_of_nodes()
+    numberOfEdges = clubsNetwork.number_of_edges()
+
+    print ''
+
+    print "[Network Analyzr]  Network successfully created"
+    print "[Network Analyzr]  Number of nodes: %d" % numberOfNodes
+    print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
+
+    if numberOfNodes > 0:
+        analyzeBasicNetworkProperties(clubsNetwork, directed)
+    else:
+        print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
+        print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
+
+    print ''
+
+
+def main():
+    leagueId = 2
+
+    seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
+    directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
+    weightedInput = raw_input('Do you want to analyze a weighted network? (0/1): ')
+
+    if(seasonsInput.lower() == 'all'):
+        seasons = seasonsInput
+    else:
+        seasons = seasonsInput.split(',')
+        seasons = [int(season) for season in seasons]
+
+    for seasonId in seasons:
+        createAndAnalyzeNetwork(leagueId, seasonId, bool(directedInput), bool(weightedInput))
+
+
+if __name__ == "__main__":
+    main()
