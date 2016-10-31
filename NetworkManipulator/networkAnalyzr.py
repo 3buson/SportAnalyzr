@@ -1,5 +1,6 @@
 __author__ = '3buson'
 
+import sys
 import time
 import snap
 import networkx as nx
@@ -376,6 +377,11 @@ def main():
     seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
     directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
     weightedInput = raw_input('Do you want to analyze a weighted network? (0/1): ')
+    printToFile   = raw_input('Do you want to have output in a file? (0/1): ')
+
+    if (bool(printToFile)):
+        f = open('networkProps.txt', 'w')
+        sys.stdout = f
 
     if(seasonsInput.lower() == 'all'):
         seasons = seasonsInput
@@ -384,7 +390,11 @@ def main():
         seasons = [int(season) for season in seasons]
 
     for seasonId in seasons:
+        print "\n[Network Analyzr] SEASON: %s" % seasonId
+
         createAndAnalyzeNetwork(leagueId, seasonId, bool(directedInput), bool(weightedInput))
+
+        print ''
 
 
 if __name__ == "__main__":

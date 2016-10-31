@@ -94,3 +94,5 @@ ENV/
 # downloaded CSV and HTML files
 FileConqueror/html
 FileConqueror/csv
+
+*networkProps.txt
