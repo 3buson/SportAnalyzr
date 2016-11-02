@@ -35,17 +35,24 @@ def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=F
     print("[Network Analyzr]  Density: %s"      % density)
 
     # Degrees
-    degrees       = graph.degree()
-    averageDegree = sum(degrees.values()) / float(len(degrees.values()))
-    print "[Network Analyzr]  Average degree: %f" % averageDegree
+    degrees         = graph.degree()
+    averageDegree   = sum(degrees.values()) / float(len(degrees.values()))
+    degreeDeviation = numpy.std(numpy.array(degrees.values()), ddof=1)
+    print "[Network Analyzr]  Average degree: %f"   % averageDegree
+    print "[Network Analyzr]  Degree deviation: %f" % degreeDeviation
 
     if (directed):
-        inDegrees        = graph.in_degree()
-        outDegrees       = graph.out_degree()
-        averageInDegree  = sum(inDegrees.values())  / float(len(inDegrees.values()))
-        averageOutDegree = sum(outDegrees.values()) / float(len(outDegrees.values()))
-        print "[Network Analyzr]  Average in degree: %f"  % averageInDegree
-        print "[Network Analyzr]  Average out degree: %f" % averageOutDegree
+        inDegrees          = graph.in_degree()
+        averageInDegree    = sum(inDegrees.values())  / float(len(inDegrees.values()))
+        inDegreeDeviation  = numpy.std(numpy.array(inDegrees.values()), ddof=1)
+        outDegrees         = graph.out_degree()
+        averageOutDegree   = sum(outDegrees.values()) / float(len(outDegrees.values()))
+        outDegreeDeviation = numpy.std(numpy.array(outDegrees.values()), ddof=1)
+
+        print "[Network Analyzr]  Average in degree: %f"    % averageInDegree
+        print "[Network Analyzr]  In degree deviation: %f"  % inDegreeDeviation
+        print "[Network Analyzr]  Average out degree: %f"   % averageOutDegree
+        print "[Network Analyzr]  Out degree deviation: %f" % outDegreeDeviation
 
     # LCC
     numOfNodes = graph.number_of_nodes()
@@ -124,22 +131,22 @@ def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=F
     if (outputToCsv):
         if (printHeader):
             if (directed):
-                file.write("seasonId,radius,diameter,avgDegree,avgInDegree,avgOutDegree,lccPercent,avgDistance,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean.bridgenessDeviation\n")
+                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,lccPercent,avgDistance,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
             else:
-                file.write("seasonId,radius,diameter,avgDegree,lccPercent,avgDistance,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean.bridgenessDeviation\n")
+                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,lccPercent,avgDistance,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
 
         if (directed):
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
-                       (seasonId, radius, diameter, averageDegree,
-                        averageInDegree, averageOutDegree, lccFraction,
-                        averageDistance, avgSPL, pageRankMean, pageRankDeviation,
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, radius, diameter, averageDegree, degreeDeviation,
+                        averageInDegree, inDegreeDeviation, averageOutDegree, outDegreeDeviation,
+                        lccFraction, averageDistance, avgSPL, pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
         else:
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
-                       (seasonId, radius, diameter, averageDegree,
-                        lccFraction, averageDistance,
-                        averageClustering, avgSPL, pageRankMean, pageRankDeviation,
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, radius, diameter, averageDegree, degreeDeviation,
+                        lccFraction, averageDistance, averageClustering,
+                        avgSPL, pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
