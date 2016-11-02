@@ -95,4 +95,4 @@ ENV/
 FileConqueror/html
 FileConqueror/csv
 
-*networkProps.txt
+NetworkManipulator/output/*

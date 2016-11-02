@@ -10,10 +10,8 @@ mostValuableAge     = 27
 noRankingPenalty    = 25
 noWeightPathPenalty = 1000
 defaultClubWeight   = 0.1
-allSeasons          = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-allSeasonsString    = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16'
-allLeagues          = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
-allLeaguesString    = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26'
+allSeasons          = range(1976,2015)
+allLeagues          = range(1,3)
 
 # --- DATABASE --- #
 databaseString = 'DRIVER=(MySQL);SERVER=localhost;DATABASE=sportnetwork;UID=root;PWD=*****'
@@ -33,26 +31,6 @@ urls['NBA'] = {
     'urlPrefix' : 'NBA_',
     'urlSuffix' : '_advanced.html'
 }
-
-# --- SEASONS --- #
-seasons         = dict()
-seasons['2016'] = '16'
-seasons['2015'] = '15'
-seasons['2014'] = '14'
-seasons['2013'] = '13'
-seasons['2012'] = '12'
-seasons['2011'] = '11'
-seasons['2010'] = '10'
-seasons['2009'] = '09'
-seasons['2008'] = '08'
-seasons['2007'] = '07'
-seasons['2006'] = '06'
-seasons['2005'] = '05'
-seasons['2004'] = '04'
-seasons['2003'] = '03'
-seasons['2002'] = '02'
-seasons['2001'] = '01'
-
 
 # --- LEAGUES --- #
 leagues        = dict()

@@ -3,6 +3,7 @@ __author__ = '3buson'
 import sys
 import time
 import snap
+import numpy
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -10,25 +11,35 @@ from collections import deque
 
 import networkBuilder
 
+sys.path.insert(0, '../')
+import constants
+
 
 ### ---- NETWORK ANALYSIS FUNCTIONS ---- ###
 
 # networkx analyzers
 
-def analyzeBasicNetworkProperties(graph, directed):
-    print("[Network Analyzr]  Radius: %d"       % nx.radius(graph))
-    print("[Network Analyzr]  Diameter: %d"     % nx.diameter(graph))
-    print("[Network Analyzr]  Eccentricity: %s" % nx.eccentricity(graph))
-    print("[Network Analyzr]  Center: %s"       % nx.center(graph))
-    print("[Network Analyzr]  Periphery: %s"    % nx.periphery(graph))
-    print("[Network Analyzr]  Density: %s"      % nx.density(graph))
+def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=False, printHeader=False):
+    radius       = nx.radius(graph)
+    diameter     = nx.diameter(graph)
+    eccentricity = nx.eccentricity(graph)
+    center       = nx.center(graph)
+    periphery    = nx.periphery(graph)
+    density      = nx.density(graph)
+
+    print("[Network Analyzr]  Radius: %d"       % radius)
+    print("[Network Analyzr]  Diameter: %d"     % diameter)
+    print("[Network Analyzr]  Eccentricity: %s" % eccentricity)
+    print("[Network Analyzr]  Center: %s"       % center)
+    print("[Network Analyzr]  Periphery: %s"    % periphery)
+    print("[Network Analyzr]  Density: %s"      % density)
 
     # Degrees
     degrees       = graph.degree()
     averageDegree = sum(degrees.values()) / float(len(degrees.values()))
     print "[Network Analyzr]  Average degree: %f" % averageDegree
 
-    if(directed):
+    if (directed):
         inDegrees        = graph.in_degree()
         outDegrees       = graph.out_degree()
         averageInDegree  = sum(inDegrees.values())  / float(len(inDegrees.values()))
@@ -38,27 +49,26 @@ def analyzeBasicNetworkProperties(graph, directed):
 
     # LCC
     numOfNodes = graph.number_of_nodes()
-    if(directed):
+    if (directed):
         lcc     = max(nx.strongly_connected_component_subgraphs(graph), key=len)
         lccSize = len(lcc)
     else:
         lcc     = max(nx.connected_component_subgraphs(graph), key=len)
         lccSize = len(lcc)
-    print "[Network Analyzr]  Percentage of nodes in LCC: %f" % (lccSize / float(numOfNodes))
+
+    lccFraction = lccSize / float(numOfNodes)
+
+    print "[Network Analyzr]  Percentage of nodes in LCC: %f" % lccFraction
 
     # Average distance
     averageDistance = nx.average_shortest_path_length(lcc)
     print "[Network Analyzr]  Average distance: %f" % averageDistance
 
-    # Diameter
-    if(not directed):
+    # Clustering
+    if (not directed):
         print "[Analyzer]  Calculating average clustering..."
         averageClustering = nx.average_clustering(graph)
         print "[Analyzer]  Average clustering: %f" % averageClustering
-
-        print "[Analyzer]  Calculating diameter..."
-        diameter = nx.diameter(lcc)
-        print "[Analyzer]  Diameter: %d" % diameter
 
     # Average Shortest Path Length
     pathLengths = []
@@ -71,7 +81,7 @@ def analyzeBasicNetworkProperties(graph, directed):
 
     avgSPL = sum(pathLengths) / float(len(pathLengths))
 
-    print("[Network Analyzr]  Average shortest path length: %s" % avgSPL)
+    print "[Network Analyzr]  Average shortest path length: %s" % avgSPL
 
     # Histogram of path lengths
     dist = {}
@@ -85,7 +95,53 @@ def analyzeBasicNetworkProperties(graph, directed):
 
     vertices = dist.keys()
     for d in sorted(vertices):
-        print('[Network Analyzr]  \t%s\t\t%d' % (d,dist[d]))
+        print '[Network Analyzr]  \t%s\t\t%d' % (d,dist[d])
+
+    pageRank          = calculatePageRank(graph)
+    pageRankMean      = sum(pageRank.values()) / len(pageRank)
+    pageRankDeviation = numpy.std(numpy.array(pageRank.values()), ddof=1)
+
+    print "[Network Analyzr]  PageRank mean: %f"      % pageRankMean
+    print "[Network Analyzr]  PageRank deviation: %f" % pageRankDeviation
+
+
+    betweennessCentrality          = calculateBetweennessCentrality(graph)
+    betweennessCentralityMean      = sum(betweennessCentrality.values()) / len(betweennessCentrality)
+    betweennessCentralityDeviation = numpy.std(numpy.array(betweennessCentrality.values()), ddof=1)
+
+    print "[Network Analyzr]  Betweenness centrality mean: %f"       % betweennessCentralityMean
+    print "[Network Analyzr]  Betweenness centrality  deviation: %f" % betweennessCentralityDeviation
+
+
+    bridgenessCentrality          = calculateBridgenessCentrality(graph)
+    bridgenessCentralityMean      = sum(bridgenessCentrality.values()) / len(bridgenessCentrality)
+    bridgenessCentralityDeviation = numpy.std(numpy.array(bridgenessCentrality.values()), ddof=1)
+
+    print "[Network Analyzr]  Bridgeness centrality  mean: %f"      % bridgenessCentralityMean
+    print "[Network Analyzr]  Bridgeness centrality  deviation: %f" % bridgenessCentralityDeviation
+
+    # Output
+    if (outputToCsv):
+        if (printHeader):
+            if (directed):
+                file.write("seasonId,radius,diameter,avgDegree,avgInDegree,avgOutDegree,lccPercent,avgDistance,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean.bridgenessDeviation\n")
+            else:
+                file.write("seasonId,radius,diameter,avgDegree,lccPercent,avgDistance,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean.bridgenessDeviation\n")
+
+        if (directed):
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, radius, diameter, averageDegree,
+                        averageInDegree, averageOutDegree, lccFraction,
+                        averageDistance, avgSPL, pageRankMean, pageRankDeviation,
+                        betweennessCentralityMean, betweennessCentralityDeviation,
+                        bridgenessCentralityMean, bridgenessCentralityDeviation))
+        else:
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, radius, diameter, averageDegree,
+                        lccFraction, averageDistance,
+                        averageClustering, avgSPL, pageRankMean, pageRankDeviation,
+                        betweennessCentralityMean, betweennessCentralityDeviation,
+                        bridgenessCentralityMean, bridgenessCentralityDeviation))
 
 
 def calculatePageRank(graph):
@@ -137,7 +193,7 @@ def calculateBetweennessCentrality(graph):
     cb         = dict()
 
     # initialize cb to zero
-    for i in range(1, N):
+    for i in graph.nodes():
         cb[i] = 0
 
     for node in graph.nodes():
@@ -145,7 +201,7 @@ def calculateBetweennessCentrality(graph):
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
-        P = list()
+        P = dict()
         Q = deque()
 
         sigma = dict()
@@ -154,14 +210,10 @@ def calculateBetweennessCentrality(graph):
         Q.append(node)
 
         # initialize structures for each node
-        for i in range(1, N):
-            P.append(list())
+        for i in graph.nodes():
+            P[i]     = list()
             sigma[i] = 0
             d[i]     = -1
-
-        # just append another empty list because nodes start with 1
-        # we will never use P[0] but that's fine
-        P.append(list())
 
         sigma[node] = 1
         d[node]     = 0
@@ -182,7 +234,7 @@ def calculateBetweennessCentrality(graph):
                     P[neighbor].append(v)
 
         delta = dict()
-        for i in range(1, N):
+        for i in graph.nodes():
             delta[i] = 0
 
         while len(S) > 0:
@@ -206,7 +258,7 @@ def calculateBridgenessCentrality(graph):
     cb        = dict()
 
     # initialize cb to zero
-    for i in range(1, N):
+    for i in graph.nodes():
         cb[i] = 0
 
     for node in graph.nodes():
@@ -216,7 +268,7 @@ def calculateBridgenessCentrality(graph):
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
-        P = list()
+        P = dict()
         Q = deque()
 
         sigma = dict()
@@ -225,14 +277,10 @@ def calculateBridgenessCentrality(graph):
         Q.append(node)
 
         # initialize structures for each node
-        for i in range(1, N):
-            P.append(list())
+        for i in graph.nodes():
+            P[i]     = list()
             sigma[i] = 0
             d[i]     = -1
-
-        # just append another empty list because nodes start with 1
-        # we will never use P[0] but that's fine
-        P.append(list())
 
         sigma[node] = 1
         d[node]     = 0
@@ -253,7 +301,7 @@ def calculateBridgenessCentrality(graph):
                     P[neighbor].append(v)
 
         delta = dict()
-        for i in range(1, N):
+        for i in graph.nodes():
             delta[i] = 0
 
         while len(S) > 0:
@@ -350,7 +398,7 @@ def analyzeMisc(FNGraph):
     print "\n[Network Analyzr]  Finished calculating in %f seconds\n" % timeSpent
 
 
-def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
+def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted, file=None, outputToCsv=False, printHeader=False):
     clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, directed, weighted)
 
     numberOfNodes = clubsNetwork.number_of_nodes()
@@ -363,7 +411,7 @@ def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-        analyzeBasicNetworkProperties(clubsNetwork, directed)
+            analyzeNetworkProperties(clubsNetwork, directed, seasonId, file, outputToCsv, printHeader)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
@@ -372,27 +420,49 @@ def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted):
 
 
 def main():
-    leagueId = 2
+    file               = None
+    leagueId           = 2
+    outputFolderPrefix = 'output/'
+    outputFileSuffix   = ''
 
-    seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
-    directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
-    weightedInput = raw_input('Do you want to analyze a weighted network? (0/1): ')
-    printToFile   = raw_input('Do you want to have output in a file? (0/1): ')
+    seasonsInput     = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
+    directedInput    = raw_input('Do you want to analyze a directed network? (0/1): ')
+    weightedInput    = raw_input('Do you want to analyze a weighted network? (0/1): ')
+    printToFileInput = raw_input('Do you want to have output in a file? (0/1): ')
 
-    if (bool(printToFile)):
-        f = open('networkProps.txt', 'w')
-        sys.stdout = f
+    isDirectected = bool(int(directedInput))
+    isWeighted    = bool(int(weightedInput))
+    printToFile   = bool(int(printToFileInput))
+
+    if (printToFile):
+        csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
+        printToCsv     = bool(int(csvOutputInput))
+
+        outputFileBaseName = 'networkStats'
+
+        if (isDirectected):
+            outputFileSuffix += '_directed'
+        if (isWeighted):
+            outputFileSuffix += '_weighted'
+
+        if (printToCsv):
+            file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.csv', 'w')
+        else:
+            file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
+            sys.stdout = file
 
     if(seasonsInput.lower() == 'all'):
-        seasons = seasonsInput
+        seasons = constants.allSeasons
     else:
         seasons = seasonsInput.split(',')
         seasons = [int(season) for season in seasons]
 
+    index = 0
     for seasonId in seasons:
         print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-        createAndAnalyzeNetwork(leagueId, seasonId, bool(directedInput), bool(weightedInput))
+        createAndAnalyzeNetwork(leagueId, seasonId, isDirectected, isWeighted, file, printToCsv, not bool(index))
+        index += 1
 
         print ''
 
