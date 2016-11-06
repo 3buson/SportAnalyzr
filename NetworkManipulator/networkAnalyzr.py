@@ -176,9 +176,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
 
             utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, 30, 'b-', False, title, 'Node', 'Out Degree', filename)
 
-            titleDistributionIn     = 'In Degrees Distribution'
+            titleDistributionIn     = 'In Degrees Distribution ' + `seasonId`
             filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId`
-            titleDistributionOut    = 'Out Degrees Distribution'
+            titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId`
             filenameDistributionOut = filenamePrefix + 'OutDegrees' + filenameSuffix + '_distribution_' + `seasonId`
 
             inDegreeCount  = dict(Counter(inDegrees.values()))
@@ -188,7 +188,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
             utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, 30, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
         # PageRank
-        title                = 'PageRank' + `seasonId`
+        title                = 'PageRank ' + `seasonId`
         filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId`
         filenameDistribution = filenamePrefix + 'pageRank' + filenameSuffix + '_distribution_' + `seasonId`
 
