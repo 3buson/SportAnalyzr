@@ -1,17 +1,19 @@
 __author__ = '3buson'
 
+import os
 import sys
 import time
 import snap
 import numpy
 import networkx as nx
-import matplotlib.pyplot as plt
 
-from collections import deque
+from matplotlib import pyplot
+from collections import deque, Counter
 
 import networkBuilder
 
 sys.path.insert(0, '../')
+import utils
 import constants
 
 
@@ -19,7 +21,7 @@ import constants
 
 # networkx analyzers
 
-def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=False, printHeader=False):
+def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, outputToCsv=False, printHeader=False, createGraphs=False):
     radius       = nx.radius(graph)
     diameter     = nx.diameter(graph)
     eccentricity = nx.eccentricity(graph)
@@ -66,10 +68,6 @@ def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=F
     lccFraction = lccSize / float(numOfNodes)
 
     print "[Network Analyzr]  Percentage of nodes in LCC: %f" % lccFraction
-
-    # Average distance
-    averageDistance = nx.average_shortest_path_length(lcc)
-    print "[Network Analyzr]  Average distance: %f" % averageDistance
 
     # Clustering
     if (not directed):
@@ -131,24 +129,73 @@ def analyzeNetworkProperties(graph, directed, seasonId, file=None, outputToCsv=F
     if (outputToCsv):
         if (printHeader):
             if (directed):
-                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,lccPercent,avgDistance,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
+                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,lccPercent,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
             else:
-                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,lccPercent,avgDistance,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
+                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,lccPercent,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
 
         if (directed):
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
                        (seasonId, radius, diameter, averageDegree, degreeDeviation,
                         averageInDegree, inDegreeDeviation, averageOutDegree, outDegreeDeviation,
-                        lccFraction, averageDistance, avgSPL, pageRankMean, pageRankDeviation,
+                        lccFraction, avgSPL, pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
         else:
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
-                       (seasonId, radius, diameter, averageDegree, degreeDeviation,
-                        lccFraction, averageDistance, averageClustering,
-                        avgSPL, pageRankMean, pageRankDeviation,
+            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, radius, diameter, averageDegree, degreeDeviation, lccFraction,
+                        averageClustering, avgSPL, pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
+
+    # Graphical output
+    if (createGraphs):
+        xs = range(0, graph.number_of_nodes())
+
+        # create '/graphs' directory if it does not exist yet
+        if not os.path.exists('output/graphs'):
+            os.makedirs('output/graphs')
+
+        filenamePrefix = 'output/graphs/'
+        filenameSuffix = ''
+
+        if (weighted):
+            filenameSuffix += '_weighted'
+
+        if (directed):
+            filenameSuffix += '_directed'
+
+            # in degrees
+            title    = 'In Degrees ' + `seasonId`
+            filename = filenamePrefix + 'inDegrees' + filenameSuffix + '_' + `seasonId`
+
+            utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, 30, 'r-', False, title, 'Node', 'In Degree', filename)
+
+            # out degrees
+            title    = 'Out Degrees ' + `seasonId`
+            filename = filenamePrefix + 'outDegrees' + filenameSuffix + '_' + `seasonId`
+
+            utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, 30, 'b-', False, title, 'Node', 'Out Degree', filename)
+
+            titleDistributionIn     = 'In Degrees Distribution'
+            filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId`
+            titleDistributionOut    = 'Out Degrees Distribution'
+            filenameDistributionOut = filenamePrefix + 'OutDegrees' + filenameSuffix + '_distribution_' + `seasonId`
+
+            inDegreeCount  = dict(Counter(inDegrees.values()))
+            outDegreeCount = dict(Counter(outDegrees.values()))
+
+            utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, 30, 'r-', False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
+            utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, 30, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
+
+        # PageRank
+        title                = 'PageRank' + `seasonId`
+        filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId`
+        filenameDistribution = filenamePrefix + 'pageRank' + filenameSuffix + '_distribution_' + `seasonId`
+
+        pageRankCount = dict(Counter(pageRank.values()))
+
+        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0, 0.1, 'b-', False, title, 'Node Id',  'PageRank',  filename)
+        utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-', False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
 
 def calculatePageRank(graph):
@@ -349,12 +396,12 @@ def analyzeDegrees(FNGraph):
     print "\t[Network Analyzr]  Network average degree: %d" % avgDeg
 
     # plot degree distribution
-    plt.figure(0)
-    plt.plot(xVector, yVector, 'b-')
-    plt.title("Degree distribution \n Average degree: %d" % avgDeg)
-    plt.ylabel("Number of nodes")
-    plt.xlabel("Degrees")
-    plt.savefig('DegreeDistribution.png')
+    pyplot.figure(0)
+    pyplot.plot(xVector, yVector, 'b-')
+    pyplot.title("Degree distribution \n Average degree: %d" % avgDeg)
+    pyplot.ylabel("Number of nodes")
+    pyplot.xlabel("Degrees")
+    pyplot.savefig('DegreeDistribution.png')
 
     timeSpent = time.time() - timeStart
 
@@ -418,7 +465,7 @@ def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted, file=None, o
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-            analyzeNetworkProperties(clubsNetwork, directed, seasonId, file, outputToCsv, printHeader)
+            analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, file, outputToCsv, printHeader, True)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
@@ -431,6 +478,9 @@ def main():
     leagueId           = 2
     outputFolderPrefix = 'output/'
     outputFileSuffix   = ''
+
+    if not os.path.exists('output'):
+        os.makedirs('output')
 
     seasonsInput     = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
     directedInput    = raw_input('Do you want to analyze a directed network? (0/1): ')
