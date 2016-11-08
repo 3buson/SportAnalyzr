@@ -1,6 +1,7 @@
 __author__ = '3buson'
 
 import time
+import numpy
 import pyodbc
 import traceback
 import networkx as nx
@@ -76,6 +77,32 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
         if (ysThird):
             pyplot.plot(xs, ysThird,  'k-')
 
+
+    if (title):
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    if filename:
+        pyplot.savefig(filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()
+
+def getCDFYValuesFromDict(input):
+    sortedValues = sorted(input.values())
+
+    return numpy.arange(len(sortedValues)) / float(len(sortedValues) - 1)
+
+def createCDFGraph(input, title=None, xLabel=None, yLabel=None, filename=None):
+    pyplot.figure(0)
+
+    pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input))
 
     if (title):
         pyplot.title(title)

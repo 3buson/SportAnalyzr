@@ -11,9 +11,14 @@ import utils
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime):
     if (extraTime):
-        return 1
+        return 0.1
     else:
-        return 1 + math.log(winnerScore - loserScore)
+        return 0.1 + math.log(max(1, float(winnerScore - loserScore) * 100 / (loserScore)))
+
+    # if (extraTime):
+    #     return 1
+    # else:
+    #     return winnerScore - loserScore
 
 def buildNetwork(leagueId, seasonId, directed=True, weighted=True):
     print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d..." % (leagueId, seasonId)

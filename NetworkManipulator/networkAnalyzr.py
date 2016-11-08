@@ -102,7 +102,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
     for d in sorted(vertices):
         print '[Network Analyzr]  \t%s\t\t%d' % (d,dist[d])
 
-    pageRank          = calculatePageRank(graph)
+    pageRank          = nx.pagerank(graph)
     pageRankMean      = sum(pageRank.values()) / len(pageRank)
     pageRankDeviation = numpy.std(numpy.array(pageRank.values()), ddof=1)
 
@@ -176,6 +176,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
 
             utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, 30, 'b-', False, title, 'Node', 'Out Degree', filename)
 
+            # degree distribution
             titleDistributionIn     = 'In Degrees Distribution ' + `seasonId`
             filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId`
             titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId`
@@ -187,6 +188,15 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
             utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, 30, 'r-', False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
             utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, 30, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
+            # degree CDF
+            titleCDFIn    = 'In Degrees Weight Sum CDF ' + `seasonId`
+            filenameCDFIn = filenamePrefix + 'inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId`
+
+            sumOfOutDegrees = getSumOfDegrees(graph)
+
+            utils.createCDFGraph(sumOfOutDegrees, titleCDFIn, 'Degree Weight Sum', 'Probability (CDF)', filenameCDFIn)
+
+
         # PageRank
         title                = 'PageRank ' + `seasonId`
         filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId`
@@ -194,8 +204,27 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0, 0.1, 'b-', False, title, 'Node Id',  'PageRank',  filename)
-        utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-', False, title, 'PageRank', 'NodeCount', filenameDistribution)
+        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, 0.07, 'b-', False, title, 'Node Id',  'PageRank',  filename)
+        # utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-', False, title, 'PageRank', 'NodeCount', filenameDistribution)
+
+
+def getSumOfDegrees(graph, inDegrees=False):
+    degreesSum = dict()
+
+    for node in graph.nodes():
+        degreeWeightSum = 0
+
+        if inDegrees:
+            for edge in graph.in_edges(node, data=True):
+                degreeWeightSum += edge[2]['weight']
+        else:
+            for edge in graph.out_edges(node, data=True):
+                degreeWeightSum += edge[2]['weight']
+
+        degreesSum[node] = degreeWeightSum
+
+    return degreesSum
+
 
 
 def calculatePageRank(graph):
@@ -212,7 +241,7 @@ def calculatePageRank(graph):
     iterations = 0
 
     # TODO: run until convergence...
-    while iterations < 30:
+    while iterations < 50:
         if(iterations % 10 == 0):
             print "[Network Analyzr]  Iteration %d" % iterations
 
@@ -242,9 +271,8 @@ def calculatePageRank(graph):
 def calculateBetweennessCentrality(graph):
     print "\n[Network Analyzr]  calculating Betweenness scores"
 
-    startTime  = time.time()
-    N          = graph.number_of_nodes() + 1
-    cb         = dict()
+    startTime = time.time()
+    cb        = dict()
 
     # initialize cb to zero
     for i in graph.nodes():
@@ -308,7 +336,6 @@ def calculateBridgenessCentrality(graph):
     print "\n[Network Analyzr]  calculating weighted Bridgeness scores"
 
     startTime = time.time()
-    N         = graph.number_of_nodes() + 1
     cb        = dict()
 
     # initialize cb to zero
