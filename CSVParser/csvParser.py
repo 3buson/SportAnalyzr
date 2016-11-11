@@ -73,7 +73,7 @@ def main():
 
     connection = utils.connectToDB()
 
-    parseCSVFile(connection, csvFilename)
+    parseCSVFile(connection, csvFile)
 
 
 if __name__ == "__main__":
