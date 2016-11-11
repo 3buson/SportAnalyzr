@@ -54,6 +54,7 @@ def main():
                         `season_id` INT,
                         `league_id` INT,
                         `date` DATE,
+                        `stage` VARCHAR(255),
                         `home_club_id` INT,
                         `away_club_id` INT,
                         `home_score` INT,

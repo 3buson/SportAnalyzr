@@ -5,13 +5,14 @@ import traceback
 
 class Match:
 
-    def __init__(self, seasonId=None, leagueId=None, date=None,
+    def __init__(self, seasonId=None, leagueId=None, date=None, stage=None,
                  homeClubId=None, awayClubId=None, homeScore=None, awayScore=None,
                  homeOdds=None, awayOdds=None, homeOddsProg=None, awayOddsProg=None, extraTime=None):
         self.id           = id
         self.seasonId     = seasonId
         self.leagueId     = leagueId
         self.date         = date
+        self.stage        = stage
         self.homeClubId   = homeClubId
         self.awayClubId   = awayClubId
         self.homeScore    = homeScore
@@ -27,14 +28,15 @@ class Match:
 
         try:
             cursor.execute('''
-                            INSERT IGNORE INTO matches(season_id, league_id, date,
+                            INSERT IGNORE INTO matches(season_id, league_id, date, stage,
                                                         home_club_id, away_club_id, home_score, away_score,
                                                         home_odds, away_odds, home_odds_prog, away_odds_prog, extra_time)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                            ''',
-                           self.seasonId, self.leagueId, self.date, self.homeClubId, self.awayClubId,
-                           self.homeScore, self.awayScore, self.homeOdds, self.awayOdds,
-                           self.homeOddsProg, self.awayOddsProg, self.extraTime)
+                           self.seasonId, self.leagueId, self.date, self.stage,
+                           self.homeClubId, self.awayClubId, self.homeScore, self.awayScore,
+                           self.homeOdds, self.awayOdds, self.homeOddsProg, self.awayOddsProg,
+                           self.extraTime)
 
         except pyodbc.DatabaseError, e:
             print "[Club class]  ERROR - DatabaseError", e

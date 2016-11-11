@@ -23,6 +23,7 @@ def parseCSVFile(connection, csvFile):
             else:
                 leagueAcronym = row[1]
                 seasonId      = row[3]
+                stage         = row[4]
                 date          = row[5]
                 homeClubName  = row[6]
                 awayClubName  = row[7]
@@ -55,9 +56,10 @@ def parseCSVFile(connection, csvFile):
                               awayClubName)
                 awayClubId = cursor.fetchall()[0][0]
 
-                match = Match(seasonId, leagueId, date, homeClubId, awayClubId,
-                              homeClubScore, awayClubScore, homeOdds, awayOdds,
-                              homeOddsProg, awayOddsProg, extraTime)
+                match = Match(seasonId, leagueId, date, stage,
+                              homeClubId, awayClubId, homeClubScore, awayClubScore,
+                              homeOdds, awayOdds, homeOddsProg, awayOddsProg,
+                              extraTime)
 
                 if rownum % 500 == 0:
                     print "[CSV Parser]  Inserting match %d..." % rownum
