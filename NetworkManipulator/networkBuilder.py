@@ -20,8 +20,9 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime):
     # else:
     #     return winnerScore - loserScore
 
-def buildNetwork(leagueId, seasonId, directed=True, weighted=True):
-    print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d..." % (leagueId, seasonId)
+def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True):
+    print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d, competition stage %s..." %\
+          (leagueId, seasonId, competitionStage)
     print "[Network Builder]  Network properties: directed=%d, weighted=%d" % (directed, weighted)
 
     connection = utils.connectToDB()
@@ -31,7 +32,7 @@ def buildNetwork(leagueId, seasonId, directed=True, weighted=True):
     else:
         graph = nx.Graph()
 
-    matchesData = databaseBridger.getAllMatches(connection, leagueId, seasonId)
+    matchesData = databaseBridger.getAllMatches(connection, leagueId, seasonId, competitionStage)
 
     for matchRecord in matchesData:
         homeClub = matchRecord[2]

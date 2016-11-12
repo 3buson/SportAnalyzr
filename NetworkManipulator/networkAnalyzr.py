@@ -21,13 +21,21 @@ import constants
 
 # networkx analyzers
 
-def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, outputToCsv=False, printHeader=False, createGraphs=False):
-    radius       = nx.radius(graph)
-    diameter     = nx.diameter(graph)
-    eccentricity = nx.eccentricity(graph)
-    center       = nx.center(graph)
-    periphery    = nx.periphery(graph)
-    density      = nx.density(graph)
+def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False, createGraphs=False):
+    if (nx.is_strongly_connected(graph)):
+        radius       = nx.radius(graph)
+        diameter     = nx.diameter(graph)
+        eccentricity = nx.eccentricity(graph)
+        center       = nx.center(graph)
+        periphery    = nx.periphery(graph)
+    else:
+        radius       = -1
+        diameter     = -1
+        eccentricity = -1
+        center       = -1
+        periphery    = -1
+
+    density = nx.density(graph)
 
     print("[Network Analyzr]  Radius: %d"       % radius)
     print("[Network Analyzr]  Diameter: %d"     % diameter)
@@ -129,21 +137,28 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
     if (outputToCsv):
         if (printHeader):
             if (directed):
-                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,lccPercent,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
+                file.write("seasonId,stage,radius,diameter,avgDegree,degreeDeviation,"
+                           "avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,"
+                           "lccPercent,avgShortestPath,pageRankMean,pageRankDeviation,"
+                           "betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
             else:
-                file.write("seasonId,radius,diameter,avgDegree,degreeDeviation,lccPercent,avgClustering,avgShortestPath,pageRankMean,pageRankDeviation,betweennessMean,betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
+                file.write("seasonId,stage,radius,diameter,avgDegree,degreeDeviation,"
+                           "lccPercent,avgClustering,avgShortestPath,"
+                           "pageRankMean,pageRankDeviation,betweennessMean,"
+                           "betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
 
         if (directed):
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
-                       (seasonId, radius, diameter, averageDegree, degreeDeviation,
+            file.write("%d,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, competitionStage, radius, diameter, averageDegree, degreeDeviation,
                         averageInDegree, inDegreeDeviation, averageOutDegree, outDegreeDeviation,
                         lccFraction, avgSPL, pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
         else:
-            file.write("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
-                       (seasonId, radius, diameter, averageDegree, degreeDeviation, lccFraction,
-                        averageClustering, avgSPL, pageRankMean, pageRankDeviation,
+            file.write("%d,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
+                       (seasonId, competitionStage, radius, diameter, averageDegree,
+                        degreeDeviation, lccFraction, averageClustering, avgSPL,
+                        pageRankMean, pageRankDeviation,
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
@@ -165,22 +180,22 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
             filenameSuffix += '_directed'
 
             # in degrees
-            title    = 'In Degrees ' + `seasonId`
-            filename = filenamePrefix + 'inDegrees' + filenameSuffix + '_' + `seasonId`
+            title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+            filename = filenamePrefix + 'inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
             utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, 30, 'r-', False, title, 'Node', 'In Degree', filename)
 
             # out degrees
-            title    = 'Out Degrees ' + `seasonId`
-            filename = filenamePrefix + 'outDegrees' + filenameSuffix + '_' + `seasonId`
+            title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+            filename = filenamePrefix + 'outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
             utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, 30, 'b-', False, title, 'Node', 'Out Degree', filename)
 
             # degree distribution
-            titleDistributionIn     = 'In Degrees Distribution ' + `seasonId`
-            filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId`
-            titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId`
-            filenameDistributionOut = filenamePrefix + 'OutDegrees' + filenameSuffix + '_distribution_' + `seasonId`
+            titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+            titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameDistributionOut = filenamePrefix + 'OutDegrees' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
 
             inDegreeCount  = dict(Counter(inDegrees.values()))
             outDegreeCount = dict(Counter(outDegrees.values()))
@@ -189,8 +204,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
             utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, 30, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
             # degree CDF
-            titleCDFIn    = 'In Degrees Weight Sum CDF ' + `seasonId`
-            filenameCDFIn = filenamePrefix + 'inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId`
+            titleCDFIn    = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameCDFIn = filenamePrefix + 'inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
 
             sumOfOutDegrees = getSumOfDegrees(graph)
 
@@ -198,9 +213,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, file=None, out
 
 
         # PageRank
-        title                = 'PageRank ' + `seasonId`
-        filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId`
-        filenameDistribution = filenamePrefix + 'pageRank' + filenameSuffix + '_distribution_' + `seasonId`
+        title                = 'PageRank ' + `seasonId` + ' Stage: ' + competitionStage
+        filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId` + '_stage_' + competitionStage
+        filenameDistribution = filenamePrefix + 'pageRank' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
 
         pageRankCount = dict(Counter(pageRank.values()))
 
@@ -479,8 +494,8 @@ def analyzeMisc(FNGraph):
     print "\n[Network Analyzr]  Finished calculating in %f seconds\n" % timeSpent
 
 
-def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted, file=None, outputToCsv=False, printHeader=False):
-    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, directed, weighted)
+def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weighted, file=None, outputToCsv=False, printHeader=False):
+    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, competitionStage, directed, weighted)
 
     numberOfNodes = clubsNetwork.number_of_nodes()
     numberOfEdges = clubsNetwork.number_of_edges()
@@ -492,7 +507,7 @@ def createAndAnalyzeNetwork(leagueId, seasonId, directed, weighted, file=None, o
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-            analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, file, outputToCsv, printHeader, True)
+            analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, competitionStage, file, outputToCsv, printHeader, True)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
@@ -545,7 +560,10 @@ def main():
     for seasonId in seasons:
         print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-        createAndAnalyzeNetwork(leagueId, seasonId, isDirectected, isWeighted, file, printToCsv, not bool(index))
+        createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirectected, isWeighted, file, printToCsv, not bool(index))
+        createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirectected, isWeighted, file, printToCsv, not bool(index))
+        createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirectected, isWeighted, file, printToCsv, not bool(index))
+
         index += 1
 
         print ''
