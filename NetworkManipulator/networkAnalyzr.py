@@ -166,6 +166,13 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     if (createGraphs):
         xs = range(0, graph.number_of_nodes())
 
+        if competitionStage == 'playoff':
+            xLimit         =  8
+            xLimitPageRank = 0.2
+        else:
+            xLimit         = 30
+            xLimitPageRank = 0.07
+
         # create '/graphs' directory if it does not exist yet
         if not os.path.exists('output/graphs'):
             os.makedirs('output/graphs')
@@ -183,13 +190,13 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
             filename = filenamePrefix + 'inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-            utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, 30, 'r-', False, title, 'Node', 'In Degree', filename)
+            utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, xLimit, 'r-', False, title, 'Node', 'In Degree', filename)
 
             # out degrees
             title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
             filename = filenamePrefix + 'outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-            utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, 30, 'b-', False, title, 'Node', 'Out Degree', filename)
+            utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, xLimit, 'b-', False, title, 'Node', 'Out Degree', filename)
 
             # degree distribution
             titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
@@ -200,8 +207,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             inDegreeCount  = dict(Counter(inDegrees.values()))
             outDegreeCount = dict(Counter(outDegrees.values()))
 
-            utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, 30, 'r-', False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
-            utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, 30, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
+            utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, xLimit, 'r-', False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
+            utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, xLimit, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
             # degree CDF
             titleCDFIn    = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -219,7 +226,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, 0.07, 'b-', False, title, 'Node Id',  'PageRank',  filename)
+        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, xLimitPageRank, 'b-', False, title, 'Node Id',  'PageRank',  filename)
         # utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-', False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
 
