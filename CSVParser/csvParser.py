@@ -22,8 +22,8 @@ def parseCSVFile(connection, csvFile):
                 rownum += 1
             else:
                 leagueAcronym = row[1]
+                stage         = row[2]
                 seasonId      = row[3]
-                stage         = row[4]
                 date          = row[5]
                 homeClubName  = row[6]
                 awayClubName  = row[7]
