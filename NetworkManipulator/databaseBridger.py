@@ -11,7 +11,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
         return 'Please choose a leagueId!'
 
     if (seasonIds == 'all'):
-        if (seasonIds == 'all'):
+        if (competitionStage == 'all'):
             cursor.execute('''
                             SELECT
                                 seasonId, date, home_club_id, away_club_id,
@@ -34,11 +34,11 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                             WHERE
                                 leagueId = %s
                             AND
-
+                                stage = '%s'
                             ''' %
-                            leagueId)
+                           (leagueId, competitionStage))
     else:
-        if (seasonIds == 'all'):
+        if (competitionStage == 'all'):
             cursor.execute('''
                             SELECT
                                 season_id, date, home_club_id, away_club_id,
@@ -65,9 +65,9 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                             AND
                                 season_id IN (%s)
                             AND
-
+                                stage = '%s'
                             ''' %
-                           (leagueId, seasonIds))
+                           (leagueId, seasonIds, competitionStage))
 
     return cursor.fetchall()
 
