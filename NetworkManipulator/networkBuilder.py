@@ -9,11 +9,11 @@ import networkx as nx
 sys.path.insert(0, '../')
 import utils
 
-def calculateEdgeWeight(winnerScore, loserScore, extraTime):
-    if (extraTime):
-        return 0.1
+def calculateEdgeWeight(winnerScore, loserScore, extraTime, penalizeExtraTime=False):
+    if (extraTime and penalizeExtraTime):
+        return 1.0 / winnerScore
     else:
-        return 0.1 + math.log(max(1, float(winnerScore - loserScore) * 100 / (loserScore)))
+        return float(winnerScore - loserScore) / (winnerScore)
 
     # if (extraTime):
     #     return 1
@@ -49,11 +49,11 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
             if (weighted):
                 weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime))
 
-            graph.add_edge(int(homeClub), int(awayClub), weight=weight)
+            graph.add_edge(int(awayClub), int(homeClub), weight=weight)
         else:
             if (weighted):
                 weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime))
 
-            graph.add_edge(int(awayClub), int(homeClub), weight=weight)
+            graph.add_edge(int(homeClub), int(awayClub), weight=weight)
 
     return graph
