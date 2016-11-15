@@ -3,11 +3,11 @@ __author__ = '3buson'
 import databaseBridger
 
 import sys
-import math
 import networkx as nx
 
 sys.path.insert(0, '../')
 import utils
+
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime, penalizeExtraTime=False):
     if (extraTime and penalizeExtraTime):
@@ -19,6 +19,7 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, penalizeExtraTime=Fa
     #     return 1
     # else:
     #     return winnerScore - loserScore
+
 
 def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True):
     print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d, competition stage %s..." %\

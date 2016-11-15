@@ -7,6 +7,7 @@ import snap
 import numpy
 import networkx as nx
 
+from scipy import stats
 from matplotlib import pyplot
 from collections import deque, Counter
 
@@ -20,6 +21,63 @@ import constants
 ### ---- NETWORK ANALYSIS FUNCTIONS ---- ###
 
 # networkx analyzers
+
+def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folderName=None):
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+
+    graphs  = graphsDict.values()
+    seasons = graphsDict.keys()
+
+    ys1 = list()
+    ys2 = list()
+
+    ys1StdDeviation   = list()
+    ys1StdErrorOfMean = list()
+
+    ys2StdDeviation   = list()
+    ys2StdErrorOfMean = list()
+
+    if property == 'edges':
+        filename = folderName + 'nodes_edges_over_time_' + competitionStage
+
+        for graph in graphs:
+            ys1.append(graph.number_of_nodes())
+            ys2.append(graph.number_of_edges())
+
+        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Nodes and Edges over time ' + competitionStage,
+                                            'Season', 'Nodes/Edges', filename,
+                                            seasons, ys1, ys2)
+    elif property == 'degrees':
+        filename = folderName + 'degrees_over_time_' + competitionStage
+
+        for graph in graphs:
+            degrees = graph.degree()
+
+            ys1.append(sum(degrees.values()) / float(len(degrees.values())))
+            ys1StdDeviation.append(numpy.std(numpy.array(degrees.values()), ddof=1))
+            ys1StdErrorOfMean.append(stats.sem(numpy.array(degrees.values())))
+
+        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Degrees over time ' + competitionStage,
+                                            'Season', 'Degrees/Degree Strengths', filename,
+                                            seasons, ys1, ys2, ys1StdDeviation, ys2StdDeviation)
+    elif property == 'inDegrees':
+        filename = folderName + 'in_degrees_over_time_' + competitionStage
+
+        for graph in graphs:
+            degrees = graph.in_degree()
+
+            ys1.append(sum(degrees.values()) / float(len(degrees.values())))
+            ys1StdDeviation.append(numpy.std(numpy.array(degrees.values()), ddof=1))
+            ys1StdErrorOfMean.append(stats.sem(numpy.array(degrees.values())))
+
+        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'In Degrees over time ' + competitionStage,
+                                            'Season', 'In Degrees/In Degree Strengths', filename,
+                                            seasons, ys1, ys2, ys1StdDeviation, ys2StdDeviation)
+    else:
+        print "[Network Analyzr]  Unsupported property!"
+        return 1
+
 
 def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False, createGraphs=False):
     if (nx.is_strongly_connected(graph)):
@@ -167,18 +225,18 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
         xs = range(0, graph.number_of_nodes())
 
         if competitionStage == 'playoff':
-            xLimit         =  8
-            xLimitPageRank = 0.2
+            xLimit         = 10
+            xLimitPageRank = 0.25
         else:
             xLimit         = 30
-            xLimitPageRank = 0.07
+            xLimitPageRank = 0.075
 
-        # create '/graphs' directory if it does not exist yet
-        if not os.path.exists('output/graphs'):
-            os.makedirs('output/graphs')
-
-        filenamePrefix = 'output/graphs/'
+        filenamePrefix = 'output/graphs/bySeason/'
         filenameSuffix = ''
+
+        # create 'output/graphs/bySeason' directory if it does not exist yet
+        if not os.path.exists(filenamePrefix):
+            os.makedirs(filenamePrefix)
 
         if (weighted):
             filenameSuffix += '_weighted'
@@ -187,50 +245,77 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             filenameSuffix += '_directed'
 
             # in degrees
-            title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
-            filename = filenamePrefix + 'inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+            if not os.path.exists(filenamePrefix + 'inDegrees/' + competitionStage):
+                os.makedirs(filenamePrefix + 'inDegrees/' + competitionStage)
 
-            utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, xLimit, 'r-', False, title, 'Node', 'In Degree', filename)
+            title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+            filename = filenamePrefix + 'inDegrees/' + competitionStage +\
+                       '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+
+            utils.creteGraph(xs, sorted(inDegrees.values(), reverse=True), 0, xLimit, 'b-',
+                             False, title, 'Node', 'In Degree', filename)
 
             # out degrees
-            title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
-            filename = filenamePrefix + 'outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+            if not os.path.exists(filenamePrefix + 'outDegrees/' + competitionStage):
+                os.makedirs(filenamePrefix + 'outDegrees/' + competitionStage)
 
-            utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, xLimit, 'b-', False, title, 'Node', 'Out Degree', filename)
+            title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+            filename = filenamePrefix + 'outDegrees/' + competitionStage +\
+                       '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+
+            utils.creteGraph(xs, sorted(outDegrees.values(), reverse=True), 0, xLimit, 'r-',
+                             False, title, 'Node', 'Out Degree', filename)
 
             # degree distribution
             titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameDistributionIn  = filenamePrefix + 'inDegrees'  + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+            filenameDistributionIn  = filenamePrefix + 'inDegrees/' + competitionStage +\
+                                      '/inDegrees'  + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
             titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameDistributionOut = filenamePrefix + 'OutDegrees' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+            filenameDistributionOut = filenamePrefix + 'outDegrees/' + competitionStage +\
+                                      '/outDegrees' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
 
             inDegreeCount  = dict(Counter(inDegrees.values()))
             outDegreeCount = dict(Counter(outDegrees.values()))
 
-            utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, xLimit, 'r-', False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
-            utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, xLimit, 'b-', False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
+            utils.creteGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, xLimit, 'b-',
+                             False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
+            utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, xLimit, 'r-',
+                             False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
             # degree CDF
-            titleCDFIn    = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameCDFIn = filenamePrefix + 'inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+            titleCDFIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameCDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                            '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+            titleCDFOut    = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                            '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
 
-            sumOfOutDegrees = getSumOfDegrees(graph)
+            sumOfInDegrees  = getSumOfDegrees(graph)
+            sumOfOutDegrees = getSumOfDegrees(graph, False)
 
-            utils.createCDFGraph(sumOfOutDegrees, titleCDFIn, 'Degree Weight Sum', 'Probability (CDF)', filenameCDFIn)
+            utils.createCDFGraph(sumOfInDegrees ,  titleCDFIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFIn)
+            utils.createCDFGraph(sumOfOutDegrees , titleCDFOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFOut)
 
 
         # PageRank
+        if not os.path.exists(filenamePrefix + 'pageRank/' + competitionStage):
+            os.makedirs(filenamePrefix + 'pageRank/' + competitionStage)
+
         title                = 'PageRank ' + `seasonId` + ' Stage: ' + competitionStage
-        filename             = filenamePrefix + 'pageRank' + filenameSuffix + '_'              + `seasonId` + '_stage_' + competitionStage
-        filenameDistribution = filenamePrefix + 'pageRank' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+        filename             = filenamePrefix + 'pageRank/' + competitionStage +\
+                               '/pageRank' + filenameSuffix + '_'              + `seasonId` + '_stage_' + competitionStage
+        filenameDistribution = filenamePrefix + 'pageRank/' + competitionStage +\
+                               '/pageRank' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, xLimitPageRank, 'b-', False, title, 'Node Id',  'PageRank',  filename)
-        # utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-', False, title, 'PageRank', 'NodeCount', filenameDistribution)
+        utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, xLimitPageRank, 'k-',
+                         False, title, 'Node Id',  'PageRank',  filename)
+        # utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-',
+        #                  False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
 
-def getSumOfDegrees(graph, inDegrees=False):
+def getSumOfDegrees(graph, inDegrees=True):
     degreesSum = dict()
 
     for node in graph.nodes():
@@ -514,7 +599,7 @@ def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weig
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-            analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, competitionStage, file, outputToCsv, printHeader, True)
+        analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, competitionStage, file, outputToCsv, printHeader, True)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
@@ -522,23 +607,55 @@ def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weig
     print ''
 
 
+def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, directed, weighted):
+    clubsNetworks = dict()
+
+    for season in seasons:
+        clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted)
+
+        clubsNetworks[season] = clubsNetwork
+
+        print "[Network Analyzr]  Network for season %s successfully created" % season
+        print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
+        print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
+
+    for property in ['edges', 'degrees', 'inDegrees']:
+        print "[Network Analyzr]  Analyzing %s over time..." % property
+
+        folderName = 'output/graphs/overTime/' + competitionStage + '/'
+
+        analyzeNetworkPropertyOverTime(clubsNetworks, property, competitionStage, folderName)
+
+        print "[Network Analyzr]  Analysis of %s over time done" % property
+
+
 def main():
+    timeStart = time.time()
+
     file               = None
     leagueId           = 2
     outputFolderPrefix = 'output/'
     outputFileSuffix   = ''
 
-    if not os.path.exists('output'):
-        os.makedirs('output')
+    if not os.path.exists(outputFolderPrefix):
+        os.makedirs(outputFolderPrefix)
 
-    seasonsInput     = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
-    directedInput    = raw_input('Do you want to analyze a directed network? (0/1): ')
-    weightedInput    = raw_input('Do you want to analyze a weighted network? (0/1): ')
-    printToFileInput = raw_input('Do you want to have output in a file? (0/1): ')
+    seasonsInput         = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
+    directedInput        = raw_input('Do you want to analyze a directed network? (0/1): ')
+    weightedInput        = raw_input('Do you want to analyze a weighted network? (0/1): ')
+    analyzeBySeasonInput = raw_input('Do you want to analyze network properties season by season? (0/1): ')
+    analyzeOverTimeInput = raw_input('Do you want to analyze properties over time? (0/1): ')
 
-    isDirectected = bool(int(directedInput))
-    isWeighted    = bool(int(weightedInput))
-    printToFile   = bool(int(printToFileInput))
+    isDirected      = bool(int(directedInput))
+    isWeighted      = bool(int(weightedInput))
+    analyzeOverTime = bool(int(analyzeOverTimeInput))
+    analyzeBySeason = bool(int(analyzeBySeasonInput))
+
+    if (analyzeBySeason):
+        printToFileInput = raw_input('Do you want to have output in a file? (0/1): ')
+        printToFile      = bool(int(printToFileInput))
+    else:
+        printToFile = False
 
     if (printToFile):
         csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
@@ -546,7 +663,7 @@ def main():
 
         outputFileBaseName = 'networkStats'
 
-        if (isDirectected):
+        if (isDirected):
             outputFileSuffix += '_directed'
         if (isWeighted):
             outputFileSuffix += '_weighted'
@@ -563,17 +680,32 @@ def main():
         seasons = seasonsInput.split(',')
         seasons = [int(season) for season in seasons]
 
-    index = 0
-    for seasonId in seasons:
-        print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-        createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirectected, isWeighted, file, printToCsv, not bool(index))
-        createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirectected, isWeighted, file, printToCsv, not bool(index))
-        createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirectected, isWeighted, file, printToCsv, not bool(index))
+    if (analyzeBySeason):
+        index = 0
+        for seasonId in seasons:
+            print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-        index += 1
+            createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirected, isWeighted,file, printToCsv, not bool(index))
+            createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirected, isWeighted,file, printToCsv, not bool(index))
+            createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirected, isWeighted,file, printToCsv, not bool(index))
 
-        print ''
+            index += 1
+
+            print ''
+
+    if (analyzeOverTime):
+        print "\n[Network Analyzr] Building networks for all seasons"
+
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all',     isDirected, isWeighted)
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'regular', isDirected, isWeighted)
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'playoff', isDirected, isWeighted)
+
+    timeSpent = time.time() - timeStart
+
+    print "\n[Network Analyzr] Analysis done, time spent: %fs" % timeSpent
+
+    return 0
 
 
 if __name__ == "__main__":
