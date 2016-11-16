@@ -586,8 +586,8 @@ def analyzeMisc(FNGraph):
     print "\n[Network Analyzr]  Finished calculating in %f seconds\n" % timeSpent
 
 
-def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weighted, file=None, outputToCsv=False, printHeader=False):
-    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, competitionStage, directed, weighted)
+def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weighted, logWeights, file=None, outputToCsv=False, printHeader=False):
+    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, competitionStage, directed, weighted, logWeights)
 
     numberOfNodes = clubsNetwork.number_of_nodes()
     numberOfEdges = clubsNetwork.number_of_edges()
@@ -607,11 +607,11 @@ def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weig
     print ''
 
 
-def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, directed, weighted):
+def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, directed, weighted, logWeights):
     clubsNetworks = dict()
 
     for season in seasons:
-        clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted)
+        clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted, logWeights)
 
         clubsNetworks[season] = clubsNetwork
 
@@ -643,11 +643,18 @@ def main():
     seasonsInput         = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
     directedInput        = raw_input('Do you want to analyze a directed network? (0/1): ')
     weightedInput        = raw_input('Do you want to analyze a weighted network? (0/1): ')
+
+    if (bool(int(weightedInput))):
+        logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')
+    else:
+        logWeightsInput = 0
+
     analyzeBySeasonInput = raw_input('Do you want to analyze network properties season by season? (0/1): ')
     analyzeOverTimeInput = raw_input('Do you want to analyze properties over time? (0/1): ')
 
     isDirected      = bool(int(directedInput))
     isWeighted      = bool(int(weightedInput))
+    hasLogWeights   = bool(int(logWeightsInput))
     analyzeOverTime = bool(int(analyzeOverTimeInput))
     analyzeBySeason = bool(int(analyzeBySeasonInput))
 
@@ -686,9 +693,9 @@ def main():
         for seasonId in seasons:
             print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-            createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirected, isWeighted,file, printToCsv, not bool(index))
-            createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirected, isWeighted,file, printToCsv, not bool(index))
-            createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirected, isWeighted,file, printToCsv, not bool(index))
+            createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+            createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+            createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
 
             index += 1
 
@@ -697,13 +704,13 @@ def main():
     if (analyzeOverTime):
         print "\n[Network Analyzr] Building networks for all seasons"
 
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all',     isDirected, isWeighted)
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'regular', isDirected, isWeighted)
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'playoff', isDirected, isWeighted)
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all',     isDirected, isWeighted, hasLogWeights)
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'regular', isDirected, isWeighted, hasLogWeights)
+        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'playoff', isDirected, isWeighted, hasLogWeights)
 
     timeSpent = time.time() - timeStart
 
-    print "\n[Network Analyzr] Analysis done, time spent: %fs" % timeSpent
+    print "\n[Network Analyzr] Analysis done, time spent: %ds" % int(round(timeSpent))
 
     return 0
 
