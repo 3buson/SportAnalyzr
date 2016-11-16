@@ -113,14 +113,14 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
         pyplot.plot(xs, deviationDown, 'b--')
 
     if (ys2):
-        pyplot.plot(xs, ys2, 'k-')
+        pyplot.plot(xs, ys2, 'r-')
 
     if (ys2Deviation):
         deviationUp   = map(add, ys2, ys2Deviation)
         deviationDown = map(sub, ys2, ys2Deviation)
 
-        pyplot.plot(xs, deviationUp,   'k--')
-        pyplot.plot(xs, deviationDown, 'k--')
+        pyplot.plot(xs, deviationUp,   'r--')
+        pyplot.plot(xs, deviationDown, 'r--')
 
     if (title):
         pyplot.title(title)

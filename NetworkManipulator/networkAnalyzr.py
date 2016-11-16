@@ -58,6 +58,24 @@ def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folde
             ys1StdDeviation.append(numpy.std(numpy.array(degrees.values()), ddof=1))
             ys1StdErrorOfMean.append(stats.sem(numpy.array(degrees.values())))
 
+            strengths = dict()
+            for edge in graph.edges(data='weight'):
+                # 'undirected' as we're looking at degrees in general
+                # add the weight to both nodes of the edge
+                if edge[1] in strengths:
+                    strengths[edge[1]] += edge[2]
+                else:
+                    strengths[edge[1]] = edge[2]
+
+                if edge[0] in strengths:
+                    strengths[edge[0]] += edge[2]
+                else:
+                    strengths[edge[0]] = edge[2]
+
+            ys2.append(sum(strengths.values()) / float(len(strengths.values())))
+            ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
+            ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
+
         utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Degrees over time ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdDeviation, ys2StdDeviation)
@@ -70,6 +88,17 @@ def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folde
             ys1.append(sum(degrees.values()) / float(len(degrees.values())))
             ys1StdDeviation.append(numpy.std(numpy.array(degrees.values()), ddof=1))
             ys1StdErrorOfMean.append(stats.sem(numpy.array(degrees.values())))
+
+            strengths = dict()
+            for edge in graph.edges(data='weight'):
+                if edge[1] in strengths:
+                    strengths[edge[1]] += edge[2]
+                else:
+                    strengths[edge[1]] = edge[2]
+
+            ys2.append(sum(strengths.values()) / float(len(strengths.values())))
+            ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
+            ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
         utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'In Degrees over time ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
