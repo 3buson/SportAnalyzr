@@ -145,10 +145,10 @@ def getCDFYValuesFromDict(input):
     return numpy.arange(len(sortedValues)) / float(len(sortedValues) - 1)
 
 
-def createCDFGraph(input, title=None, xLabel=None, yLabel=None, filename=None):
+def createCDFGraph(input, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
     pyplot.figure(0)
 
-    pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input))
+    pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input), style)
 
     if (title):
         pyplot.title(title)

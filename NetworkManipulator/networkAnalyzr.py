@@ -78,7 +78,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folde
 
         utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Degrees over time ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
-                                            seasons, ys1, ys2, ys1StdDeviation, ys2StdDeviation)
+                                            seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'inDegrees':
         filename = folderName + 'in_degrees_over_time_' + competitionStage
 
@@ -102,7 +102,46 @@ def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folde
 
         utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'In Degrees over time ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
-                                            seasons, ys1, ys2, ys1StdDeviation, ys2StdDeviation)
+                                            seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
+    elif property == 'outDegrees':
+        filename = folderName + 'out_degrees_over_time_' + competitionStage
+
+        for graph in graphs:
+            degrees = graph.out_degree()
+
+            ys1.append(sum(degrees.values()) / float(len(degrees.values())))
+            ys1StdDeviation.append(numpy.std(numpy.array(degrees.values()), ddof=1))
+            ys1StdErrorOfMean.append(stats.sem(numpy.array(degrees.values())))
+
+            strengths = dict()
+            for edge in graph.edges(data='weight'):
+                if edge[0] in strengths:
+                    strengths[edge[0]] += edge[2]
+                else:
+                    strengths[edge[0]] = edge[2]
+
+            ys2.append(sum(strengths.values()) / float(len(strengths.values())))
+            ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
+            ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
+
+        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Out Degrees over time ' + competitionStage,
+                                            'Season', 'Out Degrees/Out Degree Strengths', filename,
+                                            seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
+
+    elif property == 'pageRank':
+        filename = folderName + 'pageRank_over_time_' + competitionStage
+
+        for graph in graphs:
+            pageRank = calculatePageRank(graph)
+
+            ys1.append(sum(pageRank.values()) / float(len(pageRank.values())))
+            ys1StdDeviation.append(numpy.std(numpy.array(pageRank.values()), ddof=1))
+            ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
+
+        utils.createDoubleGraphWithVariance(0, max(ys1), 'Page Rank over time ' + competitionStage,
+                                            'Season', 'Page Rank', filename,
+                                            seasons, ys1, [], ys1StdErrorOfMean, [])
+
     else:
         print "[Network Analyzr]  Unsupported property!"
         return 1
@@ -311,19 +350,30 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             utils.creteGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, xLimit, 'r-',
                              False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
-            # degree CDF
-            titleCDFIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            # degree weight sum CDF
+            titleCDFIn     = 'In Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
             filenameCDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
-                            '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
-            titleCDFOut    = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+                            '/inDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+            titleCDFOut    = 'Out Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
             filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
-                            '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+                            '/outDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+
+            utils.createCDFGraph(inDegrees,  titleCDFIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFIn)
+            utils.createCDFGraph(outDegrees, titleCDFOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFOut , 'r-')
+
+            # degree weight sum CDF
+            titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameCDFWeightIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                                    '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+            titleCDFWeightOut    = 'Out Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+            filenameCDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                                    '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
 
             sumOfInDegrees  = getSumOfDegrees(graph)
             sumOfOutDegrees = getSumOfDegrees(graph, False)
 
-            utils.createCDFGraph(sumOfInDegrees ,  titleCDFIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFIn)
-            utils.createCDFGraph(sumOfOutDegrees , titleCDFOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFOut)
+            utils.createCDFGraph(sumOfInDegrees,  titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
+            utils.createCDFGraph(sumOfOutDegrees, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
 
 
         # PageRank
@@ -340,8 +390,15 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
         utils.creteGraph(xs, sorted(pageRank.values(), reverse=True), 0.01, xLimitPageRank, 'k-',
                          False, title, 'Node Id',  'PageRank',  filename)
-        # utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-',
-        #                  False, title, 'PageRank', 'NodeCount', filenameDistribution)
+        utils.creteGraph(pageRankCount.keys(), pageRankCount.values(), 0, 30, 'k-',
+                         False, title, 'PageRank', 'NodeCount', filenameDistribution)
+
+        # degree weight sum CDF
+        titleCDFPageRank     = 'Page Rank CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameCDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
+                               '/pageRank' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+
+        utils.createCDFGraph(inDegrees,  titleCDFPageRank,  'Page Rank',  'Probability (CDF)', filenameCDFPageRank)
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -648,7 +705,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, direct
         print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
         print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
 
-    for property in ['edges', 'degrees', 'inDegrees']:
+    for property in ['edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
         print "[Network Analyzr]  Analyzing %s over time..." % property
 
         folderName = 'output/graphs/overTime/' + competitionStage + '/'
