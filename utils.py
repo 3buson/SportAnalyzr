@@ -30,7 +30,7 @@ def connectToDB():
     return connection
 
 
-def creteGraph(xs, ys, ysMin, ysMax, style='b-', logScale=False, title=None, xLabel=None, yLabel=None, filename=None):
+def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, title=None, xLabel=None, yLabel=None, filename=None):
     pyplot.figure(0)
 
     if (logScale):
@@ -39,6 +39,8 @@ def creteGraph(xs, ys, ysMin, ysMax, style='b-', logScale=False, title=None, xLa
         pyplot.ylim([ysMin, ysMax])
         pyplot.plot(xs, ys, style)
 
+    if (xsMin != None and xsMax != None):
+        pyplot.xlim([xsMin, xsMax])
 
     if (title):
         pyplot.title(title)
@@ -99,7 +101,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ys1=None, ys2=None, ys1Deviation=None, ys2Deviation=None):
     pyplot.figure(0)
 
-    if (ysMin and ysMax):
+    if (ysMin != None and ysMax != None):
         pyplot.ylim([ysMin, ysMax])
 
     if (ys1):
@@ -145,10 +147,13 @@ def getCDFYValuesFromDict(input):
     return numpy.arange(len(sortedValues)) / float(len(sortedValues) - 1)
 
 
-def createCDFGraph(input, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
+def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
     pyplot.figure(0)
 
     pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input), style)
+
+    if (xsMin != None and xsMax != None):
+        pyplot.xlim([xsMin, xsMax])
 
     if (title):
         pyplot.title(title)
