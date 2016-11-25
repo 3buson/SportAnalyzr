@@ -30,9 +30,9 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
     connection = utils.connectToDB()
 
     if(directed):
-        graph = nx.DiGraph()
+        graph = nx.MultiDiGraph()
     else:
-        graph = nx.Graph()
+        graph = nx.MultiGraph()
 
     matchesData = databaseBridger.getAllMatches(connection, leagueId, seasonId, competitionStage)
 

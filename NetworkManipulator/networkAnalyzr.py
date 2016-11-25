@@ -22,7 +22,7 @@ import constants
 
 # networkx analyzers
 
-def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folderName=None):
+def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, folderName=None):
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
@@ -132,7 +132,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, property, competitionStage, folde
         filename = folderName + 'pageRank_over_time_' + competitionStage
 
         for graph in graphs:
-            pageRank = calculatePageRank(graph)
+            pageRank = calculatePageRank(graph, weighted)
 
             ys1.append(sum(pageRank.values()) / float(len(pageRank.values())))
             ys1StdDeviation.append(numpy.std(numpy.array(pageRank.values()), ddof=1))
@@ -236,7 +236,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     for d in sorted(vertices):
         print '[Network Analyzr]  \t%s\t\t%d' % (d,dist[d])
 
-    pageRank          = nx.pagerank(graph)
+    pageRank          = calculatePageRank(graph, weighted)
     pageRankMean      = sum(pageRank.values()) / len(pageRank)
     pageRankDeviation = numpy.std(numpy.array(pageRank.values()), ddof=1)
 
@@ -392,9 +392,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.createGraph(xs, sorted(pageRank.values(), reverse=True), None, None, 0, xLimitPageRank, 'k-',
+        utils.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, xLimit, 0, xLimitPageRank, 'k-',
                          False, title, 'Node Id',  'PageRank',  filename)
-        utils.createGraph(pageRankCount.keys(), pageRankCount.values(), None, None, 0, xLimitPageRank, 'k-',
+        utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, xLimit, 0, xLimitPageRank, 'k-',
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
         # degree weight sum CDF
@@ -424,12 +424,16 @@ def getSumOfDegrees(graph, inDegrees=True):
 
 
 
-def calculatePageRank(graph):
+def calculatePageRank(graph, weighted, alpha=0.85):
     print "\n[Network Analyzr]  calculating PageRank scores"
 
     startTime  = time.time()
     ranking    = dict()
     newRanking = dict()
+    alpha      = 0.85
+    maxiter    = 100
+    tolerance  = 0.001
+
 
     # set all ranking to 1
     for node in graph.nodes():
@@ -437,8 +441,7 @@ def calculatePageRank(graph):
 
     iterations = 0
 
-    # TODO: run until convergence...
-    while iterations < 50:
+    while iterations < maxiter:
         if(iterations % 10 == 0):
             print "[Network Analyzr]  Iteration %d" % iterations
 
@@ -447,7 +450,10 @@ def calculatePageRank(graph):
         for i in graph.nodes():
             value = 0
             for j in graph.neighbors(i):
-                value += 0.85 * ranking[j] / graph.degree(j)
+                if (weighted):
+                    value += alpha * ranking[j] * graph[i][j].values()[0]['weight'] / graph.degree(j)
+                else:
+                    value += alpha * ranking[j] / graph.degree(j)
 
             sum += value
             newRanking[i] = value
@@ -714,7 +720,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, direct
 
         folderName = 'output/graphs/overTime/' + competitionStage + '/'
 
-        analyzeNetworkPropertyOverTime(clubsNetworks, property, competitionStage, folderName)
+        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, folderName)
 
         print "[Network Analyzr]  Analysis of %s over time done" % property
 
