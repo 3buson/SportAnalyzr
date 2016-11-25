@@ -294,14 +294,14 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
         if competitionStage == 'playoff':
             xLimit          = 10
-            xLimitPageRank  = 0.25
-            xLimCDF         = 30
-            xLimCDFStrength = 45
+            xLimitPageRank  = 0.3
+            xLimCDF         = 70
+            xLimCDFStrength = 90
         else:
             xLimit          = 30
-            xLimitPageRank  = 0.075
-            xLimCDF         = 5
-            xLimCDFStrength = 10
+            xLimitPageRank  = 0.1
+            xLimCDF         = 10
+            xLimCDFStrength = 30
 
         filenamePrefix = 'output/graphs/bySeason/'
         filenameSuffix = ''
@@ -460,6 +460,10 @@ def calculatePageRank(graph, weighted, alpha=0.85):
 
         for k in graph.nodes():
             ranking[k] = ranking[k] + (1.0 - sum) / graph.number_of_nodes()
+
+        if (abs(sum(ranking) - sum(newRanking) <= tolerance)):
+            ranking = newRanking
+            break
 
         ranking = newRanking
 
