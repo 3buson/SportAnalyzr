@@ -293,15 +293,15 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
         xs = range(0, graph.number_of_nodes())
 
         if competitionStage == 'playoff':
-            xLimit          = 10
-            xLimitPageRank  = 0.3
-            xLimCDF         = 70
-            xLimCDFStrength = 90
+            nodeLimit       = 10
+            yLimitPageRank  = 0.15
+            degreesLimit    = 12
+            strengthsLimit  = 15
         else:
-            xLimit          = 30
-            xLimitPageRank  = 0.1
-            xLimCDF         = 10
-            xLimCDFStrength = 30
+            nodeLimit       = 30
+            yLimitPageRank  = 0.085
+            degreesLimit    = 75
+            strengthsLimit  = 110
 
         filenamePrefix = 'output/graphs/bySeason/'
         filenameSuffix = ''
@@ -324,7 +324,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             filename = filenamePrefix + 'inDegrees/' + competitionStage +\
                        '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-            utils.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, xLimit, 0, xLimit, 'b-',
+            utils.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
                              False, title, 'Node', 'In Degree', filename)
 
             # out degrees
@@ -335,7 +335,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             filename = filenamePrefix + 'outDegrees/' + competitionStage +\
                        '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-            utils.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, xLimit, 0, xLimit, 'r-',
+            utils.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
                              False, title, 'Node', 'Out Degree', filename)
 
             # degree distribution
@@ -349,9 +349,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             inDegreeCount  = dict(Counter(inDegrees.values()))
             outDegreeCount = dict(Counter(outDegrees.values()))
 
-            utils.createGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, xLimit, 0, xLimit, 'b-',
+            utils.createGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, degreesLimit / 5, 0, degreesLimit, 'b-',
                              False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
-            utils.createGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, xLimit, 0, xLimit, 'r-',
+            utils.createGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, degreesLimit / 5, 0, degreesLimit, 'r-',
                              False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
             # degree weight sum CDF
@@ -362,8 +362,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                             '/outDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
 
-            utils.createCDFGraph(inDegrees,  0, xLimCDF, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
-            utils.createCDFGraph(outDegrees, 0, xLimCDF, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
+            utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
+            utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
 
             # degree weight sum CDF
             titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -376,8 +376,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
             sumOfInDegrees  = getSumOfDegrees(graph)
             sumOfOutDegrees = getSumOfDegrees(graph, False)
 
-            utils.createCDFGraph(sumOfInDegrees,  0, xLimCDFStrength, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
-            utils.createCDFGraph(sumOfOutDegrees, 0, xLimCDFStrength, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
+            utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
+            utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
 
 
         # PageRank
@@ -392,9 +392,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, xLimit, 0, xLimitPageRank, 'k-',
+        utils.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'Node Id',  'PageRank',  filename)
-        utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, xLimit, 0, xLimitPageRank, 'k-',
+        utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
         # degree weight sum CDF
@@ -402,7 +402,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
         filenameCDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
 
-        utils.createCDFGraph(pageRank, 0, xLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank)
+        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank)
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -421,7 +421,6 @@ def getSumOfDegrees(graph, inDegrees=True):
         degreesSum[node] = degreeWeightSum
 
     return degreesSum
-
 
 
 def calculatePageRank(graph, weighted, alpha=0.85):
@@ -445,7 +444,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
         if(iterations % 10 == 0):
             print "[Network Analyzr]  Iteration %d" % iterations
 
-        sum = 0
+        totalSum = 0
 
         for i in graph.nodes():
             value = 0
@@ -455,13 +454,13 @@ def calculatePageRank(graph, weighted, alpha=0.85):
                 else:
                     value += alpha * ranking[j] / graph.degree(j)
 
-            sum += value
+            totalSum += value
             newRanking[i] = value
 
         for k in graph.nodes():
-            ranking[k] = ranking[k] + (1.0 - sum) / graph.number_of_nodes()
+            ranking[k] = ranking[k] + (1.0 - totalSum) / graph.number_of_nodes()
 
-        if (abs(sum(ranking) - sum(newRanking) <= tolerance)):
+        if (abs(sum(ranking.values()) - sum(newRanking.values())) <= tolerance):
             ranking = newRanking
             break
 
@@ -474,6 +473,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
     print "[Network Analyzr]  PageRank calculation done, time spent: %f s\n" % timeSpent
 
     return ranking
+
 
 def calculateBetweennessCentrality(graph):
     print "\n[Network Analyzr]  calculating Betweenness scores"
@@ -538,6 +538,7 @@ def calculateBetweennessCentrality(graph):
     print "[Network Analyzr]  Betweenness calculation done, time spent: %f s\n" % timeSpent
 
     return cb
+
 
 def calculateBridgenessCentrality(graph):
     print "\n[Network Analyzr]  calculating weighted Bridgeness scores"
@@ -604,6 +605,7 @@ def calculateBridgenessCentrality(graph):
     print "[Network Analyzr]  Bridgeness calculation done, time spent: %f s\n" % timeSpent
 
     return cb
+
 
 # SNAP analyzers
 
