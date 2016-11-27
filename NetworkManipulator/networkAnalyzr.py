@@ -9,7 +9,8 @@ import networkx as nx
 
 from scipy import stats
 from matplotlib import pyplot
-from collections import deque, Counter
+from operator import itemgetter
+from collections import deque, Counter, OrderedDict
 
 import networkBuilder
 
@@ -147,7 +148,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
         return 1
 
 
-def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False, createGraphs=False):
+def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False):
     if (nx.is_strongly_connected(graph)):
         radius       = nx.radius(graph)
         diameter     = nx.diameter(graph)
@@ -288,20 +289,122 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
                         betweennessCentralityMean, betweennessCentralityDeviation,
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
-    # Graphical output
-    if (createGraphs):
+
+def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
+    inDegrees  = graph.in_degree()
+    outDegrees = graph.out_degree()
+
+    xs = range(0, graph.number_of_nodes())
+
+    if competitionStage == 'playoff':
+        nodeLimit       = 10
+        degreesLimit    = 12
+        strengthsLimit  = 15
+    else:
+        nodeLimit       = 30
+        degreesLimit    = 75
+        strengthsLimit  = 110
+
+    filenamePrefix = 'output/graphs/bySeason/'
+    filenameSuffix = ''
+
+    # create 'output/graphs/bySeason' directory if it does not exist yet
+    if not os.path.exists(filenamePrefix):
+        os.makedirs(filenamePrefix)
+
+    if (weighted):
+        filenameSuffix += '_weighted'
+
+    if (directed):
+        filenameSuffix += '_directed'
+
+        # in degrees
+        if not os.path.exists(filenamePrefix + 'inDegrees/' + competitionStage):
+            os.makedirs(filenamePrefix + 'inDegrees/' + competitionStage)
+
+        title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+        filename = filenamePrefix + 'inDegrees/' + competitionStage +\
+                   '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+
+        utils.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
+                         False, title, 'Node', 'In Degree', filename)
+
+        # out degrees
+        if not os.path.exists(filenamePrefix + 'outDegrees/' + competitionStage):
+            os.makedirs(filenamePrefix + 'outDegrees/' + competitionStage)
+
+        title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
+        filename = filenamePrefix + 'outDegrees/' + competitionStage +\
+                   '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+
+        utils.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
+                         False, title, 'Node', 'Out Degree', filename)
+
+        # degree distribution
+        titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameDistributionIn  = filenamePrefix + 'inDegrees/' + competitionStage +\
+                                  '/inDegrees'  + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+        titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameDistributionOut = filenamePrefix + 'outDegrees/' + competitionStage +\
+                                  '/outDegrees' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
+
+        inDegreeCount        = dict(Counter(inDegrees.values()))
+        inDegreeCountKeys    = sorted(inDegreeCount, key=inDegreeCount.get)
+        inDegreeCountValues  = sorted(inDegreeCount.values())
+        outDegreeCount       = dict(Counter(outDegrees.values()))
+        outDegreeCountKeys   = sorted(inDegreeCount, key=outDegreeCount.get)
+        outDegreeCountValues = sorted(inDegreeCount.values())
+
+        utils.createGraph(inDegreeCountKeys,  inDegreeCountValues,  0, degreesLimit, 0, degreesLimit / 5, 'b-',
+                         False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
+        utils.createGraph(outDegreeCountKeys, outDegreeCountValues, 0, degreesLimit, 0, degreesLimit / 5, 'r-',
+                         False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
+
+        # degree weight sum CDF
+        titleCDFIn     = 'In Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameCDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                        '/inDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+        titleCDFOut    = 'Out Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                        '/outDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+
+        utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
+        utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
+
+        # degree weight sum CDF
+        titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameCDFWeightIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                                '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+        titleCDFWeightOut    = 'Out Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenameCDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                                '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+
+        sumOfInDegrees  = getSumOfDegrees(graph)
+        sumOfOutDegrees = getSumOfDegrees(graph, False)
+
+        utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
+        utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
+
+
+def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multipleAlphas=False):
+    alphaValues = [0.85]
+
+    if multipleAlphas:
+        alphaValues.append(0.01)
+        alphaValues.append(0.15)
+        alphaValues.append(0.50)
+
+    for alpha in alphaValues:
+        pageRank = calculatePageRank(graph, weighted, alpha)
+
         xs = range(0, graph.number_of_nodes())
 
         if competitionStage == 'playoff':
             nodeLimit       = 10
             yLimitPageRank  = 0.15
-            degreesLimit    = 12
-            strengthsLimit  = 15
         else:
             nodeLimit       = 30
             yLimitPageRank  = 0.085
-            degreesLimit    = 75
-            strengthsLimit  = 110
 
         filenamePrefix = 'output/graphs/bySeason/'
         filenameSuffix = ''
@@ -316,75 +419,13 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
         if (directed):
             filenameSuffix += '_directed'
 
-            # in degrees
-            if not os.path.exists(filenamePrefix + 'inDegrees/' + competitionStage):
-                os.makedirs(filenamePrefix + 'inDegrees/' + competitionStage)
-
-            title    = 'In Degrees ' + `seasonId` + ' Stage: ' + competitionStage
-            filename = filenamePrefix + 'inDegrees/' + competitionStage +\
-                       '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
-
-            utils.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
-                             False, title, 'Node', 'In Degree', filename)
-
-            # out degrees
-            if not os.path.exists(filenamePrefix + 'outDegrees/' + competitionStage):
-                os.makedirs(filenamePrefix + 'outDegrees/' + competitionStage)
-
-            title    = 'Out Degrees ' + `seasonId` + ' Stage: ' + competitionStage
-            filename = filenamePrefix + 'outDegrees/' + competitionStage +\
-                       '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
-
-            utils.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
-                             False, title, 'Node', 'Out Degree', filename)
-
-            # degree distribution
-            titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameDistributionIn  = filenamePrefix + 'inDegrees/' + competitionStage +\
-                                      '/inDegrees'  + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
-            titleDistributionOut    = 'Out Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameDistributionOut = filenamePrefix + 'outDegrees/' + competitionStage +\
-                                      '/outDegrees' + filenameSuffix + '_distribution_' + `seasonId` + '_stage_' + competitionStage
-
-            inDegreeCount  = dict(Counter(inDegrees.values()))
-            outDegreeCount = dict(Counter(outDegrees.values()))
-
-            utils.createGraph(inDegreeCount.keys(),  inDegreeCount.values(),  0, degreesLimit / 5, 0, degreesLimit, 'b-',
-                             False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
-            utils.createGraph(outDegreeCount.keys(), outDegreeCount.values(), 0, degreesLimit / 5, 0, degreesLimit, 'r-',
-                             False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
-
-            # degree weight sum CDF
-            titleCDFIn     = 'In Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameCDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
-                            '/inDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
-            titleCDFOut    = 'Out Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
-                            '/outDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
-
-            utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
-            utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
-
-            # degree weight sum CDF
-            titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameCDFWeightIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
-                                    '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
-            titleCDFWeightOut    = 'Out Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
-            filenameCDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
-                                    '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
-
-            sumOfInDegrees  = getSumOfDegrees(graph)
-            sumOfOutDegrees = getSumOfDegrees(graph, False)
-
-            utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
-            utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
-
+        filenameSuffix += '_alpha=' + str(alpha).replace('.', '_')
 
         # PageRank
         if not os.path.exists(filenamePrefix + 'pageRank/' + competitionStage):
             os.makedirs(filenamePrefix + 'pageRank/' + competitionStage)
 
-        title                = 'PageRank ' + `seasonId` + ' Stage: ' + competitionStage
+        title                = 'PageRank ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
         filename             = filenamePrefix + 'pageRank/' + competitionStage +\
                                '/pageRank' + filenameSuffix + '_'              + `seasonId` + '_stage_' + competitionStage
         filenameDistribution = filenamePrefix + 'pageRank/' + competitionStage +\
@@ -397,8 +438,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
         utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
-        # degree weight sum CDF
-        titleCDFPageRank     = 'Page Rank CDF ' + `seasonId` + ' Stage: ' + competitionStage
+        # PageRank CDF
+        titleCDFPageRank     = 'Page Rank CDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
         filenameCDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
 
@@ -460,6 +501,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
         for k in graph.nodes():
             ranking[k] = ranking[k] + (1.0 - totalSum) / graph.number_of_nodes()
 
+        # check for convergence
         if (abs(sum(ranking.values()) - sum(newRanking.values())) <= tolerance):
             ranking = newRanking
             break
@@ -607,43 +649,6 @@ def calculateBridgenessCentrality(graph):
     return cb
 
 
-# SNAP analyzers
-
-def analyzeDegrees(FNGraph):
-    timeStart = time.time()
-
-    print "[Network Analyzr]  Started analyzing network degrees: \n"
-
-    DegToCntV = snap.TIntPrV()
-    snap.GetDegCnt(FNGraph, DegToCntV)
-
-    avgDeg  = 0
-    xVector = list()
-    yVector = list()
-
-    for node in DegToCntV:
-        avgDeg += int(node.GetVal2()) * int(node.GetVal1())
-
-        xVector.append(node.GetVal1())
-        yVector.append(node.GetVal2())
-
-    avgDeg = avgDeg / FNGraph.GetNodes()
-
-    print "\t[Network Analyzr]  Network average degree: %d" % avgDeg
-
-    # plot degree distribution
-    pyplot.figure(0)
-    pyplot.plot(xVector, yVector, 'b-')
-    pyplot.title("Degree distribution \n Average degree: %d" % avgDeg)
-    pyplot.ylabel("Number of nodes")
-    pyplot.xlabel("Degrees")
-    pyplot.savefig('DegreeDistribution.png')
-
-    timeSpent = time.time() - timeStart
-
-    print "\n[Network Analyzr]  Finished calculating in %.3f seconds\n" % timeSpent
-
-
 def analyzeMisc(FNGraph):
     # LCC, average distances, clustering
     tStart = time.time()
@@ -701,7 +706,8 @@ def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weig
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-        analyzeNetworkProperties(clubsNetwork, directed, weighted, seasonId, competitionStage, file, outputToCsv, printHeader, True)
+        analyzeDegrees(clubsNetwork, directed, weighted, seasonId, competitionStage)
+        analyzePageRank(clubsNetwork, directed, weighted, seasonId, competitionStage, True)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
