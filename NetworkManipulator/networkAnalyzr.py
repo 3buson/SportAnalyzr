@@ -302,7 +302,7 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         strengthsLimit  = 15
     else:
         nodeLimit       = 30
-        degreesLimit    = 75
+        degreesLimit    = 80
         strengthsLimit  = 110
 
     filenamePrefix = 'output/graphs/bySeason/'
@@ -360,24 +360,39 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         utils.createGraph(outDegreeCountKeys, outDegreeCountValues, 0, degreesLimit, 0, degreesLimit / 5, 'r-',
                          False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
-        # degree weight sum CDF
+        # degree weight sum CDF & PDF
         titleCDFIn     = 'In Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
         filenameCDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
                         '/inDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
         titleCDFOut    = 'Out Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
         filenameCDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                         '/outDegrees' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+        titlePDFIn     = 'In Degrees PDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenamePDFIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                        '/inDegrees' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
+        titlePDFOut    = 'Out Degrees PDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenamePDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                        '/outDegrees' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
         utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
         utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
 
-        # degree weight sum CDF
+        utils.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn)
+        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut , 'r')
+
+        # degree weight sum CDF & PDF
         titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
         filenameCDFWeightIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
                                 '/inDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
         titleCDFWeightOut    = 'Out Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
         filenameCDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                                 '/outDegrees' + filenameSuffix + '_weight_sum_CDF_' + `seasonId` + '_stage_' + competitionStage
+        titlePDFWeightIn     = 'In Degrees Weight Sum PDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenamePDFWeightIn  = filenamePrefix + 'inDegrees/' + competitionStage + \
+                                '/inDegrees' + filenameSuffix + '_weight_sum_PDF_' + `seasonId` + '_stage_' + competitionStage
+        titlePDFWeightOut    = 'Out Degrees Weight Sum PDF ' + `seasonId` + ' Stage: ' + competitionStage
+        filenamePDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
+                                '/outDegrees' + filenameSuffix + '_weight_sum_PDF_' + `seasonId` + '_stage_' + competitionStage
 
         sumOfInDegrees  = getSumOfDegrees(graph)
         sumOfOutDegrees = getSumOfDegrees(graph, False)
@@ -385,12 +400,15 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
         utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
 
+        utils.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn)
+        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut , 'r')
+
 
 def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multipleAlphas=False):
     alphaValues = [0.85]
 
     if multipleAlphas:
-        alphaValues.append(0.01)
+        alphaValues.append(0.001)
         alphaValues.append(0.15)
         alphaValues.append(0.50)
 
@@ -438,12 +456,16 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
         utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
-        # PageRank CDF
+        # PageRank CDF & PDF
         titleCDFPageRank     = 'Page Rank CDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
         filenameCDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
+        titlePDFPageRank     = 'Page Rank PDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
+        filenamePDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
+                               '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
-        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank)
+        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
+        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'Page Rank',  'Probability (CDF)', filenamePDFPageRank, 'k')
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -472,7 +494,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
     newRanking = dict()
     alpha      = 0.85
     maxiter    = 100
-    tolerance  = 0.001
+    tolerance  = 0.00001
 
 
     # set all ranking to 1

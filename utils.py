@@ -8,6 +8,7 @@ import traceback
 from operator import add
 from operator import sub
 from matplotlib import pyplot
+from scipy.stats import norm
 
 import constants
 
@@ -150,8 +151,6 @@ def getCDFYValuesFromDict(input):
 def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
     pyplot.figure(0)
 
-    pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input), style)
-
     if (xsMin != None and xsMax != None):
         pyplot.xlim([xsMin, xsMax])
 
@@ -163,6 +162,47 @@ def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
 
     if yLabel:
         pyplot.ylabel(yLabel)
+
+    pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input), style)
+
+    if filename:
+        pyplot.savefig(filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()
+
+
+def getPDFYValuesFromDict(input, numberOfBins=12):
+    sortedValues = sorted(input.values())
+
+    p, x = numpy.histogram(sortedValues, numberOfBins)
+    x = x[:-1] + (x[1] - x[0]) / 2           # convert bin edges to centers
+    p = [float(prob) / sum(p) for prob in p] # divide every element by sum to get [0,1) range
+
+    return x.tolist(), p
+
+
+def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b'):
+    pyplot.figure(0)
+
+    if (xsMin != None and xsMax != None):
+        pyplot.xlim([xsMin, xsMax])
+
+    pyplot.ylim([0, 1])
+
+    if (title):
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    x, p = getPDFYValuesFromDict(input)
+
+    pyplot.bar(x, p, color=color)
 
     if filename:
         pyplot.savefig(filename)
