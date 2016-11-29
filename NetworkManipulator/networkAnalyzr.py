@@ -8,9 +8,8 @@ import numpy
 import networkx as nx
 
 from scipy import stats
-from matplotlib import pyplot
-from operator import itemgetter
-from collections import deque, Counter, OrderedDict
+from operator import add
+from collections import deque, Counter
 
 import networkBuilder
 
@@ -77,7 +76,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Degrees over time ' + competitionStage,
+        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+                                            'Degrees over time ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'inDegrees':
@@ -101,7 +101,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'In Degrees over time ' + competitionStage,
+        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+                                            'In Degrees over time ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'outDegrees':
@@ -125,13 +126,15 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Out Degrees over time ' + competitionStage,
+        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+                                            'Out Degrees over time ' + competitionStage,
                                             'Season', 'Out Degrees/Out Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
 
     elif property == 'pageRank':
         filename = folderName + 'pageRank_over_time_' + competitionStage
 
+        # regular PageRank
         for graph in graphs:
             pageRank = calculatePageRank(graph, weighted)
 
@@ -139,9 +142,62 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys1StdDeviation.append(numpy.std(numpy.array(pageRank.values()), ddof=1))
             ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(ys1), 'Page Rank over time ' + competitionStage,
+        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
+                                            'Page Rank over time ' + competitionStage,
                                             'Season', 'Page Rank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
+
+        # multi PageRanks with different alpha
+        ysCombined               = list()
+        ysStdDeviationCombined   = list()
+        ysStdErrorOfMeanCombined = list()
+
+        filename = folderName + 'pageRank_over_time_multiAlpha_' + competitionStage
+
+        maxY     = 0
+        maxError = 0
+        alphas   = [0.001, 0.15, 0.5, 0.85]
+
+        idx = 0
+        for alpha in alphas:
+
+            ysCombined.append(list())
+            ysStdDeviationCombined.append(list())
+            ysStdErrorOfMeanCombined.append(list())
+
+            for graph in graphs:
+                pageRank = calculatePageRank(graph, weighted, alpha)
+
+                average        = sum(pageRank.values()) / float(len(pageRank.values()))
+                stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
+                stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
+
+                if (average > maxY):
+                    maxY = average
+
+                if (stdDeviation > maxError):
+                    maxError = stdDeviation
+                if (stdErrorOfMean > maxError):
+                    maxError = stdErrorOfMean
+
+                ysCombined[idx].append(average)
+                ysStdDeviationCombined[idx].append(stdDeviation)
+                ysStdErrorOfMeanCombined[idx].append(stdErrorOfMean)
+
+            idx += 1
+
+        colors = ['b', 'r', 'k', 'g']
+
+        legendSuffix = ' | alphas: '
+        for idx, color in enumerate(colors):
+            legendSuffix += str(alphas[idx]) + '=' + colors[idx]
+
+            if idx != len(colors) - 1:
+                legendSuffix += ', '
+
+        utils.createMultiGraphWithVariance(0, maxY + maxError, 'Page Rank over time ' + competitionStage + legendSuffix,
+                                           'Season', 'Page Rank', filename,
+                                           seasons, ysCombined, ysStdErrorOfMeanCombined, colors)
 
     else:
         print "[Network Analyzr]  Unsupported property!"
@@ -300,10 +356,12 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         nodeLimit       = 10
         degreesLimit    = 12
         strengthsLimit  = 15
+        numberOfBins    = 5
     else:
         nodeLimit       = 30
         degreesLimit    = 80
         strengthsLimit  = 110
+        numberOfBins    = 12
 
     filenamePrefix = 'output/graphs/bySeason/'
     filenameSuffix = ''
@@ -377,8 +435,8 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
         utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
 
-        utils.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn)
-        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut , 'r')
+        utils.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
+        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut , 'r', numberOfBins=numberOfBins)
 
         # degree weight sum CDF & PDF
         titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -400,8 +458,8 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
         utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
 
-        utils.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn)
-        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut , 'r')
+        utils.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
+        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut , 'r', numberOfBins=numberOfBins)
 
 
 def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multipleAlphas=False):
@@ -420,9 +478,11 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
         if competitionStage == 'playoff':
             nodeLimit       = 10
             yLimitPageRank  = 0.15
+            numberOfBins    = 5
         else:
             nodeLimit       = 30
             yLimitPageRank  = 0.085
+            numberOfBins    = 10
 
         filenamePrefix = 'output/graphs/bySeason/'
         filenameSuffix = ''
@@ -465,7 +525,7 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
                                '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
         utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
-        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'Page Rank',  'Probability (CDF)', filenamePDFPageRank, 'k')
+        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'Page Rank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -492,10 +552,8 @@ def calculatePageRank(graph, weighted, alpha=0.85):
     startTime  = time.time()
     ranking    = dict()
     newRanking = dict()
-    alpha      = 0.85
     maxiter    = 100
-    tolerance  = 0.00001
-
+    tolerance  = 0.000001
 
     # set all ranking to 1
     for node in graph.nodes():
@@ -524,7 +582,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
             ranking[k] = ranking[k] + (1.0 - totalSum) / graph.number_of_nodes()
 
         # check for convergence
-        if (abs(sum(ranking.values()) - sum(newRanking.values())) <= tolerance):
+        if (sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values())) <= tolerance):
             ranking = newRanking
             break
 

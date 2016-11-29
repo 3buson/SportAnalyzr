@@ -60,7 +60,7 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
     pyplot.close()
 
 
-def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysFirst=None, ysSecond=None, ysThird=None):
+def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysFirst=None, ysSecond=None, ysThird=None, ysFourth=None):
     pyplot.figure(0)
 
     if (logScale):
@@ -70,6 +70,8 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
             pyplot.loglog(ysSecond, 'r-')
         if (ysThird):
             pyplot.loglog(ysThird,  'k-')
+        if (ysFourth):
+            pyplot.loglog(ysFourth, 'g-')
     else:
         if (ysMin and ysMax):
             pyplot.ylim([ysMin, ysMax])
@@ -80,6 +82,8 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
             pyplot.plot(xs, ysFirst,  'b-')
         if (ysThird):
             pyplot.plot(xs, ysThird,  'k-')
+        if (ysFourth):
+            pyplot.plot(xs, ysFourth, 'g-')
 
 
     if (title):
@@ -142,6 +146,40 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
     pyplot.close()
 
 
+def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, ysDeviationDoubleArray=None, colors=['b', 'r', 'k', 'g']):
+    pyplot.figure(0)
+
+    if (ysMin != None and ysMax != None):
+        pyplot.ylim([ysMin, ysMax])
+
+    for idx, ys in enumerate(ysDoubleArray):
+        pyplot.plot(xs, ys, colors[idx] + '-')
+
+    for idx, ysDeviation in enumerate(ysDeviationDoubleArray):
+        deviationUp   = map(add, ysDoubleArray[idx], ysDeviation)
+        deviationDown = map(sub, ysDoubleArray[idx], ysDeviation)
+
+        pyplot.plot(xs, deviationUp,   colors[idx] + '--')
+        pyplot.plot(xs, deviationDown, colors[idx] + '--')
+
+    if (title):
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    if filename:
+        pyplot.savefig(filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()
+
+
+
 def getCDFYValuesFromDict(input):
     sortedValues = sorted(input.values())
 
@@ -183,7 +221,7 @@ def getPDFYValuesFromDict(input, numberOfBins=12):
     return x.tolist(), p
 
 
-def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b'):
+def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b', numberOfBins=12):
     pyplot.figure(0)
 
     if (xsMin != None and xsMax != None):
@@ -200,7 +238,7 @@ def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
     if yLabel:
         pyplot.ylabel(yLabel)
 
-    x, p = getPDFYValuesFromDict(input)
+    x, p = getPDFYValuesFromDict(input, numberOfBins)
 
     pyplot.bar(x, p, color=color)
 
