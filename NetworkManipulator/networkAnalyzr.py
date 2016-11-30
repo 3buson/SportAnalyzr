@@ -176,8 +176,14 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 average        = sum(pageRank.values()) / float(len(pageRank.values()))
                 stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
-                entropies      = [(p * math.log(p)) for p in pageRank.values()]
-                entropy        = sum(entropies) / len(entropies)
+
+                try:
+                    entropies = [(p * math.log(p)) if p > 0 else 0 for p in pageRank.values()]
+                    entropy   = sum(entropies) / len(entropies)
+                except Exception, e:
+                    entropy = 0
+                    print "[Network Analyzr]  EXCEPTION CAUGHT!"
+                    print pageRank.values()
 
                 if (average > maxY):
                     maxY = average
