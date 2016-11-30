@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import snap
+import math
 import numpy
 import networkx as nx
 
@@ -143,20 +144,22 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
 
         utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
-                                            'Page Rank over time ' + competitionStage,
-                                            'Season', 'Page Rank', filename,
+                                            'PageRank over time ' + competitionStage,
+                                            'Season', 'PageRank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
 
         # multi PageRanks with different alpha
         ysCombined               = list()
         ysStdDeviationCombined   = list()
         ysStdErrorOfMeanCombined = list()
+        entropyCombined          = list()
+        stdDeviationCombined     = list()
 
         filename = folderName + 'pageRank_over_time_multiAlpha_' + competitionStage
 
         maxY     = 0
         maxError = 0
-        alphas   = [0.001, 0.15, 0.5, 0.85]
+        alphas   = constants.allPageRankAlphas
 
         idx = 0
         for alpha in alphas:
@@ -164,6 +167,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ysCombined.append(list())
             ysStdDeviationCombined.append(list())
             ysStdErrorOfMeanCombined.append(list())
+            entropyCombined.append(list())
+            stdDeviationCombined.append(list())
 
             for graph in graphs:
                 pageRank = calculatePageRank(graph, weighted, alpha)
@@ -171,6 +176,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 average        = sum(pageRank.values()) / float(len(pageRank.values()))
                 stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
+                entropies      = [(p * math.log(p)) for p in pageRank.values()]
+                entropy        = sum(entropies) / len(entropies)
 
                 if (average > maxY):
                     maxY = average
@@ -183,6 +190,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 ysCombined[idx].append(average)
                 ysStdDeviationCombined[idx].append(stdDeviation)
                 ysStdErrorOfMeanCombined[idx].append(stdErrorOfMean)
+                entropyCombined[idx].append(entropy)
+                stdDeviationCombined[idx].append(stdDeviation)
 
             idx += 1
 
@@ -195,9 +204,22 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             if idx != len(colors) - 1:
                 legendSuffix += ', '
 
-        utils.createMultiGraphWithVariance(0, maxY + maxError, 'Page Rank over time ' + competitionStage + legendSuffix,
-                                           'Season', 'Page Rank', filename,
+        # multi alpha PageRank average and std deviation/error of the mean
+        utils.createMultiGraphWithVariance(0, maxY + maxError, 'PageRank over time ' + competitionStage + legendSuffix,
+                                           'Season', 'PageRank', filename,
                                            seasons, ysCombined, ysStdErrorOfMeanCombined, colors)
+
+        # multi alpha PageRank std deviation
+        utils.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
+                               'PageRank STD dev over time ' + competitionStage + legendSuffix,
+                              'Season', 'PageRank', filename + '_std_dev',
+                              seasons, stdDeviationCombined, colors)
+
+        # multi alpha PageRank entropy
+        utils.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
+                               'PageRank Entropy over time ' + competitionStage + legendSuffix,
+                              'Season', 'PageRank', filename + '_entropy',
+                              seasons, entropyCombined, colors)
 
     else:
         print "[Network Analyzr]  Unsupported property!"
@@ -463,12 +485,10 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
 
 
 def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multipleAlphas=False):
-    alphaValues = [0.85]
-
     if multipleAlphas:
-        alphaValues.append(0.001)
-        alphaValues.append(0.15)
-        alphaValues.append(0.50)
+        alphaValues = constants.allPageRankAlphas
+    else:
+        alphaValues = [constants.stdPageRankAlpha]
 
     for alpha in alphaValues:
         pageRank = calculatePageRank(graph, weighted, alpha)
@@ -517,15 +537,15 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
         # PageRank CDF & PDF
-        titleCDFPageRank     = 'Page Rank CDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
+        titleCDFPageRank     = 'PageRank CDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
         filenameCDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_CDF_' + `seasonId` + '_stage_' + competitionStage
-        titlePDFPageRank     = 'Page Rank PDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
+        titlePDFPageRank     = 'PageRank PDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
         filenamePDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
-                               '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
+                               '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' +competitionStage
 
-        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'Page Rank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
-        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'Page Rank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
+        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
+        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -546,7 +566,7 @@ def getSumOfDegrees(graph, inDegrees=True):
     return degreesSum
 
 
-def calculatePageRank(graph, weighted, alpha=0.85):
+def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     print "\n[Network Analyzr]  calculating PageRank scores"
 
     startTime  = time.time()

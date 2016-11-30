@@ -60,31 +60,14 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
     pyplot.close()
 
 
-def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysFirst=None, ysSecond=None, ysThird=None, ysFourth=None):
+def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'r', 'k', 'g']):
     pyplot.figure(0)
 
-    if (logScale):
-        if (ysFirst):
-            pyplot.loglog(ysFirst,  'b-')
-        if (ysSecond):
-            pyplot.loglog(ysSecond, 'r-')
-        if (ysThird):
-            pyplot.loglog(ysThird,  'k-')
-        if (ysFourth):
-            pyplot.loglog(ysFourth, 'g-')
-    else:
-        if (ysMin and ysMax):
-            pyplot.ylim([ysMin, ysMax])
-
-        if (ysFirst):
-            pyplot.plot(xs, ysSecond, 'r-')
-        if (ysSecond):
-            pyplot.plot(xs, ysFirst,  'b-')
-        if (ysThird):
-            pyplot.plot(xs, ysThird,  'k-')
-        if (ysFourth):
-            pyplot.plot(xs, ysFourth, 'g-')
-
+    for idx, ys in enumerate(ysDoubleArray):
+        if (logScale):
+            pyplot.loglog(xs, ys, colors[idx] + '-')
+        else:
+            pyplot.plot(xs, ys, colors[idx] + '-')
 
     if (title):
         pyplot.title(title)
