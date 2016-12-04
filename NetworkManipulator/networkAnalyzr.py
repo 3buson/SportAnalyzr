@@ -600,11 +600,13 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     ranking    = dict()
     newRanking = dict()
     maxiter    = 100
-    tolerance  = 0.000001
+    tolerance  = 0.001
+    N          = graph.number_of_nodes()
 
     # set all ranking to 1
     for node in graph.nodes():
-        ranking[node] = 1
+        ranking[node]    = 1/ N
+        newRanking[node] = 0
 
     iterations = 0
 
@@ -612,28 +614,24 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
         if(iterations % 10 == 0):
             print "[Network Analyzr]  Iteration %d" % iterations
 
-        totalSum = 0
+        dp = 0
 
-        for i in graph.nodes():
-            value = 0
-            for j in graph.neighbors(i):
-                if (weighted):
-                    value += alpha * ranking[j] * graph[i][j].values()[0]['weight'] / graph.degree(j)
-                else:
-                    value += alpha * ranking[j] / graph.degree(j)
+        for node in graph.nodes():
+            if len(graph.neighbors(node)) == 0:
+                dp += alpha * ranking[node] / N
 
-            totalSum += value
-            newRanking[i] = value
+        for node in graph.nodes():
+            newRanking[node] = dp + ((1 - alpha) / N)
 
-        for k in graph.nodes():
-            ranking[k] = ranking[k] + (1.0 - totalSum) / graph.number_of_nodes()
+            for neighbor in graph.neighbors(node):
+                newRanking[node] += alpha * ranking[neighbor] / len(graph.neighbors(neighbor))
 
         # check for convergence
         if (sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values())) <= tolerance):
             ranking = newRanking
             break
 
-        ranking = newRanking
+        ranking = newRanking.copy()
 
         iterations += 1
 
