@@ -600,7 +600,7 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     ranking    = dict()
     newRanking = dict()
     maxiter    = 100
-    tolerance  = 0.001
+    tolerance  = 0.01
     N          = graph.number_of_nodes()
 
     # set all ranking to 1
