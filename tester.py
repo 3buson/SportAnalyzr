@@ -5,10 +5,10 @@ import time
 import networkx as nx
 
 def main():
-    network = nx.erdos_renyi_graph(30, 0.3)
+    network = nx.erdos_renyi_graph(30, 0.8)
 
-    pr1 = nx.pagerank(network)
-    pr2 = calculatePageRank(network, False)
+    pr1 = nx.pagerank(network, 0.9999)
+    pr2 = calculatePageRank(network, False, 0.9999)
 
     print pr1
     print pr2
@@ -25,7 +25,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
 
     # set all ranking to 1
     for node in graph.nodes():
-        ranking[node]    = 1/ N
+        ranking[node]    = 1.0 / N
         newRanking[node] = 0
 
     iterations = 0

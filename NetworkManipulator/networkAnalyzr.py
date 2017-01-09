@@ -164,7 +164,6 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
         idx = 0
         for alpha in alphas:
-
             ysCombined.append(list())
             ysStdDeviationCombined.append(list())
             ysStdErrorOfMeanCombined.append(list())
@@ -594,7 +593,7 @@ def getSumOfDegrees(graph, inDegrees=True):
 
 
 def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
-    print "\n[Network Analyzr]  calculating PageRank scores"
+    print "\n[Network Analyzr]  calculating PageRank scores, alpha: %f" % alpha
 
     startTime  = time.time()
     ranking    = dict()
@@ -603,9 +602,9 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     tolerance  = 0.00001
     N          = graph.number_of_nodes()
 
-    # set all ranking to 1
+    # set all ranking to 1 / N
     for node in graph.nodes():
-        ranking[node]    = 1/ N
+        ranking[node]    = 1.0 / N
         newRanking[node] = 0
 
     iterations = 0
