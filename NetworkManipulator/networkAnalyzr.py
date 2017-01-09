@@ -199,12 +199,12 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 averageEntropy         = sum(entropies)         / len(entropies)
                 averageRelativeEntropy = sum(relativeEntropies) / len(relativeEntropies)
 
-                if (average > maxY):
+                if average > maxY:
                     maxY = average
 
-                if (stdDeviation > maxError):
+                if stdDeviation > maxError:
                     maxError = stdDeviation
-                if (stdErrorOfMean > maxError):
+                if stdErrorOfMean > maxError:
                     maxError = stdErrorOfMean
 
                 ysCombined[idx].append(average)
@@ -254,7 +254,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
 
 def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False):
-    if (nx.is_strongly_connected(graph)):
+    if nx.is_strongly_connected(graph):
         radius       = nx.radius(graph)
         diameter     = nx.diameter(graph)
         eccentricity = nx.eccentricity(graph)
@@ -283,7 +283,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     print "[Network Analyzr]  Average degree: %f"   % averageDegree
     print "[Network Analyzr]  Degree deviation: %f" % degreeDeviation
 
-    if (directed):
+    if directed:
         inDegrees          = graph.in_degree()
         averageInDegree    = sum(inDegrees.values())  / float(len(inDegrees.values()))
         inDegreeDeviation  = numpy.std(numpy.array(inDegrees.values()), ddof=1)
@@ -298,7 +298,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
 
     # LCC
     numOfNodes = graph.number_of_nodes()
-    if (directed):
+    if directed:
         lcc     = max(nx.strongly_connected_component_subgraphs(graph), key=len)
         lccSize = len(lcc)
     else:
@@ -310,7 +310,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     print "[Network Analyzr]  Percentage of nodes in LCC: %f" % lccFraction
 
     # Clustering
-    if (not directed):
+    if not directed:
         print "[Analyzer]  Calculating average clustering..."
         averageClustering = nx.average_clustering(graph)
         print "[Analyzer]  Average clustering: %f" % averageClustering
@@ -366,9 +366,9 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     print "[Network Analyzr]  Bridgeness centrality  deviation: %f" % bridgenessCentralityDeviation
 
     # Output
-    if (outputToCsv):
-        if (printHeader):
-            if (directed):
+    if outputToCsv:
+        if printHeader:
+            if directed:
                 file.write("seasonId,stage,radius,diameter,avgDegree,degreeDeviation,"
                            "avgInDegree,inDegreeDeviation,avgOutDegree,outDegreeDeviation,"
                            "lccPercent,avgShortestPath,pageRankMean,pageRankDeviation,"
@@ -379,7 +379,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
                            "pageRankMean,pageRankDeviation,betweennessMean,"
                            "betweennessDeviation,bridgenessMean,bridgenessDeviation\n")
 
-        if (directed):
+        if directed:
             file.write("%d,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" %
                        (seasonId, competitionStage, radius, diameter, averageDegree, degreeDeviation,
                         averageInDegree, inDegreeDeviation, averageOutDegree, outDegreeDeviation,
@@ -419,10 +419,10 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
     if not os.path.exists(filenamePrefix):
         os.makedirs(filenamePrefix)
 
-    if (weighted):
+    if weighted:
         filenameSuffix += '_weighted'
 
-    if (directed):
+    if directed:
         filenameSuffix += '_directed'
 
         # in degrees
@@ -538,10 +538,10 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
         if not os.path.exists(filenamePrefix):
             os.makedirs(filenamePrefix)
 
-        if (weighted):
+        if weighted:
             filenameSuffix += '_weighted'
 
-        if (directed):
+        if directed:
             filenameSuffix += '_directed'
 
         filenameSuffix += '_alpha=' + str(alpha).replace('.', '_')
@@ -600,7 +600,7 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     ranking    = dict()
     newRanking = dict()
     maxiter    = 100
-    tolerance  = 0.01
+    tolerance  = 0.00001
     N          = graph.number_of_nodes()
 
     # set all ranking to 1
@@ -611,7 +611,7 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     iterations = 0
 
     while iterations < maxiter:
-        if(iterations % 10 == 0):
+        if iterations % 10 == 0:
             print "[Network Analyzr]  Iteration %d" % iterations
 
         dp = 0
@@ -627,7 +627,8 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
                 newRanking[node] += alpha * ranking[neighbor] / len(graph.neighbors(neighbor))
 
         # check for convergence
-        if (sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values())) <= tolerance):
+        error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values()))
+        if error <= tolerance:
             ranking = newRanking
             break
 
@@ -653,7 +654,7 @@ def calculateBetweennessCentrality(graph):
         cb[i] = 0
 
     for node in graph.nodes():
-        if(node % 500 == 0):
+        if node % 500 == 0:
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
@@ -680,12 +681,12 @@ def calculateBetweennessCentrality(graph):
 
             for neighbor in graph.neighbors(v):
                 # has neighbor been traversed before?
-                if(d[neighbor] < 0):
+                if d[neighbor] < 0:
                     Q.append(neighbor)
                     d[neighbor] = d[v] + 1
 
                 # is shortest path to neighbor through v?
-                if(d[neighbor] == d[v] + 1):
+                if d[neighbor] == d[v] + 1:
                     sigma[neighbor] += sigma[v]
                     P[neighbor].append(v)
 
@@ -697,7 +698,7 @@ def calculateBetweennessCentrality(graph):
             w = S.pop()
             for v in P[w]:
                 delta[v] += (sigma[v] / float(sigma[w])) * (1 + delta[w])
-                if(w != node):
+                if w != node:
                     cb[w] += delta[w]
 
     timeSpent = time.time() - startTime
@@ -720,7 +721,7 @@ def calculateBridgenessCentrality(graph):
     for node in graph.nodes():
         sp = nx.shortest_path_length(graph, node)
 
-        if(node % 500 == 0):
+        if node % 500 == 0:
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
@@ -747,12 +748,12 @@ def calculateBridgenessCentrality(graph):
 
             for neighbor in graph.neighbors(v):
                 # has neighbor been traversed before?
-                if(d[neighbor] < 0):
+                if d[neighbor] < 0:
                     Q.append(neighbor)
                     d[neighbor] = d[v] + 1
 
                 # is shortest path to neighbor through v?
-                if(d[neighbor] == d[v] + 1):
+                if d[neighbor] == d[v] + 1:
                     sigma[neighbor] += sigma[v]
                     P[neighbor].append(v)
 
@@ -764,7 +765,7 @@ def calculateBridgenessCentrality(graph):
             w = S.pop()
             for v in P[w]:
                 delta[v] += (sigma[v] / float(sigma[w])) * (1 + delta[w])
-                if(sp[w] > 1):
+                if sp[w] > 1:
                     cb[w] += delta[w]
 
     timeSpent = time.time() - startTime
@@ -797,7 +798,7 @@ def analyzeMisc(FNGraph):
     nodes   = FNGraph.GetNodes()
 
     for sourceNode in FNGraph.Nodes():
-        if (i % 100 == 0):
+        if i % 100 == 0:
             print "\t\tCalculated for %d nodes" % i
 
         NIdToDistH = snap.TIntH()
@@ -877,7 +878,7 @@ def main():
     directedInput        = raw_input('Do you want to analyze a directed network? (0/1): ')
     weightedInput        = raw_input('Do you want to analyze a weighted network? (0/1): ')
 
-    if (bool(int(weightedInput))):
+    if bool(int(weightedInput)):
         logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')
     else:
         logWeightsInput = 0
@@ -891,37 +892,37 @@ def main():
     analyzeOverTime = bool(int(analyzeOverTimeInput))
     analyzeBySeason = bool(int(analyzeBySeasonInput))
 
-    if (analyzeBySeason):
+    if analyzeBySeason:
         printToFileInput = raw_input('Do you want to have output in a file? (0/1): ')
         printToFile      = bool(int(printToFileInput))
     else:
         printToFile = False
 
-    if (printToFile):
+    if printToFile:
         csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
         printToCsv     = bool(int(csvOutputInput))
 
         outputFileBaseName = 'networkStats'
 
-        if (isDirected):
+        if isDirected:
             outputFileSuffix += '_directed'
-        if (isWeighted):
+        if isWeighted:
             outputFileSuffix += '_weighted'
 
-        if (printToCsv):
+        if printToCsv:
             file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.csv', 'w')
         else:
             file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
             sys.stdout = file
 
-    if(seasonsInput.lower() == 'all'):
+    if seasonsInput.lower() == 'all':
         seasons = constants.allSeasons
     else:
         seasons = seasonsInput.split(',')
         seasons = [int(season) for season in seasons]
 
 
-    if (analyzeBySeason):
+    if analyzeBySeason:
         index = 0
         for seasonId in seasons:
             print "\n[Network Analyzr] SEASON: %s" % seasonId
@@ -934,7 +935,7 @@ def main():
 
             print ''
 
-    if (analyzeOverTime):
+    if analyzeOverTime:
         print "\n[Network Analyzr] Building networks for all seasons"
 
         createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all',     isDirected, isWeighted, hasLogWeights)

@@ -11,12 +11,12 @@ import utils
 
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, penalizeExtraTime=False):
-    if (extraTime and penalizeExtraTime):
+    if extraTime and penalizeExtraTime:
         weight = 1.0 / winnerScore
     else:
         weight = float(winnerScore - loserScore) / (winnerScore)
 
-    if (logarithmic):
+    if logarithmic:
         weight = math.log(1 + weight)
 
     return weight * 10
@@ -29,7 +29,7 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
 
     connection = utils.connectToDB()
 
-    if(directed):
+    if directed:
         graph = nx.MultiDiGraph()
     else:
         graph = nx.MultiGraph()
@@ -47,13 +47,13 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
 
         weight = 1
 
-        if (homeScore > awayScore):
-            if (weighted):
+        if homeScore > awayScore:
+            if weighted:
                 weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
 
             graph.add_edge(int(awayClub), int(homeClub), weight=weight)
         else:
-            if (weighted):
+            if weighted:
                 weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
 
             graph.add_edge(int(homeClub), int(awayClub), weight=weight)

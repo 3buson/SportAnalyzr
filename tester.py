@@ -20,7 +20,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
     ranking    = dict()
     newRanking = dict()
     maxiter    = 100
-    tolerance  = 0.001
+    tolerance  = 0.00001
     N          = graph.number_of_nodes()
 
     # set all ranking to 1
@@ -31,7 +31,7 @@ def calculatePageRank(graph, weighted, alpha=0.85):
     iterations = 0
 
     while iterations < maxiter:
-        if(iterations % 10 == 0):
+        if iterations % 10 == 0:
             print "[Network Analyzr]  Iteration %d" % iterations
 
         dp = 0
@@ -47,7 +47,8 @@ def calculatePageRank(graph, weighted, alpha=0.85):
                 newRanking[node] += alpha * ranking[neighbor] / len(graph.neighbors(neighbor))
 
         # check for convergence
-        if (sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values())) <= tolerance):
+        error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values()))
+        if error <= tolerance:
             ranking = newRanking
             break
 

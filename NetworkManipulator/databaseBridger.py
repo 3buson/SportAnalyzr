@@ -7,11 +7,11 @@ sys.path.insert(0, '../')
 def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all'):
     cursor = connection.cursor()
 
-    if (leagueId == None):
+    if leagueId == None:
         return 'Please choose a leagueId!'
 
-    if (seasonIds == 'all'):
-        if (competitionStage == 'all'):
+    if seasonIds == 'all':
+        if competitionStage == 'all':
             cursor.execute('''
                             SELECT
                                 seasonId, date, home_club_id, away_club_id,
@@ -38,7 +38,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                             ''' %
                            (leagueId, competitionStage))
     else:
-        if (competitionStage == 'all'):
+        if competitionStage == 'all':
             cursor.execute('''
                             SELECT
                                 season_id, date, home_club_id, away_club_id,
@@ -74,7 +74,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
 def getAllClubs(connection, leagueId):
     cursor = connection.cursor
 
-    if (leagueId == None):
+    if leagueId == None:
         return 'Please choose a leagueId!'
 
     cursor.execute('''
