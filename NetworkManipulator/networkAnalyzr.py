@@ -176,27 +176,24 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
                 numberOfNodes = graph.number_of_nodes()
 
+                # average and deviations of PageRank
                 average        = sum(pageRank.values()) / float(len(pageRank.values()))
                 stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
 
-                # try:
-                entropies         = list()
-                relativeEntropies = list()
-
+                # entropy of PageRank
+                entropies = list()
                 for p in pageRank.values():
                     if p > 0:
-                        entropy         = -p * math.log(p, 2)
-                        relativeEntropy = entropy / math.log(numberOfNodes, 2)
+                        entropy = -p * math.log(p, 2)
                     else:
                         print "[Network Analyzr]  Entropy is ZERO!"
-                        entropy = relativeEntropy = 0
+                        entropy = 0
 
                     entropies.append(entropy)
-                    relativeEntropies.append(relativeEntropy)
 
-                averageEntropy         = sum(entropies)         / len(entropies)
-                averageRelativeEntropy = sum(relativeEntropies) / len(relativeEntropies)
+                averageEntropy         = sum(entropies) / len(entropies)
+                averageRelativeEntropy = averageEntropy / math.log(numberOfNodes, 2)
 
                 if average > maxY:
                     maxY = average
@@ -215,37 +212,31 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
             idx += 1
 
-        colors = ['b', 'r', 'k', 'g']
+        colors = ['b', 'k', 'r', 'm', 'g']
+        labels = ['alpha: ' + str(alpha) for alpha in alphas]
 
-        legendSuffix = '|alphas: '
-        for idx, color in enumerate(colors):
-            legendSuffix += str(alphas[idx]) + '=' + colors[idx]
-
-            if idx != len(colors) - 1:
-                legendSuffix += ', '
-
-        # multi alpha PageRank average and std deviation/error of the mean
-        utils.createMultiGraphWithVariance(0, maxY + maxError, 'PageRank over time ' + competitionStage + legendSuffix,
+        # multi alpha PageRank average and std deviation/error of the mean over time
+        utils.createMultiGraphWithVariance(0, maxY + maxError, 'PageRank ' + competitionStage,
                                            'Season', 'PageRank', filename,
-                                           seasons, ysCombined, ysStdErrorOfMeanCombined, colors)
+                                           seasons, ysCombined, ysStdErrorOfMeanCombined, colors, labels)
 
-        # multi alpha PageRank std deviation
+        # multi alpha PageRank std deviation over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
-                               'PageRank STD dev over time ' + competitionStage + legendSuffix,
+                               'PageRank STD dev ' + competitionStage,
                                'Season', 'PageRank', filename + '_std_dev',
-                               seasons, stdDeviationCombined, colors)
+                               seasons, stdDeviationCombined, colors, labels)
 
-        # multi alpha PageRank entropy
+        # multi alpha PageRank entropy over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
-                               'PageRank Entropy over time ' + competitionStage + legendSuffix,
+                               'PageRank entropy ' + competitionStage,
                                'Season', 'PageRank', filename + '_entropy',
-                               seasons, entropyCombined, colors)
+                               seasons, entropyCombined, colors, labels)
 
-        # multi alpha PageRank relative entrpy
+        # multi alpha PageRank relative entropy over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in relativeEntropyCombined), False,
-                               'PageRank rel. Entropy over time ' + competitionStage + legendSuffix,
+                               'PageRank rel. entropy ' + competitionStage,
                                'Season', 'PageRank', filename + '_relative_entropy',
-                               seasons, relativeEntropyCombined, colors)
+                               seasons, relativeEntropyCombined, colors, labels)
 
     else:
         print "[Network Analyzr]  Unsupported property!"
