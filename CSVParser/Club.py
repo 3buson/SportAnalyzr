@@ -5,7 +5,7 @@ import traceback
 
 
 class Club:
-    def __init__(self, id=None, acronym=None, name=None, leagueId=None):
+    def __init__(self, acronym=None, name=None, leagueId=None):
         self.id       = id
         self.acronym  = acronym
         self.name     = name
@@ -16,10 +16,10 @@ class Club:
 
         try:
             cursor.execute('''
-                            INSERT IGNORE INTO clubs(id, acronym, name, league_id)
-                            VALUES (?, ?, ?, ?)
+                            INSERT IGNORE INTO clubs(acronym, name, league_id)
+                            VALUES (?, ?, ?)
                            ''',
-                           self.id, self.acronym, self.name, self.leagueId)
+                           self.acronym, self.name, self.leagueId)
 
         except pyodbc.DatabaseError, e:
             print "[Club class]  ERROR - DatabaseError", e

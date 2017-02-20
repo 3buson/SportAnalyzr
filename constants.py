@@ -38,6 +38,29 @@ urls['NBA'] = {
 leagues        = dict()
 leagues['NBA'] = 'National Basketball Association'
 leagues['NHL'] = 'National Hockey League'
+# football
+leagues['B1']  = 'Belgium Pro League'
+leagues['G1']  = 'Greece Super League'
+leagues['P1']  = 'Portugal Liga NOS'
+leagues['T1']  = 'Turkey Super Lig'
+leagues['N1']  = 'Netherlands Eredevisie'
+leagues['I1']  = 'Italy Serie A'
+leagues['I2']  = 'Italy Serie B'
+leagues['D1']  = 'Germany 1. Bundesliga'
+leagues['D2']  = 'Germany 2. Bundesliga'
+leagues['F1']  = 'France Ligue 1'
+leagues['F2']  = 'France Ligue 2'
+leagues['SP1'] = 'Spain LaLiga'
+leagues['SP2'] = 'Spain LaLiga 2'
+leagues['E0']  = 'England Premier League'
+leagues['E1']  = 'England Champions League'
+leagues['E2']  = 'England League One'
+leagues['E3']  = 'England League Two'
+leagues['EC']  = 'England Conference League'
+leagues['SC0'] = 'Scotland Premier League'
+leagues['SC1'] = 'Scotland Champions League'
+leagues['SC2'] = 'Scotland League One'
+leagues['SC3'] = 'Scotland League Two'
 
 # --- CLUBS DICTS --- #
 

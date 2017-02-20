@@ -7,7 +7,7 @@ sys.path.insert(0, '../')
 def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all'):
     cursor = connection.cursor()
 
-    if leagueId == None:
+    if leagueId is None:
         return 'Please choose a leagueId!'
 
     if seasonIds == 'all':
@@ -74,7 +74,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
 def getAllClubs(connection, leagueId):
     cursor = connection.cursor
 
-    if leagueId == None:
+    if leagueId is None:
         return 'Please choose a leagueId!'
 
     cursor.execute('''
