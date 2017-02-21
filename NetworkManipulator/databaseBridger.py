@@ -34,7 +34,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                             WHERE
                                 leagueId = %s
                             AND
-                                stage = '%s'
+                                stage = "%s"
                             ''' %
                            (leagueId, competitionStage))
     else:
@@ -65,7 +65,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                             AND
                                 season_id IN (%s)
                             AND
-                                stage = '%s'
+                                stage = "%s"
                             ''' %
                            (leagueId, seasonIds, competitionStage))
 

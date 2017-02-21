@@ -846,7 +846,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, direct
     for property in ['edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
         print "[Network Analyzr]  Analyzing %s over time..." % property
 
-        folderName = 'output/graphs/overTime/' + competitionStage + '/'
+        folderName = 'output/' + leagueId + '/graphs/overTime/' + competitionStage + '/'
 
         analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, folderName)
 
@@ -857,16 +857,18 @@ def main():
     timeStart = time.time()
 
     file               = None
-    leagueId           = 2
     outputFolderPrefix = 'output/'
     outputFileSuffix   = ''
 
     if not os.path.exists(outputFolderPrefix):
         os.makedirs(outputFolderPrefix)
 
+    leagueInput          = raw_input('Please enter desired league id: ')
     seasonsInput         = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
     directedInput        = raw_input('Do you want to analyze a directed network? (0/1): ')
     weightedInput        = raw_input('Do you want to analyze a weighted network? (0/1): ')
+
+    leagueId = int(leagueInput)
 
     if bool(int(weightedInput)):
         logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')

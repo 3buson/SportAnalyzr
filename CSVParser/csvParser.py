@@ -90,7 +90,7 @@ def parseFootballCSVFile(connection, csvFile, delimeter):
                 homeClubScore = row[5]
                 awayClubScore = row[6]
 
-                seasonId  = str(int(season) + 2000 - 1)
+                seasonId  = str(int(season[-2:]) + 2000 - 1)
                 stage     = 'regular'
                 extraTime = 0
 

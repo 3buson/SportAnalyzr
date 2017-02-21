@@ -117,7 +117,7 @@ def main():
             try:
                 cursor.execute('''
                             SELECT id FROM leagues
-                            WHERE leagues.acronym = '%s'
+                            WHERE leagues.acronym = "%s"
                           ''' %
                           league)
 
