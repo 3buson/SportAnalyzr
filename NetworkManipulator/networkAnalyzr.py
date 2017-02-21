@@ -392,16 +392,9 @@ def analyzeDegrees(graph, directed, weighted, leagueId, seasonId, competitionSta
 
     xs = range(0, graph.number_of_nodes())
 
-    if competitionStage == 'playoff':
-        nodeLimit       = 10
-        degreesLimit    = 12
-        strengthsLimit  = 15
-        numberOfBins    = 5
-    else:
-        nodeLimit       = 30
-        degreesLimit    = 80
-        strengthsLimit  = 110
-        numberOfBins    = 12
+    nodeLimit    = len(inDegrees.values())
+    degreesLimit = max(inDegrees.values())
+    numberOfBins = nodeLimit / 3
 
     filenamePrefix = 'output/' + `leagueId` + '/graphs/bySeason/'
     filenameSuffix = ''
@@ -473,10 +466,10 @@ def analyzeDegrees(graph, directed, weighted, leagueId, seasonId, competitionSta
                         '/outDegrees' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
         utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
-        utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut , 'r-')
+        utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut, 'r-')
 
         utils.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
-        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut , 'r', numberOfBins=numberOfBins)
+        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut, 'r', numberOfBins=numberOfBins)
 
         # degree weight sum CDF & PDF
         titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -495,11 +488,13 @@ def analyzeDegrees(graph, directed, weighted, leagueId, seasonId, competitionSta
         sumOfInDegrees  = getSumOfDegrees(graph)
         sumOfOutDegrees = getSumOfDegrees(graph, False)
 
+        strengthsLimit = max(sumOfInDegrees)
+
         utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
-        utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut , 'r-')
+        utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut, 'r-')
 
         utils.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
-        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut , 'r', numberOfBins=numberOfBins)
+        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
 
 
 def analyzePageRank(graph, directed, weighted, leagueId, seasonId, competitionStage, multipleAlphas=False):
@@ -513,14 +508,9 @@ def analyzePageRank(graph, directed, weighted, leagueId, seasonId, competitionSt
 
         xs = range(0, graph.number_of_nodes())
 
-        if competitionStage == 'playoff':
-            nodeLimit       = 10
-            yLimitPageRank  = 0.15
-            numberOfBins    = 5
-        else:
-            nodeLimit       = 30
-            yLimitPageRank  = 0.085
-            numberOfBins    = 10
+        nodeLimit      = len(pageRank.values())
+        yLimitPageRank = max(pageRank.values()) * 1.05
+        numberOfBins   = nodeLimit / 3
 
         filenamePrefix = 'output/' + `leagueId` + '/graphs/bySeason/'
         filenameSuffix = ''
@@ -885,7 +875,7 @@ def main():
         printToFile = False
 
     file               = None
-    outputFolderPrefix = 'output/' + `leagueId`
+    outputFolderPrefix = 'output/' + `leagueId` + '/'
     outputFileSuffix   = ''
 
     if not os.path.exists(outputFolderPrefix):
