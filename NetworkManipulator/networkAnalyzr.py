@@ -13,6 +13,7 @@ from operator import add
 from collections import deque, Counter
 
 import networkBuilder
+import databaseBridger
 
 sys.path.insert(0, '../')
 import utils
@@ -385,7 +386,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
 
-def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
+def analyzeDegrees(graph, directed, weighted, leagueId, seasonId, competitionStage):
     inDegrees  = graph.in_degree()
     outDegrees = graph.out_degree()
 
@@ -402,7 +403,7 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         strengthsLimit  = 110
         numberOfBins    = 12
 
-    filenamePrefix = 'output/graphs/bySeason/'
+    filenamePrefix = 'output/' + `leagueId` + '/graphs/bySeason/'
     filenameSuffix = ''
 
     # create 'output/graphs/bySeason' directory if it does not exist yet
@@ -501,7 +502,7 @@ def analyzeDegrees(graph, directed, weighted, seasonId, competitionStage):
         utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut , 'r', numberOfBins=numberOfBins)
 
 
-def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multipleAlphas=False):
+def analyzePageRank(graph, directed, weighted, leagueId, seasonId, competitionStage, multipleAlphas=False):
     if multipleAlphas:
         alphaValues = constants.allPageRankAlphas
     else:
@@ -521,7 +522,7 @@ def analyzePageRank(graph, directed, weighted, seasonId, competitionStage, multi
             yLimitPageRank  = 0.085
             numberOfBins    = 10
 
-        filenamePrefix = 'output/graphs/bySeason/'
+        filenamePrefix = 'output/' + `leagueId` + '/graphs/bySeason/'
         filenameSuffix = ''
 
         # create 'output/graphs/bySeason' directory if it does not exist yet
@@ -822,8 +823,8 @@ def createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, directed, weig
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     if numberOfNodes > 0:
-        analyzeDegrees(clubsNetwork, directed, weighted, seasonId, competitionStage)
-        analyzePageRank(clubsNetwork, directed, weighted, seasonId, competitionStage, True)
+        analyzeDegrees(clubsNetwork, directed, weighted, leagueId, seasonId, competitionStage)
+        analyzePageRank(clubsNetwork, directed, weighted, leagueId, seasonId, competitionStage, True)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
@@ -846,7 +847,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, direct
     for property in ['edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
         print "[Network Analyzr]  Analyzing %s over time..." % property
 
-        folderName = 'output/' + leagueId + '/graphs/overTime/' + competitionStage + '/'
+        folderName = 'output/' + `leagueId` + '/graphs/overTime/' + competitionStage + '/'
 
         analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, folderName)
 
@@ -855,13 +856,6 @@ def createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, direct
 
 def main():
     timeStart = time.time()
-
-    file               = None
-    outputFolderPrefix = 'output/'
-    outputFileSuffix   = ''
-
-    if not os.path.exists(outputFolderPrefix):
-        os.makedirs(outputFolderPrefix)
 
     leagueInput          = raw_input('Please enter desired league id: ')
     seasonsInput         = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
@@ -890,6 +884,13 @@ def main():
     else:
         printToFile = False
 
+    file               = None
+    outputFolderPrefix = 'output/' + `leagueId`
+    outputFileSuffix   = ''
+
+    if not os.path.exists(outputFolderPrefix):
+        os.makedirs(outputFolderPrefix)
+
     if printToFile:
         csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
         printToCsv     = bool(int(csvOutputInput))
@@ -908,10 +909,14 @@ def main():
             sys.stdout = file
 
     if seasonsInput.lower() == 'all':
-        seasons = constants.allSeasons
+        seasons = databaseBridger.getAllSeasonsForLeague(utils.connectToDB(), leagueId)
+        seasons = list(map(lambda season: season[0], seasons))
     else:
         seasons = seasonsInput.split(',')
         seasons = [int(season) for season in seasons]
+
+    competitionStages = databaseBridger.getAllCompetitionStagesForLeague(utils.connectToDB(), leagueId)
+    competitionStages = list(map(lambda stage: stage[0], competitionStages))
 
 
     if analyzeBySeason:
@@ -919,9 +924,11 @@ def main():
         for seasonId in seasons:
             print "\n[Network Analyzr] SEASON: %s" % seasonId
 
-            createAndAnalyzeNetwork(leagueId, seasonId, 'all',     isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
-            createAndAnalyzeNetwork(leagueId, seasonId, 'regular', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
-            createAndAnalyzeNetwork(leagueId, seasonId, 'playoff', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+            for competitionStage in competitionStages:
+                createAndAnalyzeNetwork(leagueId, seasonId, competitionStage, isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+
+            if len(competitionStages) > 1:
+                createAndAnalyzeNetwork(leagueId, seasonId, 'all', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
 
             index += 1
 
@@ -930,9 +937,11 @@ def main():
     if analyzeOverTime:
         print "\n[Network Analyzr] Building networks for all seasons"
 
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all',     isDirected, isWeighted, hasLogWeights)
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'regular', isDirected, isWeighted, hasLogWeights)
-        createAndAnalyzeNetworksOverTime(leagueId, seasons, 'playoff', isDirected, isWeighted, hasLogWeights)
+        for competitionStage in competitionStages:
+            createAndAnalyzeNetworksOverTime(leagueId, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
+
+        if len(competitionStages) > 1:
+            createAndAnalyzeNetworksOverTime(leagueId, seasons, 'all', isDirected, isWeighted, hasLogWeights)
 
     timeSpent = time.time() - timeStart
 

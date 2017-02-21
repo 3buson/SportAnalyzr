@@ -14,7 +14,7 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, p
     if extraTime and penalizeExtraTime:
         weight = 1.0 / winnerScore
     else:
-        weight = float(winnerScore - loserScore) / (winnerScore)
+        weight = float(winnerScore - loserScore) / (max(1, winnerScore))
 
     if logarithmic:
         weight = math.log(1 + weight)

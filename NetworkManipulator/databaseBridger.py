@@ -72,19 +72,55 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
     return cursor.fetchall()
 
 def getAllClubs(connection, leagueId):
-    cursor = connection.cursor
+    cursor = connection.cursor()
 
     if leagueId is None:
         return 'Please choose a leagueId!'
 
     cursor.execute('''
-                    SELECT
-                        id, acronym, name
-                    FROM
-                        clubs
-                    WHERE
-                        leagueId = %s
-                    ''' %
+                        SELECT
+                            id, acronym, name
+                        FROM
+                            clubs
+                        WHERE
+                            league_id = %s
+                        ''' %
                     leagueId)
 
-    return cursor.fetchAll()
+    return cursor.fetchall()
+
+def getAllSeasonsForLeague(connection, leagueId):
+    cursor = connection.cursor()
+
+    if leagueId is None:
+        return 'Please choose a leagueId!'
+
+    cursor.execute('''
+                        SELECT
+                            DISTINCT (season_id)
+                        FROM
+                            matches
+                        WHERE
+                            league_id = %s
+                        ''' %
+                   leagueId)
+
+    return cursor.fetchall()
+
+def getAllCompetitionStagesForLeague(connection, leagueId):
+    cursor = connection.cursor()
+
+    if leagueId is None:
+        return 'Please choose a leagueId!'
+
+    cursor.execute('''
+                        SELECT
+                            DISTINCT (stage)
+                        FROM
+                            matches
+                        WHERE
+                            league_id = %s
+                        ''' %
+                   leagueId)
+
+    return cursor.fetchall()
