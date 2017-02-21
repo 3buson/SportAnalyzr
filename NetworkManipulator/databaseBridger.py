@@ -124,3 +124,21 @@ def getAllCompetitionStagesForLeague(connection, leagueId):
                    leagueId)
 
     return cursor.fetchall()
+
+def getLeagueNameFromId(connection, leagueId):
+    cursor = connection.cursor()
+
+    if leagueId is None:
+        return 'Please choose a leagueId!'
+
+    cursor.execute('''
+                            SELECT
+                                name
+                            FROM
+                                leagues
+                            WHERE
+                                id = %s
+                            ''' %
+                   leagueId)
+
+    return cursor.fetchone()[0]
