@@ -71,7 +71,7 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
 
     return cursor.fetchall()
 
-def getAllClubs(connection, leagueId):
+def getAllClubsForLeague(connection, leagueId):
     cursor = connection.cursor()
 
     if leagueId is None:
@@ -88,6 +88,19 @@ def getAllClubs(connection, leagueId):
                     leagueId)
 
     return cursor.fetchall()
+
+def getAllLeagues(connection):
+    cursor = connection.cursor()
+
+    cursor.execute('''
+                    SELECT
+                        id
+                    FROM
+                        leagues
+                    ''')
+
+    return cursor.fetchall()
+
 
 def getAllSeasonsForLeague(connection, leagueId):
     cursor = connection.cursor()

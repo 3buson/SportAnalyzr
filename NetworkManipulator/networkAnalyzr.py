@@ -24,7 +24,7 @@ import constants
 
 # networkx analyzers
 
-def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, folderName=None):
+def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, leagueName, folderName=None):
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
@@ -79,7 +79,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
         utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
-                                            'Degrees over time ' + competitionStage,
+                                            'Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'inDegrees':
@@ -104,7 +104,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
         utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
-                                            'In Degrees over time ' + competitionStage,
+                                            'In Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'outDegrees':
@@ -129,7 +129,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
         utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
-                                            'Out Degrees over time ' + competitionStage,
+                                            'Out Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'Out Degrees/Out Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
 
@@ -145,7 +145,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
 
         utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
-                                            'PageRank over time ' + competitionStage,
+                                            'PageRank over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'PageRank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
 
@@ -217,26 +217,26 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
         labels = ['alpha: ' + str(alpha) for alpha in alphas]
 
         # multi alpha PageRank average and std deviation/error of the mean over time
-        utils.createMultiGraphWithVariance(0, maxY + maxError, 'PageRank ' + competitionStage,
-                                           'Season', 'PageRank', filename,
+        utils.createMultiGraphWithVariance(0, maxY + maxError, 'Average PageRank ' + leagueName + ' ' + competitionStage,
+                                           'Season', 'Average PageRank', filename,
                                            seasons, ysCombined, ysStdErrorOfMeanCombined, colors, labels)
 
         # multi alpha PageRank std deviation over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
-                               'PageRank STD dev ' + competitionStage,
-                               'Season', 'PageRank', filename + '_std_dev',
+                               'PageRank STD dev ' + leagueName + ' ' + competitionStage,
+                               'Season', 'PageRank STD dev', filename + '_std_dev',
                                seasons, stdDeviationCombined, colors, labels)
 
         # multi alpha PageRank entropy over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
-                               'PageRank entropy ' + competitionStage,
-                               'Season', 'PageRank', filename + '_entropy',
+                               'PageRank Entropy ' + leagueName + ' ' + competitionStage,
+                               'Season', 'Entropy', filename + '_entropy',
                                seasons, entropyCombined, colors, labels)
 
         # multi alpha PageRank relative entropy over time
         utils.createMultiGraph(0, max(max(arr[1:]) for arr in relativeEntropyCombined), False,
-                               'PageRank rel. entropy ' + competitionStage,
-                               'Season', 'PageRank', filename + '_relative_entropy',
+                               'PageRank Rel. Entropy ' + leagueName + ' ' + competitionStage,
+                               'Season', 'Rel. Entropy', filename + '_relative_entropy',
                                seasons, relativeEntropyCombined, colors, labels)
 
     else:
@@ -605,7 +605,7 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
             newRanking[node] = dp + ((1 - alpha) / N)
 
             for neighbor in graph.neighbors(node):
-                newRanking[node] += alpha * ranking[neighbor] / len(graph.neighbors(neighbor))
+                newRanking[node] += alpha * ranking[neighbor] / max(len(graph.neighbors(neighbor)), 1)
 
         # check for convergence
         error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values()))
@@ -839,22 +839,25 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
 
         folderName = 'output/' + leagueString + '/graphs/overTime/' + competitionStage + '/'
 
-        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, folderName)
+        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, leagueString, folderName)
 
         print "[Network Analyzr]  Analysis of %s over time done" % property
 
 
 def main():
-    timeStart  = time.time()
     connection = utils.connectToDB()
 
-    leagueInput          = raw_input('Please enter desired league id: ')
-    seasonsInput         = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
-    directedInput        = raw_input('Do you want to analyze a directed network? (0/1): ')
-    weightedInput        = raw_input('Do you want to analyze a weighted network? (0/1): ')
+    leaguesInput  = raw_input('Please enter desired league ids separated by comma (all for all of them): ')
+    seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')
+    directedInput = raw_input('Do you want to analyze a directed network? (0/1): ')
+    weightedInput = raw_input('Do you want to analyze a weighted network? (0/1): ')
 
-    leagueId     = int(leagueInput)
-    leagueString = databaseBridger.getLeagueNameFromId(connection, leagueId)
+    if leaguesInput.lower() == 'all':
+        leagues = databaseBridger.getAllLeagues(connection)
+        leagues = list(map(lambda league: league[0], leagues))
+    else:
+        leagues = leaguesInput.rstrip(',').split(',')
+        leagues = [int(league) for league in leagues]
 
     if bool(int(weightedInput)):
         logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')
@@ -876,68 +879,80 @@ def main():
     else:
         printToFile = False
 
-    file               = None
-    outputFolderPrefix = 'output/' + leagueString + '/'
-    outputFileSuffix   = ''
+    csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
+    printToCsv = bool(int(csvOutputInput))
 
-    if not os.path.exists(outputFolderPrefix):
-        os.makedirs(outputFolderPrefix)
+    timeStartInitial = time.time()
+    for leagueId in leagues:
+        timeStart = time.time()
 
-    if printToFile:
-        csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
-        printToCsv     = bool(int(csvOutputInput))
+        file               = None
+        leagueString       = databaseBridger.getLeagueNameFromId(connection, leagueId)
+        outputFolderPrefix = 'output/' + leagueString + '/'
+        outputFileSuffix   = ''
 
-        outputFileBaseName = 'networkStats'
+        print "\n[Network Analyzr] Analyzing league %s..." % leagueString
 
-        if isDirected:
-            outputFileSuffix += '_directed'
-        if isWeighted:
-            outputFileSuffix += '_weighted'
+        if not os.path.exists(outputFolderPrefix):
+            os.makedirs(outputFolderPrefix)
 
-        if printToCsv:
-            file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.csv', 'w')
+        if printToFile:
+            outputFileBaseName = 'networkStats'
+
+            if isDirected:
+                outputFileSuffix += '_directed'
+            if isWeighted:
+                outputFileSuffix += '_weighted'
+
+            if printToCsv:
+                file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.csv', 'w')
+            else:
+                file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
+                sys.stdout = file
+
+        if seasonsInput.lower() == 'all':
+            seasons = databaseBridger.getAllSeasonsForLeague(connection, leagueId)
+            seasons = list(map(lambda season: season[0], seasons))
         else:
-            file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
-            sys.stdout = file
+            seasons = seasonsInput.rstrip(',').split(',')
+            seasons = [int(season) for season in seasons]
 
-    if seasonsInput.lower() == 'all':
-        seasons = databaseBridger.getAllSeasonsForLeague(connection, leagueId)
-        seasons = list(map(lambda season: season[0], seasons))
-    else:
-        seasons = seasonsInput.split(',')
-        seasons = [int(season) for season in seasons]
-
-    competitionStages = databaseBridger.getAllCompetitionStagesForLeague(connection, leagueId)
-    competitionStages = list(map(lambda stage: stage[0], competitionStages))
+        competitionStages = databaseBridger.getAllCompetitionStagesForLeague(connection, leagueId)
+        competitionStages = list(map(lambda stage: stage[0], competitionStages))
 
 
-    if analyzeBySeason:
-        index = 0
-        for seasonId in seasons:
-            print "\n[Network Analyzr] SEASON: %s" % seasonId
+        if analyzeBySeason:
+            index = 0
+            for seasonId in seasons:
+                print "\n[Network Analyzr] Analyzing season %s..." % seasonId
+
+                for competitionStage in competitionStages:
+                    createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+
+                if len(competitionStages) > 1:
+                    createAndAnalyzeNetwork(leagueId, leagueString, seasonId, 'all', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+
+                index += 1
+
+                print ''
+
+        if analyzeOverTime:
+            print "\n[Network Analyzr] Building networks for all seasons"
 
             for competitionStage in competitionStages:
-                createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+                createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
 
             if len(competitionStages) > 1:
-                createAndAnalyzeNetwork(leagueId, leagueString, seasonId, 'all', isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+                createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, 'all', isDirected, isWeighted, hasLogWeights)
 
-            index += 1
+        timeSpent = time.time() - timeStart
+        timeStart = time.time()
 
-            print ''
+        print "\n[Network Analyzr] Analysis done, time spent: %d s" % int(round(timeSpent))
 
-    if analyzeOverTime:
-        print "\n[Network Analyzr] Building networks for all seasons"
+    totalTimeSpent = time.time() - timeStartInitial
 
-        for competitionStage in competitionStages:
-            createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
-
-        if len(competitionStages) > 1:
-            createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, 'all', isDirected, isWeighted, hasLogWeights)
-
-    timeSpent = time.time() - timeStart
-
-    print "\n[Network Analyzr] Analysis done, time spent: %d s" % int(round(timeSpent))
+    print "\n[Network Analyzr] Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
 
     return 0
 
