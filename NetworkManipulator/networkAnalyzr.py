@@ -40,14 +40,24 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
     ys2StdDeviation   = list()
     ys2StdErrorOfMean = list()
 
-    if property == 'edges':
+    if property == 'nodes':
+        filename = folderName + 'nodes_over_time_' + competitionStage
+
+        for graph in graphs:
+            ys1.append(graph.number_of_nodes())
+
+        utils.createDoubleGraphWithVariance(0, max(ys1) + 1, 'Nodes over time ' + competitionStage,
+                                            'Season', 'Nodes', filename,
+                                            seasons, ys1, [])
+
+    elif property == 'edges':
         filename = folderName + 'nodes_edges_over_time_' + competitionStage
 
         for graph in graphs:
             ys1.append(graph.number_of_nodes())
             ys2.append(graph.number_of_edges())
 
-        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2), 'Nodes and Edges over time ' + competitionStage,
+        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2) + 1, 'Nodes and Edges over time ' + competitionStage,
                                             'Season', 'Nodes/Edges', filename,
                                             seasons, ys1, ys2)
     elif property == 'degrees':
@@ -834,7 +844,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
         print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
         print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
 
-    for property in ['edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
+    for property in ['nodes', 'edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
         print "[Network Analyzr]  Analyzing %s over time..." % property
 
         folderName = 'output/' + leagueString + '/graphs/overTime/' + competitionStage + '/'
