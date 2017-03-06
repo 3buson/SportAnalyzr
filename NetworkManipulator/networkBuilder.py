@@ -1,13 +1,9 @@
 __author__ = '3buson'
 
-import databaseBridger
-
-import sys
 import math
 import networkx as nx
-
-sys.path.insert(0, '../')
 import utils
+import databaseBridger
 
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, penalizeExtraTime=False):

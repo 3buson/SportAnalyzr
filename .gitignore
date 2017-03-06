@@ -95,4 +95,5 @@ ENV/
 FileConqueror/html
 FileConqueror/csv
 
-NetworkManipulator/output/*
+# output of SportAnalyzr
+output/*

@@ -8,9 +8,6 @@ import traceback
 from operator import add
 from operator import sub
 from matplotlib import pyplot
-from scipy.stats import norm
-
-import constants
 
 
 ### ---- DATABASE FUNCTIONS ---- ###

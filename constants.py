@@ -1,5 +1,6 @@
 __author__ = '3buson'
 
+
 # --- VARIOUS CONSTANTS --- #
 currentSeason       = '16'
 inflationRatio      = 2.11

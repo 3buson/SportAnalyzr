@@ -1,8 +1,5 @@
 __author__ = '3buson'
 
-import sys
-
-sys.path.insert(0, '../')
 
 def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all'):
     cursor = connection.cursor()

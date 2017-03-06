@@ -1,11 +1,9 @@
 __author__ = '3buson'
 
 import os
-import sys
 import time
 import urlgrabber
 
-sys.path.insert(0, '../')
 import constants
 
 baseDirname = 'html/'

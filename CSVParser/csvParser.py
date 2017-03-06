@@ -3,11 +3,10 @@ __author__ = '3buson'
 import csv
 import sys
 
+import utils
+
 from Club import Club
 from Match import Match
-
-sys.path.insert(0, '../')
-import utils
 
 
 def parseNBACSVFile(connection, csvFile, delimeter):

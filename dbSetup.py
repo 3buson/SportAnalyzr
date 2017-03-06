@@ -1,11 +1,8 @@
 __author__ = '3buson'
 
-import sys
 import utils
 import pyodbc
 import traceback
-
-sys.path.insert(0, '../')
 import constants
 
 
