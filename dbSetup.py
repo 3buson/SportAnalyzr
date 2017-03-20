@@ -1,9 +1,11 @@
-__author__ = '3buson'
-
 import utils
 import pyodbc
 import traceback
+
 import constants
+
+
+__author__ = '3buson'
 
 
 def main():

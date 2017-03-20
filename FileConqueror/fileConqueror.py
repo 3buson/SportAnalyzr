@@ -1,12 +1,14 @@
-__author__ = '3buson'
-
 import os
 import time
 import urlgrabber
 
 import constants
 
+
+__author__ = '3buson'
+
 baseDirname = 'html/'
+
 
 def fetchHTMLFiles(clubDict, league, season='2016'):
     # create csv directory

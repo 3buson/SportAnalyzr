@@ -1,7 +1,4 @@
-__author__ = '3buson'
-
 import os
-import sys
 import time
 import snap
 import math
@@ -12,15 +9,20 @@ from scipy import stats
 from operator import add
 from collections import deque, Counter
 
-import utils
 import constants
 import networkBuilder
 
+from Visualizer import visualizer
 
-### ---- NETWORK ANALYSIS FUNCTIONS ---- ###
+
+__author__ = '3buson'
+
+
+### --- NETWORK ANALYSIS FUNCTIONS --- ###
 
 # networkx analyzers
 
+# TODO: WRITE TO CSV INSTEAD
 def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, leagueName, folderName=None):
     if not os.path.exists(folderName):
         os.makedirs(folderName)
@@ -43,7 +45,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
         for graph in graphs:
             ys1.append(graph.number_of_nodes())
 
-        utils.createDoubleGraphWithVariance(0, max(ys1) + 1, 'Nodes over time ' + competitionStage,
+        visualizer.createDoubleGraphWithVariance(0, max(ys1) + 1, 'Nodes over time ' + competitionStage,
                                             'Season', 'Nodes', filename,
                                             seasons, ys1, [])
 
@@ -54,7 +56,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys1.append(graph.number_of_nodes())
             ys2.append(graph.number_of_edges())
 
-        utils.createDoubleGraphWithVariance(0, max(ys1 + ys2) + 1, 'Nodes and Edges over time ' + competitionStage,
+        visualizer.createDoubleGraphWithVariance(0, max(ys1 + ys2) + 1, 'Nodes and Edges over time ' + competitionStage,
                                             'Season', 'Nodes/Edges', filename,
                                             seasons, ys1, ys2)
     elif property == 'degrees':
@@ -85,7 +87,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+        visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
@@ -110,7 +112,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+        visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'In Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
@@ -135,7 +137,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
+        visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Out Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'Out Degrees/Out Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
@@ -151,7 +153,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys1StdDeviation.append(numpy.std(numpy.array(pageRank.values()), ddof=1))
             ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
 
-        utils.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
+        visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
                                             'PageRank over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'PageRank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
@@ -182,8 +184,6 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             for graph in graphs:
                 pageRank = calculatePageRank(graph, weighted, alpha)
 
-                numberOfNodes = graph.number_of_nodes()
-
                 # average and deviations of PageRank
                 average        = sum(pageRank.values()) / float(len(pageRank.values()))
                 stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
@@ -201,7 +201,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                     entropies.append(entropy)
 
                 averageEntropy         = sum(entropies) / len(entropies)
-                averageRelativeEntropy = averageEntropy / math.log(numberOfNodes, 2)
+                averageRelativeEntropy = averageEntropy / math.log(graph.number_of_nodes(), 2)
 
                 if average > maxY:
                     maxY = average
@@ -224,24 +224,24 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
         labels = ['alpha: ' + str(alpha) for alpha in alphas]
 
         # multi alpha PageRank average and std deviation/error of the mean over time
-        utils.createMultiGraphWithVariance(0, maxY + maxError, 'Average PageRank ' + leagueName + ' ' + competitionStage,
+        visualizer.createMultiGraphWithVariance(0, maxY + maxError, 'Average PageRank ' + leagueName + ' ' + competitionStage,
                                            'Season', 'Average PageRank', filename,
                                            seasons, ysCombined, ysStdErrorOfMeanCombined, colors, labels)
 
         # multi alpha PageRank std deviation over time
-        utils.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
+        visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
                                'PageRank STD dev ' + leagueName + ' ' + competitionStage,
                                'Season', 'PageRank STD dev', filename + '_std_dev',
                                seasons, stdDeviationCombined, colors, labels)
 
         # multi alpha PageRank entropy over time
-        utils.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
+        visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
                                'PageRank Entropy ' + leagueName + ' ' + competitionStage,
                                'Season', 'Entropy', filename + '_entropy',
                                seasons, entropyCombined, colors, labels)
 
         # multi alpha PageRank relative entropy over time
-        utils.createMultiGraph(0, max(max(arr[1:]) for arr in relativeEntropyCombined), False,
+        visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in relativeEntropyCombined), False,
                                'PageRank Rel. Entropy ' + leagueName + ' ' + competitionStage,
                                'Season', 'Rel. Entropy', filename + '_relative_entropy',
                                seasons, relativeEntropyCombined, colors, labels)
@@ -393,6 +393,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
 
+# TODO: WRITE TO CSV INSTEAD
 def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitionStage):
     inDegrees  = graph.in_degree()
     outDegrees = graph.out_degree()
@@ -424,7 +425,7 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         filename = filenamePrefix + 'inDegrees/' + competitionStage +\
                    '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-        utils.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
+        visualizer.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
                          False, title, 'Node', 'In Degree', filename)
 
         # out degrees
@@ -435,7 +436,7 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         filename = filenamePrefix + 'outDegrees/' + competitionStage +\
                    '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
-        utils.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
+        visualizer.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
                          False, title, 'Node', 'Out Degree', filename)
 
         # degree distribution
@@ -453,9 +454,9 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         outDegreeCountKeys   = sorted(inDegreeCount, key=outDegreeCount.get)
         outDegreeCountValues = sorted(inDegreeCount.values())
 
-        utils.createGraph(inDegreeCountKeys,  inDegreeCountValues,  0, degreesLimit, 0, degreesLimit / 5, 'b-',
+        visualizer.createGraph(inDegreeCountKeys,  inDegreeCountValues,  0, degreesLimit, 0, degreesLimit / 5, 'b-',
                          False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
-        utils.createGraph(outDegreeCountKeys, outDegreeCountValues, 0, degreesLimit, 0, degreesLimit / 5, 'r-',
+        visualizer.createGraph(outDegreeCountKeys, outDegreeCountValues, 0, degreesLimit, 0, degreesLimit / 5, 'r-',
                          False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
 
         # degree weight sum CDF & PDF
@@ -472,11 +473,11 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         filenamePDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                         '/outDegrees' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
-        utils.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
-        utils.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut, 'r-')
+        visualizer.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
+        visualizer.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut, 'r-')
 
-        utils.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
-        utils.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut, 'r', numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut, 'r', numberOfBins=numberOfBins)
 
         # degree weight sum CDF & PDF
         titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -497,13 +498,14 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
 
         strengthsLimit = max(sumOfInDegrees)
 
-        utils.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
-        utils.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut, 'r-')
+        visualizer.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
+        visualizer.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut, 'r-')
 
-        utils.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
-        utils.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
 
 
+# TODO: WRITE TO CSV INSTEAD
 def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competitionStage, multipleAlphas=False):
     if multipleAlphas:
         alphaValues = constants.allPageRankAlphas
@@ -546,9 +548,9 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
 
         pageRankCount = dict(Counter(pageRank.values()))
 
-        utils.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, nodeLimit, 0, yLimitPageRank, 'k-',
+        visualizer.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'Node Id',  'PageRank',  filename)
-        utils.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
+        visualizer.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
                          False, title, 'PageRank', 'NodeCount', filenameDistribution)
 
         # PageRank CDF & PDF
@@ -559,8 +561,8 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
         filenamePDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' +competitionStage
 
-        utils.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
-        utils.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
+        visualizer.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
+        visualizer.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -781,8 +783,8 @@ def analyzeMisc(FNGraph):
     # Average distance
     print "\t[Network Analyzr]  Calculating average distance..."
 
-    avgDist = 0
     i       = 0
+    avgDist = 0
     nodes   = FNGraph.GetNodes()
 
     for sourceNode in FNGraph.Nodes():

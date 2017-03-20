@@ -1,12 +1,14 @@
-__author__ = '3buson'
-
 import os
 import sys
 import time
-import utils
 
-from NetworkManipulator import databaseBridger
+import utils
+import databaseBridger
+
 from NetworkManipulator import networkAnalyzr
+
+
+__author__ = '3buson'
 
 
 def main():
@@ -44,8 +46,8 @@ def main():
     else:
         printToFile = False
 
-    csvOutputInput = raw_input('Do you want to have output in a CSV? (0/1): ')
-    printToCsv = bool(int(csvOutputInput))
+    csvOutputInput = raw_input('Do you want to have basic output in a CSV? (0/1): ')
+    printToCsv     = bool(int(csvOutputInput))
 
     timeStartInitial = time.time()
     for leagueId in leagues:
@@ -56,7 +58,7 @@ def main():
         outputFolderPrefix = 'output/' + leagueString + '/'
         outputFileSuffix   = ''
 
-        print "\n[Network Analyzr] Analyzing league %s..." % leagueString
+        print "\n[Network Analyzr]  Analyzing league %s..." % leagueString
 
         if not os.path.exists(outputFolderPrefix):
             os.makedirs(outputFolderPrefix)
@@ -89,7 +91,7 @@ def main():
         if analyzeBySeason:
             index = 0
             for seasonId in seasons:
-                print "\n[Network Analyzr] Analyzing season %s..." % seasonId
+                print "\n[Network Analyzr]  Analyzing season %s..." % seasonId
 
                 for competitionStage in competitionStages:
                     networkAnalyzr.createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
@@ -102,7 +104,7 @@ def main():
                 print ''
 
         if analyzeOverTime:
-            print "\n[Network Analyzr] Building networks for all seasons"
+            print "\n[Network Analyzr]  Building networks for all seasons"
 
             for competitionStage in competitionStages:
                 networkAnalyzr.createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
@@ -113,11 +115,11 @@ def main():
         timeSpent = time.time() - timeStart
         timeStart = time.time()
 
-        print "\n[Network Analyzr] Analysis of league '%s' done, time spent: %d s" % (leagueString, int(round(timeSpent)))
+        print "\n[Network Analyzr]  Analysis of league '%s' done, time spent: %d s" % (leagueString, int(round(timeSpent)))
 
     totalTimeSpent = time.time() - timeStartInitial
 
-    print "\n[Network Analyzr] Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
+    print "\n[Network Analyzr]  Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
 
     return 0
 

@@ -1,9 +1,12 @@
-__author__ = '3buson'
-
 import math
+
 import networkx as nx
+
 import utils
 import databaseBridger
+
+
+__author__ = '3buson'
 
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, penalizeExtraTime=False):

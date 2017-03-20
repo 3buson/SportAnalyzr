@@ -1,7 +1,18 @@
-__author__ = '3buson'
-
 import time
 import networkx as nx
+
+
+__author__ = '3buson'
+
+
+def main():
+    network = nx.erdos_renyi_graph(30, 0.8)
+
+    pr1 = nx.pagerank(network, 0.9999)
+    pr2 = calculatePageRank(network, False, 0.9999)
+
+    print pr1
+    print pr2
 
 
 def calculatePageRank(graph, weighted, alpha=0.85):

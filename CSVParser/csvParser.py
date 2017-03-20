@@ -1,7 +1,4 @@
-__author__ = '3buson'
-
 import csv
-import sys
 
 import utils
 
@@ -9,12 +6,15 @@ from Club import Club
 from Match import Match
 
 
-def parseNBACSVFile(connection, csvFile, delimeter):
+__author__ = '3buson'
+
+
+def parseNBACSVFile(connection, csvFile, delimiter):
     cursor = connection.cursor()
 
     rownum = 0
     with open(csvFile, 'rb') as f:
-        reader = csv.reader(f, delimiter=delimeter)
+        reader = csv.reader(f, delimiter=delimiter)
 
         for row in reader:
             # skip header
@@ -69,12 +69,12 @@ def parseNBACSVFile(connection, csvFile, delimeter):
                 rownum += 1
 
 
-def parseFootballCSVFile(connection, csvFile, delimeter):
+def parseFootballCSVFile(connection, csvFile, delimiter):
     cursor = connection.cursor()
 
     rownum = 0
     with open(csvFile, 'rb') as f:
-        reader = csv.reader(f, delimiter=delimeter)
+        reader = csv.reader(f, delimiter=delimiter)
 
         for row in reader:
             # skip header
@@ -161,6 +161,7 @@ def parseFootballCSVFile(connection, csvFile, delimeter):
                 match.dbInsert(connection)
 
                 rownum += 1
+
 
 def main():
     connection = utils.connectToDB()

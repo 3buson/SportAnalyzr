@@ -1,7 +1,9 @@
-__author__ = '3buson'
-
 import pyodbc
 import traceback
+
+
+__author__ = '3buson'
+
 
 class Match:
 
