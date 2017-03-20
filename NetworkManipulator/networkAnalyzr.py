@@ -897,7 +897,7 @@ def main():
         outputFolderPrefix = 'output/' + leagueString + '/'
         outputFileSuffix   = ''
 
-        print "\n[Network Analyzr] Analyzing league %s..." % leagueString
+        print "\n[Network Analyzr]  Analyzing league %s..." % leagueString
 
         if not os.path.exists(outputFolderPrefix):
             os.makedirs(outputFolderPrefix)
@@ -930,7 +930,7 @@ def main():
         if analyzeBySeason:
             index = 0
             for seasonId in seasons:
-                print "\n[Network Analyzr] Analyzing season %s..." % seasonId
+                print "\n[Network Analyzr]  Analyzing season %s..." % seasonId
 
                 for competitionStage in competitionStages:
                     createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, isDirected, isWeighted, hasLogWeights, file, printToCsv, not bool(index))
@@ -943,7 +943,7 @@ def main():
                 print ''
 
         if analyzeOverTime:
-            print "\n[Network Analyzr] Building networks for all seasons"
+            print "\n[Network Analyzr]  Building networks for all seasons"
 
             for competitionStage in competitionStages:
                 createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
@@ -954,11 +954,11 @@ def main():
         timeSpent = time.time() - timeStart
         timeStart = time.time()
 
-        print "\n[Network Analyzr] Analysis done, time spent: %d s" % int(round(timeSpent))
+        print "\n[Network Analyzr]  Analysis done, time spent: %d s" % int(round(timeSpent))
 
     totalTimeSpent = time.time() - timeStartInitial
 
-    print "\n[Network Analyzr] Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
+    print "\n[Network Analyzr]  Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
 
     return 0
 
