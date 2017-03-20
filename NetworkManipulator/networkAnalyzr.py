@@ -190,18 +190,14 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
 
                 # entropy of PageRank
-                entropies = list()
+                entropy = 0
                 for p in pageRank.values():
                     if p > 0:
-                        entropy = -p * math.log(p, 2)
+                        entropy += (-p * math.log(p, 2))
                     else:
                         print "[Network Analyzr]  Entropy is ZERO!"
-                        entropy = 0
 
-                    entropies.append(entropy)
-
-                averageEntropy         = sum(entropies) / len(entropies)
-                averageRelativeEntropy = averageEntropy / math.log(graph.number_of_nodes(), 2)
+                relativeEntropy = entropy / math.log(graph.number_of_nodes(), 2)
 
                 if average > maxY:
                     maxY = average
@@ -214,8 +210,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 ysCombined[idx].append(average)
                 ysStdDeviationCombined[idx].append(stdDeviation)
                 ysStdErrorOfMeanCombined[idx].append(stdErrorOfMean)
-                entropyCombined[idx].append(averageEntropy)
-                relativeEntropyCombined[idx].append(averageRelativeEntropy)
+                entropyCombined[idx].append(entropy)
+                relativeEntropyCombined[idx].append(relativeEntropy)
                 stdDeviationCombined[idx].append(stdDeviation)
 
             idx += 1
@@ -851,3 +847,4 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
         analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, leagueString, folderName)
 
         print "[Network Analyzr]  Analysis of %s over time done" % property
+
