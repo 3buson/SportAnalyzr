@@ -580,7 +580,7 @@ def getSumOfDegrees(graph, inDegrees=True):
 
 
 def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
-    print "\n[Network Analyzr]  calculating PageRank scores, alpha: %f" % alpha
+    print "\n[Network Analyzr]  Calculating PageRank scores, alpha: %f" % alpha
 
     startTime  = time.time()
     ranking    = dict()

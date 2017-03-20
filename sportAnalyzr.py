@@ -116,6 +116,7 @@ def main():
         timeStart = time.time()
 
         print "\n[Network Analyzr]  Analysis of league '%s' done, time spent: %d s" % (leagueString, int(round(timeSpent)))
+        print "____________________________________________________________________________________________________\n\n"
 
     totalTimeSpent = time.time() - timeStartInitial
 
