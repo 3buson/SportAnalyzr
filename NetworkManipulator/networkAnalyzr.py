@@ -190,13 +190,17 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
 
                 # entropy of PageRank
-                entropy = 0
-                for p in pageRank.values():
+                entropy     = 0
+                pageRankSum = sum(pageRank.values())
+                for pageRankValue in pageRank.values():
+                    p = pageRankValue / pageRankSum
+
                     if p > 0:
-                        entropy += (-p * math.log(p, 2))
+                        entropy += p * math.log(p, 2)
                     else:
                         print "[Network Analyzr]  Entropy is ZERO!"
 
+                entropy         = -entropy
                 relativeEntropy = entropy / math.log(graph.number_of_nodes(), 2)
 
                 if average > maxY:
