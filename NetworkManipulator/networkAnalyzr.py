@@ -1,4 +1,5 @@
 import os
+import csv
 import time
 import snap
 import math
@@ -22,8 +23,8 @@ __author__ = '3buson'
 
 # networkx analyzers
 
-# TODO: WRITE TO CSV INSTEAD
-def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, leagueName, folderName=None):
+# TODO: MOVE VISUALIZER PART TO VISUALIZER
+def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, leagueName, folderName=None, filenameCSV=None):
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
@@ -39,11 +40,16 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
     ys2StdDeviation   = list()
     ys2StdErrorOfMean = list()
 
+    file   = open(filenameCSV, 'a')
+    writer = csv.writer(file)
+
     if property == 'nodes':
         filename = folderName + 'nodes_over_time_' + competitionStage
 
         for graph in graphs:
             ys1.append(graph.number_of_nodes())
+
+        writer.writerow([property, 'Nodes', competitionStage, ' '.join(str(v) for v in ys1)])
 
         visualizer.createDoubleGraphWithVariance(0, max(ys1) + 1, 'Nodes over time ' + competitionStage,
                                             'Season', 'Nodes', filename,
@@ -55,6 +61,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
         for graph in graphs:
             ys1.append(graph.number_of_nodes())
             ys2.append(graph.number_of_edges())
+
+        writer.writerow([property, 'Edges', competitionStage, ' '.join(str(v) for v in ys2)])
 
         visualizer.createDoubleGraphWithVariance(0, max(ys1 + ys2) + 1, 'Nodes and Edges over time ' + competitionStage,
                                             'Season', 'Nodes/Edges', filename,
@@ -87,6 +95,14 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
+        writer.writerow(['degrees', 'Degrees', competitionStage, ' '.join(str(v) for v in ys1)])
+        writer.writerow(['degreesStdDev', 'Degrees STD dev', competitionStage, ' '.join(str(v) for v in ys1StdDeviation)])
+        writer.writerow(['degreesErrorOfMean', 'Degrees STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys1StdErrorOfMean)])
+
+        writer.writerow(['degreeStrengths', 'Degree Strengths', competitionStage, ' '.join(str(v) for v in ys2)])
+        writer.writerow(['degreeStrengthsStdDev', 'Degree Strengths STD dev', competitionStage, ' '.join(str(v) for v in ys2StdDeviation)])
+        writer.writerow(['degreeStrengthsErrorOfMean', 'Degree Strengths STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys2StdErrorOfMean)])
+
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'Degrees/Degree Strengths', filename,
@@ -112,6 +128,14 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
 
+        writer.writerow(['inDegrees', 'In Degrees', competitionStage, ' '.join(str(v) for v in ys1)])
+        writer.writerow(['inDegreesStdDev', 'In Degrees STD dev', competitionStage, ' '.join(str(v) for v in ys1StdDeviation)])
+        writer.writerow(['inDegreesErrorOfMean', 'In Degrees STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys1StdErrorOfMean)])
+
+        writer.writerow(['inDegreeStrengths', 'In Degree Strengths', competitionStage, ' '.join(str(v) for v in ys2)])
+        writer.writerow(['inDegreeStrengthsStdDev', 'In Degree Strengths STD dev', competitionStage, ' '.join(str(v) for v in ys2StdDeviation)])
+        writer.writerow(['inDegreeStrengthsErrorOfMean', 'In Degree Strengths STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys2StdErrorOfMean)])
+
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'In Degrees over time ' + leagueName + ' ' + competitionStage,
                                             'Season', 'In Degrees/In Degree Strengths', filename,
@@ -136,6 +160,14 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             ys2.append(sum(strengths.values()) / float(len(strengths.values())))
             ys2StdDeviation.append(numpy.std(numpy.array(strengths.values()), ddof=1))
             ys2StdErrorOfMean.append(stats.sem(numpy.array(strengths.values())))
+
+        writer.writerow(['outDegrees', 'Out Degrees', competitionStage, ' '.join(str(v) for v in ys1)])
+        writer.writerow(['outDegreesStdDev', 'Out Degrees STD dev', competitionStage, ' '.join(str(v) for v in ys1StdDeviation)])
+        writer.writerow(['outDegreesErrorOfMean', 'Out Degrees STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys1StdErrorOfMean)])
+
+        writer.writerow(['outDegreeStrengths', 'Out Degree Strengths', competitionStage, ' '.join(str(v) for v in ys2)])
+        writer.writerow(['outDegreeStrengthsStdDev', 'Out Degree Strengths STD dev', competitionStage, ' '.join(str(v) for v in ys2StdDeviation)])
+        writer.writerow(['outDegreeStrengthsErrorOfMean', 'Out Degree Strengths STD Error of Mean', competitionStage, ' '.join(str(v) for v in ys2StdErrorOfMean)])
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Out Degrees over time ' + leagueName + ' ' + competitionStage,
@@ -218,6 +250,13 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 relativeEntropyCombined[idx].append(relativeEntropy)
                 stdDeviationCombined[idx].append(stdDeviation)
 
+            writer.writerow(['pageRankAvg', 'Average PageRank', competitionStage, ' '.join(str(v) for v in ysCombined[idx])])
+            writer.writerow(['pageRankAvgStdDev', 'PageRank STD dev', competitionStage, ' '.join(str(v) for v in ysStdDeviationCombined[idx])])
+            writer.writerow(['pageRankAvgErrorOfMean', 'PageRank STD Error Of Mean', competitionStage, ' '.join(str(v) for v in ysStdErrorOfMeanCombined[idx])])
+
+            writer.writerow(['pageRankEntropy', 'PageRank Entropy', competitionStage, ' '.join(str(v) for v in entropyCombined[idx])])
+            writer.writerow(['pageRankRelativeEntropy', 'PageRank Rel. Entropy', competitionStage, ' '.join(str(v) for v in relativeEntropyCombined[idx])])
+
             idx += 1
 
         colors = ['b', 'k', 'r', 'm', 'g']
@@ -249,6 +288,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
     else:
         print "[Network Analyzr]  Unsupported property!"
         return 1
+
+    file.close()
 
 
 def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionStage, file=None, outputToCsv=False, printHeader=False):
@@ -393,8 +434,8 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
                         bridgenessCentralityMean, bridgenessCentralityDeviation))
 
 
-# TODO: WRITE TO CSV INSTEAD
-def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitionStage):
+# TODO: MOVE VISUALIZER PART TO VISUALIZER
+def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitionStage, filenameCSV=None):
     inDegrees  = graph.in_degree()
     outDegrees = graph.out_degree()
 
@@ -403,6 +444,9 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
     nodeLimit    = len(inDegrees.values())
     degreesLimit = max(inDegrees.values())
     numberOfBins = nodeLimit / 3
+
+    file   = open(filenameCSV, 'a')
+    writer = csv.writer(file)
 
     filenamePrefix = 'output/' + leagueString + '/graphs/bySeason/'
     filenameSuffix = ''
@@ -504,9 +548,22 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         visualizer.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
         visualizer.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
 
+        writer.writerow(['inDegrees', 'In Degrees', competitionStage, seasonId, ' '.join(str(v) for v in inDegrees)])
+        writer.writerow(['inDegreesSum', 'In Degree Weight Sum', competitionStage, seasonId, ' '.join(str(v) for v in sumOfInDegrees)])
+        writer.writerow(['inDegreesKeysValues', 'In Degree Distribution', competitionStage, seasonId, ' '.join(str(v) for v in inDegreeCountKeys), ' '.join(str(v) for v in inDegreeCountValues)])
 
-# TODO: WRITE TO CSV INSTEAD
-def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competitionStage, multipleAlphas=False):
+        writer.writerow(['outDegrees', 'Out Degrees', competitionStage, seasonId, ' '.join(str(v) for v in outDegrees)])
+        writer.writerow(['outDegreesSum', 'Out Degree Weight Sum', competitionStage, seasonId, ' '.join(str(v) for v in sumOfOutDegrees)])
+        writer.writerow(['outDegreesKeysValues', 'Out Degree Distribution', competitionStage, seasonId, ' '.join(str(v) for v in outDegreeCountKeys), ' '.join(str(v) for v in outDegreeCountValues)])
+
+    file.close()
+
+
+# TODO: MOVE VISUALIZER PART TO VISUALIZER
+def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competitionStage, multipleAlphas=False, filenameCSV=None):
+    file   = open(filenameCSV, 'a')
+    writer = csv.writer(file)
+
     if multipleAlphas:
         alphaValues = constants.allPageRankAlphas
     else:
@@ -563,6 +620,11 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
 
         visualizer.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
         visualizer.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
+
+        writer.writerow(['pageRank', 'PageRank', competitionStage, seasonId, alpha, ' '.join(str(v) for v in pageRank)])
+        writer.writerow(['pageRankKeysValues', 'PageRank Distribution', competitionStage, seasonId, alpha, ' '.join(str(v) for v in pageRankCount.keys()), ' '.join(str(v) for v in pageRankCount.values())])
+
+    file.close()
 
 
 def getSumOfDegrees(graph, inDegrees=True):
@@ -815,24 +877,37 @@ def createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, 
     numberOfNodes = clubsNetwork.number_of_nodes()
     numberOfEdges = clubsNetwork.number_of_edges()
 
-    print ''
-
-    print "[Network Analyzr]  Network successfully created"
+    print "\n[Network Analyzr]  Network successfully created"
     print "[Network Analyzr]  Number of nodes: %d" % numberOfNodes
     print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
+    filenamePrefix = 'output/'
+
+    # create 'output/' directory if it does not exist yet
+    if not os.path.exists(filenamePrefix):
+        os.makedirs(filenamePrefix)
+
+    filenameDegrees  = filenamePrefix + leagueString  + 'DegreesBySeason'  + '.csv'
+    filenamePageRank = filenamePrefix + leagueString  + 'PageRankBySeason' + '.csv'
+
     if numberOfNodes > 0:
-        analyzeDegrees(clubsNetwork, directed, weighted, leagueString, seasonId, competitionStage)
-        analyzePageRank(clubsNetwork, directed, weighted, leagueString, seasonId, competitionStage, True)
+        analyzeDegrees(clubsNetwork, directed, weighted, leagueString, seasonId, competitionStage, filenameDegrees)
+        analyzePageRank(clubsNetwork, directed, weighted, leagueString, seasonId, competitionStage, True, filenamePageRank)
     else:
         print "[Network Analyzr]  No matches matched the desired criteria, thus, network without nodes was created!"
-        print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?"
-
-    print ''
+        print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?\n"
 
 
 def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, directed, weighted, logWeights):
     clubsNetworks = dict()
+
+    filenamePrefix = 'output/'
+
+    # create 'output/' directory if it does not exist yet
+    if not os.path.exists(filenamePrefix):
+        os.makedirs(filenamePrefix)
+
+    filename = filenamePrefix + leagueString + 'NetworkPropertiesOverTime' + '.csv'
 
     for season in seasons:
         clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted, logWeights)
@@ -848,7 +923,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
 
         folderName = 'output/' + leagueString + '/graphs/overTime/' + competitionStage + '/'
 
-        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, leagueString, folderName)
+        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, leagueString, folderName, filename)
 
         print "[Network Analyzr]  Analysis of %s over time done" % property
 
