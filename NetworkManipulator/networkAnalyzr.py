@@ -651,7 +651,7 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
     startTime  = time.time()
     ranking    = dict()
     newRanking = dict()
-    maxiter    = 100
+    maxiter    = 150
     tolerance  = 0.00001
     N          = graph.number_of_nodes()
 
@@ -871,8 +871,8 @@ def analyzeMisc(FNGraph):
     print "\n[Network Analyzr]  Finished calculating in %f seconds\n" % timeSpent
 
 
-def createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, directed, weighted, logWeights, file=None, outputToCsv=False, printHeader=False):
-    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, competitionStage, directed, weighted, logWeights)
+def createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, directed, weighted, simpleWeights, logWeights, file=None, outputToCsv=False, printHeader=False):
+    clubsNetwork = networkBuilder.buildNetwork(leagueId, seasonId, competitionStage, directed, weighted, simpleWeights, logWeights)
 
     numberOfNodes = clubsNetwork.number_of_nodes()
     numberOfEdges = clubsNetwork.number_of_edges()
@@ -898,7 +898,7 @@ def createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, 
         print "[Network Analyzr]  Did you enter the correct seasonId and/or leagueId?\n"
 
 
-def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, directed, weighted, logWeights):
+def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, directed, weighted, simpleWeights, logWeights):
     clubsNetworks = dict()
 
     filenamePrefix = 'output/'
@@ -910,7 +910,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
     filename = filenamePrefix + leagueString + 'NetworkPropertiesOverTime' + '.csv'
 
     for season in seasons:
-        clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted, logWeights)
+        clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted, simpleWeights, logWeights)
 
         clubsNetworks[season] = clubsNetwork
 

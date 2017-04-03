@@ -27,18 +27,24 @@ def main():
         leagues = [int(league) for league in leagues]
 
     if bool(int(weightedInput)):
-        logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')
+        simpleWeightsInput = raw_input('Do you want to have weights only by score? (0/1): ')
+
+        if bool(int(simpleWeightsInput)):
+            logWeightsInput = 0
+        else:
+            logWeightsInput = raw_input('Do you want to calculate weights with logarithmic function? (0/1): ')
     else:
         logWeightsInput = 0
 
     analyzeBySeasonInput = raw_input('Do you want to analyze network properties season by season? (0/1): ')
     analyzeOverTimeInput = raw_input('Do you want to analyze properties over time? (0/1): ')
 
-    isDirected      = bool(int(directedInput))
-    isWeighted      = bool(int(weightedInput))
-    hasLogWeights   = bool(int(logWeightsInput))
-    analyzeOverTime = bool(int(analyzeOverTimeInput))
-    analyzeBySeason = bool(int(analyzeBySeasonInput))
+    isDirected       = bool(int(directedInput))
+    isWeighted       = bool(int(weightedInput))
+    hasSimpleWeights = bool(int(simpleWeightsInput))
+    hasLogWeights    = bool(int(logWeightsInput))
+    analyzeOverTime  = bool(int(analyzeOverTimeInput))
+    analyzeBySeason  = bool(int(analyzeBySeasonInput))
 
     if analyzeBySeason:
         printToFileInput = raw_input('Do you want to have output in a file? (0/1): ')
@@ -46,7 +52,7 @@ def main():
     else:
         printToFile = False
 
-    csvOutputInput = raw_input('Do you want to have basic output in a CSV? (0/1): ')
+    csvOutputInput = raw_input('Do you want to have basic network stats output in a CSV? (0/1): ')
     printToCsv     = bool(int(csvOutputInput))
 
     timeStartInitial = time.time()
@@ -57,6 +63,9 @@ def main():
         leagueString       = databaseBridger.getLeagueNameFromId(connection, leagueId)
         outputFolderPrefix = 'output/' + leagueString + '/'
         outputFileSuffix   = ''
+
+        if leagueString is 'National Basketball Association':
+            hasSimpleWeights = False
 
         print "\n[Network Analyzr]  Analyzing league %s..." % leagueString
 
@@ -107,10 +116,10 @@ def main():
             print "\n[Network Analyzr]  Building networks for all seasons"
 
             for competitionStage in competitionStages:
-                networkAnalyzr.createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasLogWeights)
+                networkAnalyzr.createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitionStage, isDirected, isWeighted, hasSimpleWeights, hasLogWeights)
 
             if len(competitionStages) > 1:
-                networkAnalyzr.createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, 'all', isDirected, isWeighted, hasLogWeights)
+                networkAnalyzr.createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, 'all', isDirected, isWeighted, hasSimpleWeights, hasLogWeights)
 
         timeSpent = time.time() - timeStart
         timeStart = time.time()

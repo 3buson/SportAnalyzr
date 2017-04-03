@@ -21,7 +21,7 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, p
     return weight * 10
 
 
-def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True, logWeights=False):
+def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True, simpleWeights=False, logWeights=False):
     print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d, competition stage %s..." %\
           (leagueId, seasonId, competitionStage)
     print "[Network Builder]  Network properties: directed=%d, weighted=%d" % (directed, weighted)
@@ -46,15 +46,22 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
 
         weight = 1
 
-        if homeScore > awayScore:
-            if weighted:
-                weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
-
-            graph.add_edge(int(awayClub), int(homeClub), weight=weight)
+        if simpleWeights:
+            if homeScore:
+                graph.add_edge(int(awayClub), int(homeClub), weight=homeScore)
+            if awayScore:
+                graph.add_edge(int(homeClub), int(awayClub), weight=awayScore)
         else:
-            if weighted:
-                weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
+            if homeScore > awayScore:
+                if weighted:
+                    weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
 
-            graph.add_edge(int(homeClub), int(awayClub), weight=weight)
+                graph.add_edge(int(awayClub), int(homeClub), weight=weight)
+            else:
+                if weighted:
+                    weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
+
+                graph.add_edge(int(homeClub), int(awayClub), weight=weight)
+
 
     return graph
