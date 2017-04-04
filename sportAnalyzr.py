@@ -1,12 +1,16 @@
 import os
 import sys
+import csv
 import time
 
+from random import shuffle
+
 import utils
+import constants
 import databaseBridger
 
 from NetworkManipulator import networkAnalyzr
-
+from Visualizer import visualizer
 
 __author__ = '3buson'
 
@@ -126,6 +130,42 @@ def main():
 
         print "\n[Network Analyzr]  Analysis of league '%s' done, time spent: %d s" % (leagueString, int(round(timeSpent)))
         print "____________________________________________________________________________________________________\n\n"
+
+    # draw combined relative entropy graphs
+    if len(leagues) > 1 and analyzeOverTime:
+        relativeEntropies = list()
+        leagueStrings     = list()
+
+        for leagueId in leagues:
+            leagueString = databaseBridger.getLeagueNameFromId(connection, leagueId)
+            filename = 'output/' + leagueString + 'NetworkPropertiesOverTime' + '.csv'
+
+            with open(filename, 'rb') as f:
+                reader = csv.reader(f, delimiter=',')
+
+                leagueRelativeEntropyList = list()
+
+                for row in reader:
+                    if row[0] == 'pageRankRelativeEntropy' and row[2] == 'regular' and row[3] == '0.85':
+                        leagueRelativeEntropyList = row[4].split(' ')
+                        break
+
+            relativeEntropies.append(leagueRelativeEntropyList)
+            leagueStrings.append(leagueString)
+
+        relativeEntropyGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy'
+
+        # 26 RGB colors for relative entropy graph
+        colors = constants.rgb26
+        # mix them so similar colors will not get plotted together
+        shuffle(colors)
+
+        # scale RGB values to the [0, 1] interval
+        for i in range(len(colors)):
+            r, g, b = colors[i]
+            colors[i] = (r / 255.0, g / 255.0, b / 255.0)
+
+        visualizer.createMultiGraph(None, None, False, 'Relative PR Entropy of Leagues Over Time', 'Season', 'Relative PageRank Entropy', relativeEntropyGraphFilename, seasons, relativeEntropies, colors, leagueStrings)
 
     totalTimeSpent = time.time() - timeStartInitial
 

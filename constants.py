@@ -11,8 +11,8 @@ mostValuableAge     = 27
 noRankingPenalty    = 25
 noWeightPathPenalty = 1000
 defaultClubWeight   = 0.1
-allSeasons          = range(1976,2015)
-allLeagues          = range(1,3)
+allSeasons          = range(1976, 2015)
+allLeagues          = range(1, 3)
 stdPageRankAlpha    = 0.85
 allPageRankAlphas   = [0.001, 0.15, 0.5, 0.85, 0.999]
 
@@ -135,3 +135,13 @@ clubDictNBA['WAS'] = 'Washington Wizards'
 clubs        = dict()
 clubs['NHL'] = clubDictNHL
 clubs['NBA'] = clubDictNBA
+
+# 26 RGB colors
+rgb26 = [
+    (2,63,165), (125,135,185), (190,193,212), (214,188,192),
+    (187,119,132), (142,6,59), (74,111,227), (133,149,225),
+    (181,187,227), (230,175,185), (224,123,145), (211,63,106),
+    (17,198,56), (141,213,147), (198,222,199), (234,211,198),
+    (240,185,141), (239,151,8), (15,207,192), (156,222,214),
+    (213,234,231), (243,225,235), (246,196,225), (247,156,212)
+]

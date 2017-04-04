@@ -250,12 +250,12 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 relativeEntropyCombined[idx].append(relativeEntropy)
                 stdDeviationCombined[idx].append(stdDeviation)
 
-            writer.writerow(['pageRankAvg', 'Average PageRank', competitionStage, ' '.join(str(v) for v in ysCombined[idx])])
-            writer.writerow(['pageRankAvgStdDev', 'PageRank STD dev', competitionStage, ' '.join(str(v) for v in ysStdDeviationCombined[idx])])
-            writer.writerow(['pageRankAvgErrorOfMean', 'PageRank STD Error Of Mean', competitionStage, ' '.join(str(v) for v in ysStdErrorOfMeanCombined[idx])])
+            writer.writerow(['pageRankAvg', 'Average PageRank', competitionStage, alpha, ' '.join(str(v) for v in ysCombined[idx])])
+            writer.writerow(['pageRankAvgStdDev', 'PageRank STD dev', competitionStage, alpha, ' '.join(str(v) for v in ysStdDeviationCombined[idx])])
+            writer.writerow(['pageRankAvgErrorOfMean', 'PageRank STD Error Of Mean', competitionStage, alpha, ' '.join(str(v) for v in ysStdErrorOfMeanCombined[idx])])
 
-            writer.writerow(['pageRankEntropy', 'PageRank Entropy', competitionStage, ' '.join(str(v) for v in entropyCombined[idx])])
-            writer.writerow(['pageRankRelativeEntropy', 'PageRank Rel. Entropy', competitionStage, ' '.join(str(v) for v in relativeEntropyCombined[idx])])
+            writer.writerow(['pageRankEntropy', 'PageRank Entropy', competitionStage, alpha, ' '.join(str(v) for v in entropyCombined[idx])])
+            writer.writerow(['pageRankRelativeEntropy', 'PageRank Rel. Entropy', competitionStage, alpha, ' '.join(str(v) for v in relativeEntropyCombined[idx])])
 
             idx += 1
 
@@ -908,6 +908,9 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
         os.makedirs(filenamePrefix)
 
     filename = filenamePrefix + leagueString + 'NetworkPropertiesOverTime' + '.csv'
+
+    # cleanup possible old files
+    os.remove(filename) if os.path.exists(filename) else None
 
     for season in seasons:
         clubsNetwork = networkBuilder.buildNetwork(leagueId, season, competitionStage, directed, weighted, simpleWeights, logWeights)

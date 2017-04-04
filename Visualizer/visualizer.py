@@ -50,14 +50,14 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
     for idx, ys in enumerate(ysDoubleArray):
         if logScale:
-            pyplot.loglog(xs, ys, colors[idx] + '-')
+            pyplot.loglog(xs, ys, color=colors[idx])
         else:
             if labels is not None:
                 label = labels[idx]
             else:
                 label = None
 
-            pyplot.plot(xs, ys, colors[idx] + '-', label=label)
+            pyplot.plot(xs, ys, color=colors[idx], label=label)
 
     pyplot.legend(loc='best')
 
