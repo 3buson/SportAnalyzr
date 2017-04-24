@@ -1,78 +1,76 @@
 import time
 import networkx as nx
 
+import utils
+import sportAnalyzr
+
 
 __author__ = '3buson'
 
 
-def main():
-    network = nx.erdos_renyi_graph(30, 0.8)
+# LEAGUE IDS
+# 27: Greece Super League
+# 28: Italy Serie A
+# 29: National Hockey League
+# 30: Italy Serie B
+# 31: National Basketball Association
+# 32: England Champions League
+# 33: England Premier League
+# 34: England League Two
+# 35: England League One
+# 36: Portugal Liga NOS
+# 37: Spain LaLiga
+# 38: Spain LaLiga 2
+# 39: England Conference League
+# 40: Turkey Super Lig
+# 41: Netherlands Eredevisie
+# 42: Scotland Champions League
+# 43: Scotland Premier League
+# 44: Scotland League Two
+# 45: Scotland League One
+# 46: France Ligue 1
+# 47: France Ligue 2
+# 48: Belgium Pro League
+# 49: Germany 2. Bundesliga
+# 50: Germany 1. Bundesliga
 
-    pr1 = nx.pagerank(network, 0.9999)
-    pr2 = calculatePageRank(network, False, 0.9999)
-
-    print pr1
-    print pr2
-
-
-def calculatePageRank(graph, weighted, alpha=0.85):
-    print "\n[Network Analyzr]  calculating PageRank scores"
-
-    startTime = time.time()
-    ranking = dict()
-    newRanking = dict()
-    maxiter = 100
-    tolerance = 0.00001
-    N = graph.number_of_nodes()
-
-    # set all ranking to 1
-    for node in graph.nodes():
-        ranking[node] = 1.0 / N
-        newRanking[node] = 0
-
-    iterations = 0
-
-    while iterations < maxiter:
-        if iterations % 10 == 0:
-            print "[Network Analyzr]  Iteration %d" % iterations
-
-        dp = 0
-
-        for node in graph.nodes():
-            if len(graph.neighbors(node)) == 0:
-                dp += alpha * ranking[node] / N
-
-        for node in graph.nodes():
-            newRanking[node] = dp + ((1 - alpha) / N)
-
-            for neighbor in graph.neighbors(node):
-                newRanking[node] += alpha * ranking[neighbor] / len(graph.neighbors(neighbor))
-
-        # check for convergence
-        error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in
-                    zip(ranking.values(), newRanking.values()))
-        if error <= tolerance:
-            ranking = newRanking
-            break
-
-        ranking = newRanking.copy()
-
-        iterations += 1
-
-    timeSpent = time.time() - startTime
-
-    print "[Network Analyzr]  PageRank calculation done, time spent: %f s\n" % timeSpent
-
-    return ranking
 
 def main():
-    network = nx.erdos_renyi_graph(30, 0.8)
+    leagues = [28, 33, 36, 37, 41, 43, 46, 48, 50]
+    seasonsInput = 'all'
+    connection = utils.connectToDB()
+    isDirected = True
+    isWeighted = True
+    analyzeBySeason = False
+    analyzeOverTime = True
+    hasLogWeights = True
+    hasSimpleWeights = False
+    printToFile = True
+    printToCsv = False
 
-    pr1 = nx.pagerank(network, 0.9999)
-    pr2 = calculatePageRank(network, False, 0.9999)
+    colors = [
+        (166, 206, 227),
+        (31, 120, 180),
+        (178, 223, 138),
+        (51, 160, 44),
+        (251, 154, 153),
+        (227, 26, 28),
+        (253, 191, 111),
+        (255, 127, 0),
+        (202, 178, 214),
+        (106, 61, 154),
+        (255, 255, 153),
+        (177, 89, 40)
+    ]
 
-    print pr1
-    print pr2
+    # scale RGB values to the [0, 1] interval
+    for i in range(len(colors)):
+        r, g, b = colors[i]
+        colors[i] = (r / 255.0, g / 255.0, b / 255.0)
+
+    sportAnalyzr.analyze(connection, leagues, seasonsInput,
+                         isDirected, isWeighted, analyzeBySeason, analyzeOverTime,
+                         hasLogWeights, hasSimpleWeights, printToFile, printToCsv, colors)
 
 
 if __name__ == "__main__":

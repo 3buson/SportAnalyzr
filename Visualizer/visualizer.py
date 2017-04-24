@@ -59,7 +59,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
             pyplot.plot(xs, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best')
+    pyplot.legend(loc='best', prop={'size': 8})
 
     if title:
         pyplot.title(title)
@@ -114,7 +114,7 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
         pyplot.plot(xs, deviationUp,   'r--')
         pyplot.plot(xs, deviationDown, 'r--')
 
-    pyplot.legend(loc='best')
+    pyplot.legend(loc='best', prop={'size': 8})
 
     if title:
         pyplot.title(title)
@@ -154,7 +154,7 @@ def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None
         pyplot.plot(xs, deviationUp,   colors[idx] + '--')
         pyplot.plot(xs, deviationDown, colors[idx] + '--')
 
-    pyplot.legend(loc='best')
+    pyplot.legend(loc='best', prop={'size': 8})
 
     if title:
         pyplot.title(title)
