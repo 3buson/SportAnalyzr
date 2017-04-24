@@ -21,12 +21,12 @@ def parseNBACSVFile(connection, csvFile, delimiter):
             if rownum == 0:
                 rownum += 1
             else:
-                leagueAcronym = row[1]
+                leagueAcronym = row[1].strip()
                 stage         = row[2]
                 seasonId      = row[3]
                 date          = row[5]
-                homeClubName  = row[6]
-                awayClubName  = row[7]
+                homeClubName  = row[6].strip()
+                awayClubName  = row[7].strip()
                 homeClubScore = row[8]
                 awayClubScore = row[9]
                 extraTime     = row[10]
@@ -81,11 +81,11 @@ def parseFootballCSVFile(connection, csvFile, delimiter):
             if rownum == 0:
                 rownum += 1
             else:
-                leagueAcronym = row[0]
+                leagueAcronym = row[0].strip()
                 season        = row[1]
                 date          = row[2]
-                homeClubName  = row[3]
-                awayClubName  = row[4]
+                homeClubName  = row[3].strip()
+                awayClubName  = row[4].strip()
                 homeClubScore = row[5]
                 awayClubScore = row[6]
 
@@ -108,7 +108,7 @@ def parseFootballCSVFile(connection, csvFile, delimiter):
 
                 cursor.execute('''
                                 SELECT id FROM clubs
-                                WHERE clubs.name LIKE "%s"
+                                WHERE clubs.name = "%s"
                               ''' %
                                homeClubName)
 
