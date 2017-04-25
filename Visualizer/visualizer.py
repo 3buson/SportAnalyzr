@@ -17,7 +17,7 @@ __author__ = '3buson'
 ### --- PLOTTING FUNCTIONS --- ###
 
 def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, title=None, xLabel=None, yLabel=None, filename=None):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     if logScale:
         pyplot.loglog(ys, style)
@@ -46,7 +46,7 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
 
 
 def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     for idx, ys in enumerate(ysDoubleArray):
         if logScale:
@@ -59,7 +59,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
             pyplot.plot(xs, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best', prop={'size': 8})
+    pyplot.legend(loc='best', prop={'size': 11})
 
     if title:
         pyplot.title(title)
@@ -79,7 +79,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
 
 def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ys1=None, ys2=None, ys1Deviation=None, ys2Deviation=None, labels=None):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
@@ -114,7 +114,7 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
         pyplot.plot(xs, deviationUp,   'r--')
         pyplot.plot(xs, deviationDown, 'r--')
 
-    pyplot.legend(loc='best', prop={'size': 8})
+    pyplot.legend(loc='best', prop={'size': 11})
 
     if title:
         pyplot.title(title)
@@ -134,7 +134,7 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
 
 
 def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, ysDeviationDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
@@ -154,7 +154,7 @@ def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None
         pyplot.plot(xs, deviationUp,   colors[idx] + '--')
         pyplot.plot(xs, deviationDown, colors[idx] + '--')
 
-    pyplot.legend(loc='best', prop={'size': 8})
+    pyplot.legend(loc='best', prop={'size': 11})
 
     if title:
         pyplot.title(title)
@@ -181,7 +181,7 @@ def getCDFYValuesFromDict(input):
 
 
 def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
@@ -216,7 +216,7 @@ def getPDFYValuesFromDict(input, numberOfBins=12):
 
 
 def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b', numberOfBins=12):
-    pyplot.figure(0)
+    pyplot.figure(figsize=(15, 15))
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
