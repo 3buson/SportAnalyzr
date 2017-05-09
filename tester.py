@@ -36,7 +36,7 @@ __author__ = '3buson'
 
 
 def main():
-    leagues = [28, 33, 36, 37, 41, 43, 46, 48, 50]
+    leagues = [31, 28, 33, 36, 37, 41, 43, 46, 48, 50]
     seasonsInput = 'all'
     connection = utils.connectToDB()
     isDirected = True

@@ -907,7 +907,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
     if not os.path.exists(filenamePrefix):
         os.makedirs(filenamePrefix)
 
-    filename = filenamePrefix + leagueString + 'NetworkPropertiesOverTime' + '.csv'
+    filename = filenamePrefix + leagueString + 'NetworkPropertiesOverTime' + competitionStage.capitalize() + '.csv'
 
     # cleanup possible old files
     os.remove(filename) if os.path.exists(filename) else None

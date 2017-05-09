@@ -17,6 +17,7 @@ __author__ = '3buson'
 
 def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBySeason, analyzeOverTime, hasLogWeights, hasSimpleWeights, printToFile, printToCsv, colors):
     timeStartInitial = time.time()
+    minNumOfSeasons = None
     for leagueId in leagues:
         timeStart = time.time()
 
@@ -53,6 +54,11 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
         else:
             seasons = seasonsInput.rstrip(',').split(',')
             seasons = [int(season) for season in seasons]
+
+        if minNumOfSeasons is None:
+            minNumOfSeasons = len(seasons)
+        elif minNumOfSeasons > len(seasons):
+            minNumOfSeasons = len(seasons)
 
         competitionStages = databaseBridger.getAllCompetitionStagesForLeague(connection, leagueId)
         competitionStages = list(map(lambda stage: stage[0], competitionStages))
@@ -100,7 +106,7 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
         for leagueId in leagues:
             leagueString = databaseBridger.getLeagueNameFromId(connection, leagueId)
-            filename = 'output/' + leagueString + 'NetworkPropertiesOverTime' + '.csv'
+            filename = 'output/' + leagueString + 'NetworkPropertiesOverTimeRegular' + '.csv'
 
             with open(filename, 'rb') as f:
                 reader = csv.reader(f, delimiter=',')
@@ -110,9 +116,10 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
                 for row in reader:
                     if row[0] == 'pageRankRelativeEntropy' and row[2] == 'regular' and row[3] == '0.85':
                         leagueRelativeEntropyList = row[4].split(' ')
+
                         break
 
-            relativeEntropies.append(leagueRelativeEntropyList)
+            relativeEntropies.append(leagueRelativeEntropyList[-minNumOfSeasons:])
             leagueStrings.append(leagueString)
 
         relativeEntropyGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy'
