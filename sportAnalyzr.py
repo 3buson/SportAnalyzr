@@ -17,7 +17,7 @@ __author__ = '3buson'
 
 def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBySeason, analyzeOverTime, hasLogWeights, hasSimpleWeights, printToFile, printToCsv, colors):
     timeStartInitial = time.time()
-    minNumOfSeasons = None
+
     for leagueId in leagues:
         timeStart = time.time()
 
@@ -54,11 +54,6 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
         else:
             seasons = seasonsInput.rstrip(',').split(',')
             seasons = [int(season) for season in seasons]
-
-        if minNumOfSeasons is None:
-            minNumOfSeasons = len(seasons)
-        elif minNumOfSeasons > len(seasons):
-            minNumOfSeasons = len(seasons)
 
         competitionStages = databaseBridger.getAllCompetitionStagesForLeague(connection, leagueId)
         competitionStages = list(map(lambda stage: stage[0], competitionStages))
@@ -101,6 +96,7 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
     # draw combined relative entropy graphs
     if len(leagues) > 1 and analyzeOverTime:
+        seasonsDoubleArray = list()
         relativeEntropies = list()
         leagueStrings = list()
 
@@ -115,17 +111,19 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
                 for row in reader:
                     if row[0] == 'pageRankRelativeEntropy' and row[2] == 'regular' and row[3] == '0.85':
-                        leagueRelativeEntropyList = row[4].split(' ')
+                        seasonsForLeague = row[4].split(' ')
+                        leagueRelativeEntropyList = row[5].split(' ')
 
                         break
 
-            relativeEntropies.append(leagueRelativeEntropyList[-minNumOfSeasons:])
+            seasonsDoubleArray.append(seasonsForLeague)
+            relativeEntropies.append(leagueRelativeEntropyList)
             leagueStrings.append(leagueString)
 
         relativeEntropyGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy'
 
         visualizer.createMultiGraph(None, None, False, 'Relative PR Entropy of Leagues Over Time', 'Season',
-                                    'Relative PageRank Entropy', relativeEntropyGraphFilename, seasons,
+                                    'Relative PageRank Entropy', relativeEntropyGraphFilename, seasonsDoubleArray,
                                     relativeEntropies, colors, leagueStrings)
 
     totalTimeSpent = time.time() - timeStartInitial

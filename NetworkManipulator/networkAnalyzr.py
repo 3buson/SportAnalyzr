@@ -200,9 +200,11 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
         filename = folderName + 'pageRank_over_time_multiAlpha_' + competitionStage
 
-        maxY     = 0
+        maxY = 0
         maxError = 0
-        alphas   = constants.allPageRankAlphas
+        alphas = constants.allPageRankAlphas
+
+        seasonsString = ' '.join(str(s) for s in seasons)
 
         idx = 0
         for alpha in alphas:
@@ -250,12 +252,12 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
                 relativeEntropyCombined[idx].append(relativeEntropy)
                 stdDeviationCombined[idx].append(stdDeviation)
 
-            writer.writerow(['pageRankAvg', 'Average PageRank', competitionStage, alpha, ' '.join(str(v) for v in ysCombined[idx])])
-            writer.writerow(['pageRankAvgStdDev', 'PageRank STD dev', competitionStage, alpha, ' '.join(str(v) for v in ysStdDeviationCombined[idx])])
-            writer.writerow(['pageRankAvgErrorOfMean', 'PageRank STD Error Of Mean', competitionStage, alpha, ' '.join(str(v) for v in ysStdErrorOfMeanCombined[idx])])
+            writer.writerow(['pageRankAvg', 'Average PageRank', competitionStage, alpha, seasonsString, ' '.join(str(v) for v in ysCombined[idx])])
+            writer.writerow(['pageRankAvgStdDev', 'PageRank STD dev', competitionStage, alpha, seasonsString, ' '.join(str(v) for v in ysStdDeviationCombined[idx])])
+            writer.writerow(['pageRankAvgErrorOfMean', 'PageRank STD Error Of Mean', competitionStage, alpha, seasonsString, ' '.join(str(v) for v in ysStdErrorOfMeanCombined[idx])])
 
-            writer.writerow(['pageRankEntropy', 'PageRank Entropy', competitionStage, alpha, ' '.join(str(v) for v in entropyCombined[idx])])
-            writer.writerow(['pageRankRelativeEntropy', 'PageRank Rel. Entropy', competitionStage, alpha, ' '.join(str(v) for v in relativeEntropyCombined[idx])])
+            writer.writerow(['pageRankEntropy', 'PageRank Entropy', competitionStage, alpha, seasonsString, ' '.join(str(v) for v in entropyCombined[idx])])
+            writer.writerow(['pageRankRelativeEntropy', 'PageRank Rel. Entropy', competitionStage, alpha, seasonsString, ' '.join(str(v) for v in relativeEntropyCombined[idx])])
 
             idx += 1
 

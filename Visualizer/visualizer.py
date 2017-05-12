@@ -49,15 +49,20 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
     pyplot.figure(figsize=(15, 15))
 
     for idx, ys in enumerate(ysDoubleArray):
+        if isinstance(xs[idx], list):
+            xsParsed = xs[idx]
+        else:
+            xsParsed = xs
+
         if logScale:
-            pyplot.loglog(xs, ys, color=colors[idx])
+            pyplot.loglog(xsParsed, ys, color=colors[idx])
         else:
             if labels is not None:
                 label = labels[idx]
             else:
                 label = None
 
-            pyplot.plot(xs, ys, color=colors[idx], label=label)
+            pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
     pyplot.legend(loc='best', prop={'size': 11})
 
