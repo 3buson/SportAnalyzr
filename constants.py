@@ -16,8 +16,10 @@ allLeagues          = range(1, 3)
 stdPageRankAlpha    = 0.85
 allPageRankAlphas   = [0.001, 0.15, 0.5, 0.85, 0.999]
 
+
 # --- DATABASE --- #
 databaseString = 'DRIVER=(MySQL);SERVER=localhost;DATABASE=sportnetwork;UID=root;PWD=*****'
+
 
 # --- URLS --- #
 urls = dict()
@@ -35,10 +37,16 @@ urls['NBA'] = {
     'urlSuffix' : '_advanced.html'
 }
 
+
 # --- LEAGUES --- #
 leagues        = dict()
+
+# basketball
 leagues['NBA'] = 'National Basketball Association'
-leagues['NHL'] = 'National Hockey League'
+leagues['TUB'] = 'Turkey TBL Basketball League'
+leagues['SPB'] = 'Spain ACB Basketball League'
+leagues['ITB'] = 'Italy Lega Basketball League'
+leagues['GRB'] = 'Greece A1 Basketball League'
 # football
 leagues['B1']  = 'Belgium Pro League'
 leagues['G1']  = 'Greece Super League'
@@ -62,6 +70,28 @@ leagues['SC0'] = 'Scotland Premier League'
 leagues['SC1'] = 'Scotland Champions League'
 leagues['SC2'] = 'Scotland League One'
 leagues['SC3'] = 'Scotland League Two'
+# hockey
+leagues['CZH'] = 'Czech Hockey League'
+leagues['FIH'] = 'Finland SM Hockey League'
+leagues['GEH'] = 'Germany DEL Hockey League'
+leagues['NOH'] = 'Norway Eliteserien Hockey League'
+leagues['RUH'] = 'Russia KHL Hockey League'
+leagues['SWH'] = 'Sweden Eliteserien Hockey League'
+leagues['CHH'] = 'Switzerland NLA Hockey League'
+leagues['NHL'] = 'National Hockey League'
+# handball
+leagues['POH'] = 'Poland Ekstraklasa Handball League'
+leagues['PRH'] = 'Portugal LPA Handball League'
+leagues['GBH'] = 'Germany Bundesliga Handball League'
+leagues['FRH'] = 'France Division Handball League'
+leagues['DEH'] = 'Denmark Jack Handball League'
+# volleyball
+leagues['BEV'] = 'Belgium Volleyball League'
+leagues['FRV'] = 'France Pro Volleyball League'
+leagues['GEV'] = 'Germany Volleyball League'
+leagues['ITV'] = 'Italy Serie Volleyball League'
+leagues['POV'] = 'Poland Plusliga Volleyball League'
+
 
 # --- CLUBS DICTS --- #
 
@@ -135,6 +165,7 @@ clubDictNBA['WAS'] = 'Washington Wizards'
 clubs        = dict()
 clubs['NHL'] = clubDictNHL
 clubs['NBA'] = clubDictNBA
+
 
 # 26 RGB colors
 rgb26 = [

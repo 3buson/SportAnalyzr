@@ -163,6 +163,114 @@ def parseFootballCSVFile(connection, csvFile, delimiter):
                 rownum += 1
 
 
+def parseVariousSportsCSVFile(connection, csvFile, delimiter):
+    cursor = connection.cursor()
+
+    rownum = 0
+    with open(csvFile, 'rb') as f:
+        reader = csv.reader(f, delimiter=delimiter)
+
+        for row in reader:
+            # skip header
+            if rownum == 0:
+                rownum += 1
+            else:
+                leagueCode     = row[0].strip()
+                season         = row[1].split('_')[1]
+                homeClubName   = row[2].strip()
+                awayClubName   = row[3].strip()
+                homeClubScore  = row[4]
+                awayClubScore  = row[5]
+                additionalInfo = row[6]
+
+                seasonId  = str(int(season) - 1)
+                stage     = 'regular'
+                extraTime = 0
+
+                leagueAcronym = leagueCode.split('.')[1][:2].upper() + leagueCode.split('.')[0][0].upper()
+
+                # edge cases
+                if leagueCode == 'handball.portugal.lpa.combined':
+                    leagueAcronym = 'PRH'
+                elif leagueCode == 'handball.germany.bundesliga.combined':
+                    leagueAcronym = 'GBH'
+                elif leagueCode == 'hockey.switzerland.nla.combined':
+                    leagueAcronym = 'CHH'
+                elif leagueCode == 'hockey.usa.nhl.combined':
+                    leagueAcronym = 'NHL'
+
+                if additionalInfo == 'ET' or additionalInfo == 'pen.'   :
+                    extraTime = 1
+
+                dateArray = date.split('.')
+                dateArray.reverse()
+
+                date = '-'.join(dateArray)
+
+                cursor.execute('''
+                                SELECT id FROM leagues
+                                WHERE leagues.acronym = "%s"
+                              ''' %
+                               leagueAcronym)
+                leagueId = cursor.fetchall()[0][0]
+
+                cursor.execute('''
+                                SELECT id FROM clubs
+                                WHERE clubs.name = "%s"
+                              ''' %
+                               homeClubName)
+
+                result = cursor.fetchall()
+
+                # if no such club exists insert it and select again
+                if len(result) == 0:
+                    homeClub = Club(homeClubName[:3].upper(), homeClubName, leagueId)
+                    homeClub.dbInsert(connection)
+
+                    cursor.execute('''
+                                    SELECT id FROM clubs
+                                    WHERE clubs.name LIKE "%s"
+                                  ''' %
+                                   homeClubName)
+                    homeClubId = cursor.fetchall()[0][0]
+                else:
+                    homeClubId = result[0][0]
+
+                cursor.execute('''
+                                SELECT id FROM clubs
+                                WHERE clubs.name LIKE "%s"
+                              ''' %
+                               awayClubName)
+
+                result = cursor.fetchall()
+
+                # if no such club exists insert it and select again
+                if len(result) == 0:
+                    awayClub = Club(awayClubName[:3].upper(), awayClubName, leagueId)
+                    awayClub.dbInsert(connection)
+
+                    cursor.execute('''
+                                SELECT id FROM clubs
+                                WHERE clubs.name LIKE "%s"
+                              ''' %
+                               awayClubName)
+                    awayClubId = cursor.fetchall()[0][0]
+                else:
+                    awayClubId = result[0][0]
+
+                match = Match(seasonId, leagueId, date, stage,
+                              homeClubId, awayClubId, homeClubScore, awayClubScore,
+                              None, None, None, None,
+                              extraTime)
+
+                if rownum % 500 == 0:
+                    print "[CSV Parser]  Inserting match %d..." % rownum
+
+                match.dbInsert(connection)
+
+                rownum += 1
+
+
 def main():
     connection = utils.connectToDB()
 
@@ -178,6 +286,8 @@ def main():
         parseNBACSVFile(connection, csvFile, delimeterInput)
     elif (leagueInput.lower() == 'football'):
         parseFootballCSVFile(connection, csvFile, delimeterInput)
+    elif (leagueInput.lower() == 'various'):
+        parseVariousSportsCSVFile(connection, csvFile, delimeterInput)
 
 
 if __name__ == "__main__":
