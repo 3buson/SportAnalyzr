@@ -60,15 +60,27 @@ __author__ = '3buson'
 
 
 def main():
+    # top football
+    # leagues = [7, 17, 22, 36, 47]
     # NBA + top football
     leagues = [7, 14, 17, 22, 36, 47]
-    # top football
-    leagues = [7, 17, 22, 36, 47]
     # NBA + top football extended
-    leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
+    # leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
     # top football extended
-    leagues = [7, 11, 17, 20, 22, 27, 30, 36, 43, 47]
+    # leagues = [7, 11, 17, 20, 22, 27, 30, 36, 43, 47]
+    # hockey
+    # leagues = [1, 8, 15, 21, 25, 31, 38, 42]
+    # handball
+    # leagues = [2, 3, 10, 12, 13, 24]
+    # volleyball
+    # leagues = [4, 5, 29, 41, 44]
+    # basketball
+    # leagues = [14, 28, 33, 39, 40, 45]
+    # various sports combined
+    # leagues = [14, 28, 33, 17, 22, 2, 24, 29, 8, 25]
 
+    # common seasons (various sports)
+    # seasonsInput = '2008,2009,2010,2011'
     # common seasons (NBA + football)
     seasonsInput = '2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014'
     # all seasons
