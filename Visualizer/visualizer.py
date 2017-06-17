@@ -49,7 +49,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
     pyplot.figure(figsize=(15, 15))
 
     for idx, ys in enumerate(ysDoubleArray):
-        if isinstance(xs[idx], list):
+        if len(xs) > idx and isinstance(xs[idx], list):
             xsParsed = xs[idx]
         else:
             xsParsed = xs
