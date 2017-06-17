@@ -182,91 +182,98 @@ def parseVariousSportsCSVFile(connection, csvFile, delimiter):
                 homeClubScore  = row[4]
                 awayClubScore  = row[5]
                 additionalInfo = row[6]
+                date           = row[7]
 
                 seasonId  = str(int(season) - 1)
                 stage     = 'regular'
                 extraTime = 0
 
-                leagueAcronym = leagueCode.split('.')[1][:2].upper() + leagueCode.split('.')[0][0].upper()
+                # skip soccer, we get soccer matches from a different source
+                if leagueCode.split('.')[0] != 'soccer':
+                    leagueAcronym = leagueCode.split('.')[1][:2].upper() + leagueCode.split('.')[0][0].upper()
 
-                # edge cases
-                if leagueCode == 'handball.portugal.lpa.combined':
-                    leagueAcronym = 'PRH'
-                elif leagueCode == 'handball.germany.bundesliga.combined':
-                    leagueAcronym = 'GBH'
-                elif leagueCode == 'hockey.switzerland.nla.combined':
-                    leagueAcronym = 'CHH'
-                elif leagueCode == 'hockey.usa.nhl.combined':
-                    leagueAcronym = 'NHL'
+                    # edge cases
+                    if leagueCode == 'handball.portugal.lpa.combined':
+                        leagueAcronym = 'PRH'
+                    elif leagueCode == 'handball.germany.bundesliga.combined':
+                        leagueAcronym = 'GBH'
+                    elif leagueCode == 'hockey.switzerland.nla.combined':
+                        leagueAcronym = 'CHH'
+                    elif leagueCode == 'hockey.usa.nhl.combined':
+                        leagueAcronym = 'NHL'
 
-                if additionalInfo == 'ET' or additionalInfo == 'pen.'   :
-                    extraTime = 1
+                    if additionalInfo == 'ET' or additionalInfo == 'pen.'   :
+                        extraTime = 1
 
-                dateArray = date.split('.')
-                dateArray.reverse()
+                    dateArray = date.split('.')
+                    dateArray.reverse()
 
-                date = '-'.join(dateArray)
+                    date = '-'.join(dateArray)
 
-                cursor.execute('''
-                                SELECT id FROM leagues
-                                WHERE leagues.acronym = "%s"
-                              ''' %
-                               leagueAcronym)
-                leagueId = cursor.fetchall()[0][0]
+                    cursor.execute('''
+                                    SELECT id FROM leagues
+                                    WHERE leagues.acronym = "%s"
+                                  ''' %
+                                   leagueAcronym)
+                    try:
+                        leagueId = cursor.fetchall()[0][0]
+                    except:
+                        print leagueAcronym
 
-                cursor.execute('''
-                                SELECT id FROM clubs
-                                WHERE clubs.name = "%s"
-                              ''' %
-                               homeClubName)
 
-                result = cursor.fetchall()
+                    cursor.execute('''
+                                    SELECT id FROM clubs
+                                    WHERE clubs.name = "%s"
+                                  ''' %
+                                   homeClubName)
 
-                # if no such club exists insert it and select again
-                if len(result) == 0:
-                    homeClub = Club(homeClubName[:3].upper(), homeClubName, leagueId)
-                    homeClub.dbInsert(connection)
+                    result = cursor.fetchall()
+
+                    # if no such club exists insert it and select again
+                    if len(result) == 0:
+                        homeClub = Club(homeClubName[:3].upper(), homeClubName, leagueId)
+                        homeClub.dbInsert(connection)
+
+                        cursor.execute('''
+                                        SELECT id FROM clubs
+                                        WHERE clubs.name LIKE "%s"
+                                      ''' %
+                                       homeClubName)
+                        homeClubId = cursor.fetchall()[0][0]
+                    else:
+                        homeClubId = result[0][0]
 
                     cursor.execute('''
                                     SELECT id FROM clubs
                                     WHERE clubs.name LIKE "%s"
                                   ''' %
-                                   homeClubName)
-                    homeClubId = cursor.fetchall()[0][0]
-                else:
-                    homeClubId = result[0][0]
+                                   awayClubName)
 
-                cursor.execute('''
-                                SELECT id FROM clubs
-                                WHERE clubs.name LIKE "%s"
-                              ''' %
-                               awayClubName)
+                    result = cursor.fetchall()
 
-                result = cursor.fetchall()
+                    # if no such club exists insert it and select again
+                    if len(result) == 0:
+                        awayClub = Club(awayClubName[:3].upper(), awayClubName, leagueId)
+                        awayClub.dbInsert(connection)
 
-                # if no such club exists insert it and select again
-                if len(result) == 0:
-                    awayClub = Club(awayClubName[:3].upper(), awayClubName, leagueId)
-                    awayClub.dbInsert(connection)
+                        cursor.execute('''
+                                    SELECT id FROM clubs
+                                    WHERE clubs.name LIKE "%s"
+                                  ''' %
+                                   awayClubName)
+                        awayClubId = cursor.fetchall()[0][0]
+                    else:
+                        awayClubId = result[0][0]
 
-                    cursor.execute('''
-                                SELECT id FROM clubs
-                                WHERE clubs.name LIKE "%s"
-                              ''' %
-                               awayClubName)
-                    awayClubId = cursor.fetchall()[0][0]
-                else:
-                    awayClubId = result[0][0]
+                    match = Match(seasonId, leagueId, date, stage,
+                                  homeClubId, awayClubId, homeClubScore, awayClubScore,
+                                  None, None, None, None,
+                                  extraTime)
 
-                match = Match(seasonId, leagueId, date, stage,
-                              homeClubId, awayClubId, homeClubScore, awayClubScore,
-                              None, None, None, None,
-                              extraTime)
+                    if rownum % 500 == 0:
+                        print "[CSV Parser]  Inserting match %d..." % rownum
 
-                if rownum % 500 == 0:
-                    print "[CSV Parser]  Inserting match %d..." % rownum
-
-                match.dbInsert(connection)
+                    match.dbInsert(connection)
 
                 rownum += 1
 
@@ -278,7 +285,7 @@ def main():
     csvPath     = '../FileConqueror/csv/'
     csvFile     = csvPath + csvFilename
 
-    leagueInput = raw_input('Please enter what kind of data CSV file includes [NBA/football]: ')
+    leagueInput = raw_input('Please enter what kind of data CSV file includes [NBA/football/various]: ')
 
     delimeterInput = raw_input('Please enter the delimeter for this CSV file: ')
 

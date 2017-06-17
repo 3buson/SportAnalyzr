@@ -1,6 +1,3 @@
-import time
-import networkx as nx
-
 import utils
 import sportAnalyzr
 
@@ -9,34 +6,57 @@ __author__ = '3buson'
 
 
 # LEAGUE IDS
-# 27: Greece Super League
-# 28: Italy Serie A
-# 29: National Hockey League
-# 30: Italy Serie B
-# 31: National Basketball Association
-# 32: England Champions League
-# 33: England Premier League
-# 34: England League Two
-# 35: England League One
-# 36: Portugal Liga NOS
-# 37: Spain LaLiga
-# 38: Spain LaLiga 2
-# 39: England Conference League
-# 40: Turkey Super Lig
-# 41: Netherlands Eredevisie
-# 42: Scotland Champions League
-# 43: Scotland Premier League
-# 44: Scotland League Two
-# 45: Scotland League One
-# 46: France Ligue 1
-# 47: France Ligue 2
-# 48: Belgium Pro League
-# 49: Germany 2. Bundesliga
-# 50: Germany 1. Bundesliga
+# 1: Sweden Eliteserien Hockey League
+# 2: Germany Bundesliga Handball League
+# 3: Denmark Jack Handball League
+# 4: Belgium Volleyball League
+# 5: Germany Volleyball League
+# 6: Greece Super League
+# 7: Italy Serie A
+# 8: National Hockey League
+# 9: Italy Serie B
+# 10: Portugal LPA Handball League
+# 11: Scotland Premier League
+# 12: Spain Liga Handball League
+# 13: Poland Ekstraklasa Handball League
+# 14: National Basketball Association
+# 15: Germany DEL Hockey League
+# 16: England Champions League
+# 17: England Premier League
+# 18: England League Two
+# 19: England League One
+# 20: Portugal Liga NOS
+# 21: Switzerland NLA Hockey League
+# 22: Spain LaLiga
+# 23: Spain LaLiga 2
+# 24: France Division Handball League
+# 25: Russia KHL Hockey League
+# 26: England Conference League
+# 27: Turkey Super Lig
+# 28: Greece A1 Basketball League
+# 29: France Pro Volleyball League
+# 30: Netherlands Eredevisie
+# 31: Finland SM Hockey League
+# 32: Scotland Champions League
+# 33: Spain ACB Basketball League
+# 34: Scotland League Two
+# 35: Scotland League One
+# 36: France Ligue 1
+# 37: France Ligue 2
+# 38: Norway Eliteserien Hockey League
+# 39: Russia Superleague Basketball League
+# 40: Italy Lega Basketball League
+# 41: Poland Plusliga Volleyball League
+# 42: Czech Hockey League
+# 43: Belgium Pro League
+# 44: Italy Serie Volleyball League
+# 45: Turkey TBL Basketball League
+# 46: Germany 2. Bundesliga
+# 47: Germany 1. Bundesliga
 
 
 def main():
-    leagues = [31, 28, 33, 37, 46, 50]
+    leagues = [7, 11, 14, 22, 36, 47]
     seasonsInput = 'all'
     connection = utils.connectToDB()
     isDirected = True

@@ -24,7 +24,7 @@ __author__ = '3buson'
 # networkx analyzers
 
 # TODO: MOVE VISUALIZER PART TO VISUALIZER
-def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionStage, leagueName, folderName=None, filenameCSV=None):
+def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, competitionStage, leagueName, folderName=None, filenameCSV=None):
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
@@ -179,7 +179,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
 
         # regular PageRank
         for graph in graphs:
-            pageRank = calculatePageRank(graph, weighted)
+            pageRank = calculatePageRank(graph, directed, weighted)
 
             ys1.append(sum(pageRank.values()) / float(len(pageRank.values())))
             ys1StdDeviation.append(numpy.std(numpy.array(pageRank.values()), ddof=1))
@@ -216,7 +216,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, weighted, property, competitionSt
             stdDeviationCombined.append(list())
 
             for graph in graphs:
-                pageRank = calculatePageRank(graph, weighted, alpha)
+                pageRank = calculatePageRank(graph, directed, weighted, alpha)
 
                 # average and deviations of PageRank
                 average        = sum(pageRank.values()) / float(len(pageRank.values()))
@@ -383,7 +383,7 @@ def analyzeNetworkProperties(graph, directed, weighted, seasonId, competitionSta
     for d in sorted(vertices):
         print '[Network Analyzr]  \t%s\t\t%d' % (d,dist[d])
 
-    pageRank          = calculatePageRank(graph, weighted)
+    pageRank          = calculatePageRank(graph, directed, weighted)
     pageRankMean      = sum(pageRank.values()) / len(pageRank)
     pageRankDeviation = numpy.std(numpy.array(pageRank.values()), ddof=1)
 
@@ -572,7 +572,7 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
         alphaValues = [constants.stdPageRankAlpha]
 
     for alpha in alphaValues:
-        pageRank = calculatePageRank(graph, weighted, alpha)
+        pageRank = calculatePageRank(graph, directed, weighted, alpha)
 
         xs = range(0, graph.number_of_nodes())
 
@@ -647,7 +647,7 @@ def getSumOfDegrees(graph, inDegrees=True):
     return degreesSum
 
 
-def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
+def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlpha):
     print "\n[Network Analyzr]  Calculating PageRank scores, alpha: %f" % alpha
 
     startTime  = time.time()
@@ -677,8 +677,22 @@ def calculatePageRank(graph, weighted, alpha=constants.stdPageRankAlpha):
         for node in graph.nodes():
             newRanking[node] = dp + ((1 - alpha) / N)
 
-            for neighbor in graph.neighbors(node):
-                newRanking[node] += alpha * ranking[neighbor] / max(len(graph.neighbors(neighbor)), 1)
+            if directed:
+                predecessors = graph.predecessors(node)
+            else:
+                predecessors = graph.neighbors(node)
+
+            predecessors = graph.neighbors(node)
+
+            for predecessor in predecessors:
+                if directed:
+                    successors = graph.successors(predecessor)
+                else:
+                    successors = graph.neighbors(predecessor)
+
+                successors = graph.neighbors(predecessor)
+
+                newRanking[node] += alpha * ranking[predecessor] / max(len(successors), 1)
 
         # check for convergence
         error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values()))
@@ -928,7 +942,7 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
 
         folderName = 'output/' + leagueString + '/graphs/overTime/' + competitionStage + '/'
 
-        analyzeNetworkPropertyOverTime(clubsNetworks, weighted, property, competitionStage, leagueString, folderName, filename)
+        analyzeNetworkPropertyOverTime(clubsNetworks, directed, weighted, property, competitionStage, leagueString, folderName, filename)
 
         print "[Network Analyzr]  Analysis of %s over time done" % property
 
