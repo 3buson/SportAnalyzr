@@ -48,12 +48,15 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
                 file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
                 sys.stdout = file
 
+        allSeasons = list(map(lambda season: season[0], databaseBridger.getAllSeasonsForLeague(connection, leagueId)))
+
         if seasonsInput.lower() == 'all':
-            seasons = databaseBridger.getAllSeasonsForLeague(connection, leagueId)
-            seasons = list(map(lambda season: season[0], seasons))
+            seasons = allSeasons
         else:
             seasons = seasonsInput.rstrip(',').split(',')
             seasons = [int(season) for season in seasons]
+
+            seasons = filter(lambda season: season in allSeasons, seasons)
 
         competitionStages = databaseBridger.getAllCompetitionStagesForLeague(connection, leagueId)
         competitionStages = list(map(lambda stage: stage[0], competitionStages))
