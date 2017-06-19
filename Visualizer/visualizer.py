@@ -9,6 +9,7 @@ from scipy import stats
 from operator import add
 from operator import sub
 from matplotlib import pyplot
+from matplotlib.ticker import MaxNLocator
 
 
 __author__ = '3buson'
@@ -18,6 +19,9 @@ __author__ = '3buson'
 
 def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, title=None, xLabel=None, yLabel=None, filename=None):
     pyplot.figure(figsize=(15, 15))
+    ax = pyplot.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
 
     if logScale:
         pyplot.loglog(ys, style)
@@ -47,6 +51,9 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
 
 def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
     pyplot.figure(figsize=(15, 15))
+    ax = pyplot.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
 
     for idx, ys in enumerate(ysDoubleArray):
         if len(xs) > idx and isinstance(xs[idx], list):
@@ -85,6 +92,9 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
 def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ys1=None, ys2=None, ys1Deviation=None, ys2Deviation=None, labels=None):
     pyplot.figure(figsize=(15, 15))
+    ax = pyplot.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
 
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
@@ -140,6 +150,9 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
 
 def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, ysDeviationDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
     pyplot.figure(figsize=(15, 15))
+    ax = pyplot.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
 
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
@@ -187,6 +200,7 @@ def getCDFYValuesFromDict(input):
 
 def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
     pyplot.figure(figsize=(15, 15))
+    pyplot.ticklabel_format(useOffset=False)
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
@@ -222,6 +236,9 @@ def getPDFYValuesFromDict(input, numberOfBins=12):
 
 def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b', numberOfBins=12):
     pyplot.figure(figsize=(15, 15))
+    pyplot.ticklabel_format(useOffset=False)
+    ax = pyplot.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
