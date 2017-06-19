@@ -75,9 +75,9 @@ def main():
     # volleyball
     # leagues = [4, 5, 29, 41, 44]
     # basketball
-    leagues = [14, 28, 33, 39, 40, 45]
+    # leagues = [14, 28, 33, 39, 40, 45]
     # various sports combined
-    # leagues = [14, 28, 33, 17, 22, 2, 24, 29, 8, 25]
+    leagues = [14, 28, 33, 17, 22, 2, 24, 29, 8, 25]
 
     # common seasons (various sports)
     seasonsInput = '2008,2009,2010,2011'
