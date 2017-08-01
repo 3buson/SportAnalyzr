@@ -124,10 +124,20 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
             leagueStrings.append(leagueString)
 
         relativeEntropyGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy'
+        relativeEntropyRankGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy_rank'
+        relativeEntropyLineFitGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy_line_fit'
 
         visualizer.createMultiGraph(None, None, False, 'Relative PR Entropy of Leagues Over Time', 'Season',
                                     'Relative PageRank Entropy', relativeEntropyGraphFilename, seasonsDoubleArray,
                                     relativeEntropies, colors, leagueStrings)
+
+        visualizer.createMultiGraphAppxWithDev(None, None, False, 'Relative PR Entropy of Leagues Over Time (Line Fit)', 'Season',
+                                         'Relative PageRank Entropy', relativeEntropyLineFitGraphFilename, seasonsDoubleArray,
+                                         relativeEntropies, colors, leagueStrings)
+
+        visualizer.createRanksMultiGraph(0, len(relativeEntropies) + 1, False, 'Rank According to Relative PR Entropy Over Time', 'Season',
+                                         'Relative PageRank Entropy Rank', relativeEntropyRankGraphFilename, seasonsDoubleArray,
+                                         relativeEntropies, colors, leagueStrings)
 
     totalTimeSpent = time.time() - timeStartInitial
 

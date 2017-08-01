@@ -53,6 +53,9 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
+    if ysMin is not None and ysMax is not None:
+        pyplot.ylim([ysMin, ysMax])
+
     for idx, ys in enumerate(ysDoubleArray):
         if len(xs) > idx and isinstance(xs[idx], list):
             xsParsed = xs[idx]
@@ -60,7 +63,114 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
             xsParsed = xs
 
         if logScale:
-            pyplot.loglog(xsParsed, ys, color=colors[idx])
+            pyplot.loglog(xsParsed, ys, color=colors[idx], label=label)
+        else:
+            if labels is not None:
+                label = labels[idx]
+            else:
+                label = None
+
+            pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
+
+    pyplot.legend(loc='best', prop={'size': 11})
+
+    if title:
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    if filename:
+        pyplot.savefig(filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()
+
+
+def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
+    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
+
+    if ysMin is not None and ysMax is not None:
+        pyplot.ylim([ysMin, ysMax])
+
+    for idx, ys in enumerate(ysDoubleArray):
+        if len(xs) > idx and isinstance(xs[idx], list):
+            xsParsed = xs[idx]
+        else:
+            xsParsed = xs
+
+        ysAppx = numpy.poly1d(numpy.polyfit([float(x) for x in xsParsed], [float(y) for y in ys], 1))([float(x) for x in xsParsed])
+
+        if logScale:
+            pyplot.loglog(xsParsed, ysAppx, color=colors[idx], label=label)
+            # pyplot.loglog(xsParsed, ys, color=colors[idx])
+        else:
+            if labels is not None:
+                label = labels[idx]
+            else:
+                label = None
+
+            pyplot.plot(xsParsed, ysAppx, color=colors[idx], label=label)
+            # pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
+
+    pyplot.legend(loc='best', prop={'size': 11})
+
+    if title:
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    if filename:
+        pyplot.savefig(filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()
+
+
+def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
+    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
+
+    if ysMin is not None and ysMax is not None:
+        pyplot.ylim([ysMin, ysMax])
+
+    # create ranks double array
+    ranks = []
+    for l in range(0, len(ysDoubleArray)):
+        ranksForLeague = []
+        for i in range(0, len(ysDoubleArray[l])):
+            scoreForLeague = ysDoubleArray[l][i]
+
+            rank = 1
+
+            for o in range(0, len(ysDoubleArray)):
+                if ysDoubleArray[o][i] < scoreForLeague:
+                    rank += 1
+
+            ranksForLeague.append(rank)
+
+        ranks.append(ranksForLeague)
+
+    for idx, ys in enumerate(ranks):
+        if len(xs) > idx and isinstance(xs[idx], list):
+            xsParsed = xs[idx]
+        else:
+            xsParsed = xs
+
+        if logScale:
+            pyplot.loglog(xsParsed, ys, color=colors[idx], label=label)
         else:
             if labels is not None:
                 label = labels[idx]
@@ -486,3 +596,15 @@ def visualizeMetricOverTime(inputFilePath, outputFolderName, leagueName, delimit
                      'PageRank Rel. Entropy ' + leagueName + ' ' + competitionStage,
                      'Season', 'Rel. Entropy', filename + '_relative_entropy',
                      seasons, pageRankRelativeEntropiesDoubleList, colors, labels)
+
+    # multi alpha PageRank relative entropy ranks only over time
+    createRanksMultiGraph(0, len(pageRankRelativeEntropiesDoubleList[0]), False,
+                         'PageRank Rel. Entropy Rank ' + leagueName + ' ' + competitionStage,
+                         'Season', 'Rel. Entropy Rank', filename + '_relative_entropy_rank',
+                         seasons, pageRankRelativeEntropiesDoubleList, colors, labels)
+
+    # multi alpha PageRank relative entropy line fit only over time
+    createMultiGraphAppxWithDev(0, len(pageRankRelativeEntropiesDoubleList[0]), False,
+                         'PageRank Rel. Entropy Rank Line Fit ' + leagueName + ' ' + competitionStage,
+                         'Season', 'Rel. Entropy', filename + '_relative_entropy_line_fit',
+                         seasons, pageRankRelativeEntropiesDoubleList, colors, labels)
