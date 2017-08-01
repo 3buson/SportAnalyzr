@@ -146,6 +146,11 @@ def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xL
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
 
+    # check if we have the same ammount of seasons for all leagues
+    for c in range(1, len(ysDoubleArray)):
+        if len(ysDoubleArray[c]) != len(ysDoubleArray[0]):
+            return False
+
     # create ranks double array
     ranks = []
     for l in range(0, len(ysDoubleArray)):
