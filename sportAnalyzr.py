@@ -105,7 +105,7 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
         for leagueId in leagues:
             leagueString = databaseBridger.getLeagueNameFromId(connection, leagueId)
-            filename = 'output/' + leagueString + 'NetworkPropertiesOverTimeRegular' + '.csv'
+            filename = 'output/' + leagueString + ' NetworkPropertiesOverTimeRegular' + '.csv'
 
             with open(filename, 'rb') as f:
                 reader = csv.reader(f, delimiter=',')
