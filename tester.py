@@ -60,6 +60,8 @@ __author__ = '3buson'
 
 
 def main():
+    # NBA
+    # leagues = [14]
     # top football
     # leagues = [7, 17, 22, 36, 47]
     # NBA + top football
@@ -82,9 +84,9 @@ def main():
     # common seasons (various sports)
     # seasonsInput = '2008,2009,2010,2011'
     # common seasons (NBA + football)
-    seasonsInput = '2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014'
+    # seasonsInput = '2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014'
     # all seasons
-    # seasonsInput = 'all'
+    seasonsInput = 'all'
 
     connection = utils.connectToDB()
     isDirected = True
