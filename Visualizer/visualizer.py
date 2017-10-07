@@ -616,3 +616,53 @@ def visualizeMetricOverTime(inputFilePath, outputFolderName, leagueName, delimit
                          'PageRank Rel. Entropy Rank Line Fit ' + leagueName + ' ' + competitionStage,
                          'Season', 'Rel. Entropy', filename + '_relative_entropy_line_fit',
                          seasons, pageRankRelativeEntropiesDoubleList, colors, labels)
+
+def visualizeCorrelationAndIntervalsOverLeagues(folderName, filename, correlationsDict, title='Correlation Over Leagues', xLabel='League', yLabel='Correlation'):
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+
+    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    pyplot.ticklabel_format(useOffset=False)
+
+    pyplot.xlim([-0.5, (2 * len(correlationsDict.keys())) - 0.5])
+    pyplot.ylim([-1, 1])
+
+    pyplot.axhline(0, color='k')
+
+    if title:
+        pyplot.title(title)
+
+    if xLabel:
+        pyplot.xlabel(xLabel)
+
+    if yLabel:
+        pyplot.ylabel(yLabel)
+
+    idx = 0
+    for league, correlationDict in correlationsDict.iteritems():
+        pearsonUp = abs(correlationDict['pearson'] - correlationDict['pearsonUpper'])
+        pearsonDown = abs(correlationDict['pearson'] - correlationDict['pearsonLower'])
+        pearsonError = numpy.array([[pearsonDown], [pearsonUp]])
+
+        spearmanUp = abs(correlationDict['spearman'] - correlationDict['spearmanUpper'])
+        spearmanDown = abs(correlationDict['spearman'] - correlationDict['spearmanLower'])
+        spearmanError = numpy.array([[spearmanUp], [spearmanDown]])
+
+        pearson = pyplot.errorbar(idx - 0.15, correlationDict['pearson'], yerr=pearsonError, fmt='o', color='k', ecolor='b', label='Pearson')
+        spearman = pyplot.errorbar(idx + 0.15, correlationDict['spearman'], yerr=spearmanError, fmt='o', color='k', ecolor='r', label='Spearman')
+
+        idx += 2
+
+    leagues = correlationsDict.keys()
+    x = range(0, 2 * len(leagues), 2)
+    pyplot.xticks(x, leagues, rotation=30)
+
+    pyplot.legend(handles=[pearson, spearman], loc='best', prop={'size': 11})
+
+    if filename:
+        pyplot.savefig(folderName + filename)
+    else:
+        pyplot.show()
+
+    pyplot.close()

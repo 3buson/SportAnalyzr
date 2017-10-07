@@ -4,6 +4,7 @@ import csv
 import constants
 
 import numpy
+from Visualizer import visualizer
 from NetworkManipulator import correlationAnalyzr
 
 __author__ = '3buson'
@@ -23,6 +24,10 @@ def main():
 
     confidenceInterval = 95
     bootstrapSamples = 1000
+
+    attendanceCorrelationsDictionary = dict()
+    betsCorrelationsDictionary = dict()
+    leagueValueCorrelationsDictionary = dict()
 
     combined_attendance_array = []
     combined_pr_rel_entropy_array = []
@@ -96,6 +101,15 @@ def main():
                 [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(attendance_array, pr_rel_entropy_array, 'pearson', confidenceInterval, bootstrapSamples)
                 [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(attendance_array, pr_rel_entropy_array, 'spearman', confidenceInterval, bootstrapSamples)
 
+                attendanceCorrelationsDictionary[league] = {
+                    'pearson': pearson,
+                    'pearsonLower': pLower,
+                    'pearsonUpper': pUpper,
+                    'spearman': spearman,
+                    'spearmanLower': sLower,
+                    'spearmanUpper': sUpper
+                }
+
                 print "[Correlation Tester]:  Attendance correlation for league %s REGULAR:" \
                       "\n\tPearson: %f, p: %f" \
                       "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
@@ -157,9 +171,9 @@ def main():
                         else:
                             season = int(row[0])
 
-                            if season > 1999 and season < 2015:
+                            if season > 1999 and season < 2016:
                                 inflationRatio = constants.inflationRatio / 100  # average inflation ratio per year (percent)
-                                valueInflationRatio = 1 + ((2015 - season) * inflationRatio)
+                                valueInflationRatio = 1 + ((2016 - season) * inflationRatio)
 
                                 value_array.append(float(row[1]) * valueInflationRatio)
             else:
@@ -184,7 +198,7 @@ def main():
                         else:
                             season = int(row[0])
 
-                            if season > 1999 and season < 2015:
+                            if season > 1999 and season < 2016:
                                 attendance_array.append(float(row[1]))
             else:
                 attendance_array = []
@@ -207,7 +221,7 @@ def main():
                         else:
                             season = int(row[0])
 
-                            if season > 1999 and season < 2015 and league != 'National Basketball Association':
+                            if season > 1999 and season < 2015:
                                 bets_array.append(float(row[1]))
             else:
                 bets_array = []
@@ -224,13 +238,22 @@ def main():
                     if row[0] == 'pageRankRelativeEntropy':
                         pr_rel_entropy_array = [float(res) for res in row[5].split(' ')]
 
-            pr_rel_entropy_array_reduced = pr_rel_entropy_array[4:14]
+            pr_rel_entropy_array_reduced = pr_rel_entropy_array[4:15]
             if len(value_array) == len(pr_rel_entropy_array_reduced):
                 [pearson,  pp] = correlationAnalyzr.calculateCorrelation(value_array, pr_rel_entropy_array_reduced , 'pearson')
                 [spearman, sp] = correlationAnalyzr.calculateCorrelation(value_array, pr_rel_entropy_array_reduced , 'spearman')
 
                 [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(value_array, pr_rel_entropy_array_reduced, 'pearson', confidenceInterval, bootstrapSamples)
                 [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(value_array, pr_rel_entropy_array_reduced, 'spearman', confidenceInterval, bootstrapSamples)
+
+                leagueValueCorrelationsDictionary[league] = {
+                    'pearson': pearson,
+                    'pearsonLower': pLower,
+                    'pearsonUpper': pUpper,
+                    'spearman': spearman,
+                    'spearmanLower': sLower,
+                    'spearmanUpper': sUpper
+                }
 
                 print "[Correlation Tester]:  League value correlation for league %s:" \
                       "\n\tPearson: %f, p: %f" \
@@ -247,6 +270,15 @@ def main():
 
                 [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(attendance_array, pr_rel_entropy_array, 'pearson', confidenceInterval, bootstrapSamples)
                 [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(attendance_array, pr_rel_entropy_array, 'spearman', confidenceInterval, bootstrapSamples)
+
+                attendanceCorrelationsDictionary[league] = {
+                    'pearson': pearson,
+                    'pearsonLower': pLower,
+                    'pearsonUpper': pUpper,
+                    'spearman': spearman,
+                    'spearmanLower': sLower,
+                    'spearmanUpper': sUpper
+                }
 
                 print "[Correlation Tester]:  Attendance correlation for league %s:" \
                       "\n\tPearson: %f, p: %f" \
@@ -271,6 +303,15 @@ def main():
                 [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(bets_array, pr_rel_entropy_array_reduced, 'pearson', confidenceInterval, bootstrapSamples)
                 [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(bets_array, pr_rel_entropy_array_reduced, 'spearman', confidenceInterval, bootstrapSamples)
 
+                betsCorrelationsDictionary[league] = {
+                    'pearson': pearson,
+                    'pearsonLower': pLower,
+                    'pearsonUpper': pUpper,
+                    'spearman': spearman,
+                    'spearmanLower': sLower,
+                    'spearmanUpper': sUpper
+                }
+
                 print "[Correlation Tester]:  Bets volume correlation for league %s:" \
                       "\n\tPearson: %f, p: %f" \
                       "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
@@ -280,7 +321,7 @@ def main():
             else:
                 print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (league, len(bets_array), len(pr_rel_entropy_array_reduced))
 
-            attendance_array_reduced = attendance_array[4:14]
+            attendance_array_reduced = attendance_array[4:15]
             if len(attendance_array_reduced) == len(value_array):
                 [pearson,  pp] = correlationAnalyzr.calculateCorrelation(attendance_array_reduced, value_array, 'pearson')
                 [spearman, sp] = correlationAnalyzr.calculateCorrelation(attendance_array_reduced, value_array, 'spearman')
@@ -336,6 +377,17 @@ def main():
               (pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
     else:
         print "[Correlation Tester]:  Error! Arrays do not match for all leagues combined %s. Length %d, %d" % (len(attendance_array), len(pr_rel_entropy_array))
+
+
+    # Visualizations
+    folderName = 'output/graphs/correlation/'
+    filename_attendance = 'attendance_correlation_over_leagues'
+    filename_bets = 'bets_correlation_over_leagues'
+    filename_league_value = 'league_value_correlation_over_leagues'
+
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Attendance Correlation Over Leagues', 'League', 'Attendance Correlation')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Bets Volume Correlation Over Leagues', 'League', 'Bets Volume Correlation')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Players Value (average of club per league) Correlation Over Leagues', 'League', 'Players Value (average of club per league) Correlation')
 
 
 if __name__ == "__main__":
