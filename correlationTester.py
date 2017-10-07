@@ -73,6 +73,26 @@ def main():
 
             # print "[Correlation Tester]:  Attendance array for league %s: %s" % (league, attendance_array_string)
 
+            rownum = 0
+            if os.path.isfile(bets_csv):
+                with open(bets_csv, 'rb') as f:
+                    reader = csv.reader(f, delimiter=',')
+                    for row in reader:
+                        # skip header
+                        if rownum == 0:
+                            rownum += 1
+                        else:
+                            season = int(row[0])
+
+                            if season > 1999 and season < 2015:
+                                bets_array.append(float(row[1]))
+            else:
+                bets_array = []
+
+            bets_array_string = ', '.join([str(v) for v in bets_array])
+
+            # print "[Correlation Tester]:  Bets volume array for league %s: %s" % (league, bets_array_string)
+
             with open(properties_csv, 'rb') as f:
                 reader = csv.reader(f, delimiter=',')
 
@@ -156,6 +176,33 @@ def main():
                       (league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
             else:
                 print "[Correlation Tester]:  Error! Arrays do not match for league %s PLAYOFF. Length %d, %d" % (league, len(attendance_array), len(pr_rel_entropy_array_playoff))
+
+            pr_rel_entropy_array_reduced = pr_rel_entropy_array[29:38]
+            if len(bets_array) == len(pr_rel_entropy_array_reduced):
+                [pearson, pp] = correlationAnalyzr.calculateCorrelation(bets_array, pr_rel_entropy_array_reduced, 'pearson')
+                [spearman, sp] = correlationAnalyzr.calculateCorrelation(bets_array, pr_rel_entropy_array_reduced, 'spearman')
+
+                [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(bets_array, pr_rel_entropy_array_reduced, 'pearson', confidenceInterval, bootstrapSamples)
+                [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(bets_array, pr_rel_entropy_array_reduced, 'spearman', confidenceInterval, bootstrapSamples)
+
+                betsCorrelationsDictionary[league] = {
+                    'pearson': pearson,
+                    'pearsonLower': pLower,
+                    'pearsonUpper': pUpper,
+                    'spearman': spearman,
+                    'spearmanLower': sLower,
+                    'spearmanUpper': sUpper
+                }
+
+                print "[Correlation Tester]:  Bets volume correlation for league %s:" \
+                      "\n\tPearson: %f, p: %f" \
+                      "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
+                      "\n\tSpearman: %f, p: %f" \
+                      "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
+                      (league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
+            else:
+                print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (
+                league, len(bets_array), len(pr_rel_entropy_array_reduced))
 
             print ""
             print "-------------------------------------------------------------------------------------------------"
@@ -295,7 +342,7 @@ def main():
             else:
                 print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (league, len(attendance_array), len(pr_rel_entropy_array))
 
-            pr_rel_entropy_array_reduced = pr_rel_entropy_array[6:14]
+            pr_rel_entropy_array_reduced = pr_rel_entropy_array[5:14]
             if len(bets_array) == len(pr_rel_entropy_array_reduced):
                 [pearson,  pp] = correlationAnalyzr.calculateCorrelation(bets_array, pr_rel_entropy_array_reduced, 'pearson')
                 [spearman, sp] = correlationAnalyzr.calculateCorrelation(bets_array, pr_rel_entropy_array_reduced, 'spearman')
@@ -338,7 +385,7 @@ def main():
             else:
                 print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (league, len(attendance_array_reduced), len(value_array))
 
-            attendance_array_reduced = attendance_array[6:14]
+            attendance_array_reduced = attendance_array[5:14]
             if len(attendance_array_reduced) == len(bets_array):
                 [pearson, pp] = correlationAnalyzr.calculateCorrelation(attendance_array_reduced, bets_array, 'pearson')
                 [spearman, sp] = correlationAnalyzr.calculateCorrelation(attendance_array_reduced, bets_array, 'spearman')

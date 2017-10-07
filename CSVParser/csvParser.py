@@ -399,11 +399,19 @@ def parseBetsCSVFile(csvsFolder, delimiter):
                                 betsDict['SCO'][season] += float(row[11])
                             else:
                                 betsDict['SCO'][season] = float(row[11])
+                        if 'NBA' in leagueString:
+                            if 'NBA' not in betsDict.keys():
+                                betsDict['NBA'] = dict()
+
+                            if season in betsDict['NBA'].keys():
+                                betsDict['NBA'][season] += float(row[11])
+                            else:
+                                betsDict['NBA'][season] = float(row[11])
 
     for league, seasonsDict in betsDict.iteritems():
         print "\n[CSV Parser]  Bets volume for league %s" % league
         for season, volume in seasonsDict.iteritems():
-            print "%s %d" % (season, int(volume))
+            print "%s,%d" % (season, int(volume))
 
 
 def main():
