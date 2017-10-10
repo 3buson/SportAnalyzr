@@ -9,6 +9,76 @@ from NetworkManipulator import correlationAnalyzr
 
 __author__ = '3buson'
 
+def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
+    bets_uniformity_per_game_csv = 'FileConqueror/csv/bets/volume_uniformity_per_game.csv'
+
+    correlation_dict = dict()
+
+    correlation_arrays_uniformity_combined = []
+    correlation_arrays_betsVolume_combined = []
+
+    rownum = 0
+    if os.path.isfile(bets_uniformity_per_game_csv):
+        with open(bets_uniformity_per_game_csv, 'rb') as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                # skip header
+                if rownum == 0:
+                    rownum += 1
+                else:
+                    league = row[0]
+                    uniformity = float(row[1])
+                    betsVolume = float(row[2])
+
+                    if league in correlation_dict.keys():
+                        correlation_dict[league]['uniformity'].append(uniformity)
+                        correlation_dict[league]['betsVolume'].append(betsVolume)
+                    else:
+                        correlation_dict[league] = {
+                            'uniformity': [uniformity],
+                            'betsVolume': [betsVolume]
+                        }
+
+    for league, correlation_arrays in correlation_dict.iteritems():
+        uniformities = correlation_arrays['uniformity']
+        betsVolumes = correlation_arrays['betsVolume']
+
+        [pearson, pp] = correlationAnalyzr.calculateCorrelation(uniformities, betsVolumes, 'pearson')
+        [spearman, sp] = correlationAnalyzr.calculateCorrelation(uniformities, betsVolumes, 'spearman')
+
+        [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(uniformities, betsVolumes, 'pearson', confidenceInterval, bootstrapSamples)
+        [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(uniformities, betsVolumes, 'spearman', confidenceInterval, bootstrapSamples)
+
+        correlation_arrays_uniformity_combined = correlation_arrays_uniformity_combined + uniformities
+        correlation_arrays_betsVolume_combined = correlation_arrays_betsVolume_combined + betsVolumes
+
+        print "[Correlation Tester]:  Bets Volume and Uniformity correlation for league %s:" \
+              "\n\tPearson: %f, p: %f" \
+              "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
+              "\n\tSpearman: %f, p: %f" \
+              "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
+              (league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
+
+    print ""
+
+    [pearson, pp] = correlationAnalyzr.calculateCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'pearson')
+    [spearman, sp] = correlationAnalyzr.calculateCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'spearman')
+
+    [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'pearson', confidenceInterval, bootstrapSamples)
+    [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'spearman', confidenceInterval, bootstrapSamples)
+
+    print "[Correlation Tester]:  Bets Volume and Uniformity correlation for all leagues combined:" \
+          "\n\tPearson: %f, p: %f" \
+          "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
+          "\n\tSpearman: %f, p: %f" \
+          "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
+          (pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples,
+           confidenceInterval, sLower, sUpper)
+
+    print ""
+    print "-------------------------------------------------------------------------------------------------"
+
+
 def main():
     leagues = [
         'National Basketball Association',
@@ -24,6 +94,8 @@ def main():
 
     confidenceInterval = 95
     bootstrapSamples = 1000
+
+    correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples)
 
     attendanceCorrelationsDictionary = dict()
     betsCorrelationsDictionary = dict()
@@ -61,7 +133,7 @@ def main():
                         else:
                             season = int(row[0])
 
-                            if season > 1975 and season < 2015 and league == 'National Basketball Association':
+                            if season > 1975 and season < 2015:
                                 attendance_array.append(float(row[1]))
             else:
                 attendance_array = []
