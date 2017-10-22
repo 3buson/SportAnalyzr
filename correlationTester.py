@@ -13,6 +13,7 @@ def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
     bets_uniformity_per_game_csv = 'FileConqueror/csv/bets/volume_uniformity_per_game.csv'
 
     correlation_dict = dict()
+    correlation_dict_per_league = dict()
 
     correlation_arrays_uniformity_combined = []
     correlation_arrays_betsVolume_combined = []
@@ -59,6 +60,15 @@ def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
               "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
               (league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
 
+        correlation_dict_per_league[league] = {
+            'pearson': pearson,
+            'pearsonLower': pLower,
+            'pearsonUpper': pUpper,
+            'spearman': spearman,
+            'spearmanLower': sLower,
+            'spearmanUpper': sUpper
+        }
+
     print ""
 
     [pearson, pp] = correlationAnalyzr.calculateCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'pearson')
@@ -78,6 +88,8 @@ def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
     print ""
     print "-------------------------------------------------------------------------------------------------"
 
+    return correlation_dict_per_league
+
 
 def main():
     leagues = [
@@ -95,7 +107,7 @@ def main():
     confidenceInterval = 95
     bootstrapSamples = 1000
 
-    correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples)
+    correlation_dict_per_game = correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples)
 
     attendanceCorrelationsDictionary = dict()
     betsCorrelationsDictionary = dict()
@@ -500,10 +512,12 @@ def main():
 
     # Visualizations
     folderName = 'output/graphs/correlation/'
+    filename_uniformity_bets_per_game = 'uniformity_bets_correlation_per_game_over_leagues'
     filename_attendance = 'attendance_correlation_over_leagues'
     filename_bets = 'bets_correlation_over_leagues'
     filename_league_value = 'league_value_correlation_over_leagues'
 
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game, correlation_dict_per_game, 'Uniformity per game from bets and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Attendance Correlation Over Leagues', 'League', 'Attendance Correlation')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Bets Volume Correlation Over Leagues', 'League', 'Bets Volume Correlation')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Players Value (average of club per league) Correlation Over Leagues', 'League', 'Players Value (average of club per league) Correlation')

@@ -68,12 +68,13 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
                 for competitionStage in competitionStages:
                     networkAnalyzr.createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage,
-                                                           isDirected, isWeighted, hasLogWeights, file, printToCsv,
-                                                           not bool(index))
+                                                           isDirected, isWeighted, False, hasLogWeights, file,
+                                                           printToCsv, not bool(index))
 
                 if len(competitionStages) > 1:
                     networkAnalyzr.createAndAnalyzeNetwork(leagueId, leagueString, seasonId, 'all', isDirected,
-                                                           isWeighted, hasLogWeights, file, printToCsv, not bool(index))
+                                                           isWeighted, False, hasLogWeights, file, printToCsv,
+                                                           not bool(index))
 
                 index += 1
 

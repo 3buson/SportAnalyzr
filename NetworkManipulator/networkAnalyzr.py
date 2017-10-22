@@ -682,7 +682,7 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
             else:
                 predecessors = graph.neighbors(node)
 
-            predecessors = graph.neighbors(node)
+            # predecessors = graph.neighbors(node)
 
             for predecessor in predecessors:
                 if directed:
@@ -690,9 +690,18 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
                 else:
                     successors = graph.neighbors(predecessor)
 
-                successors = graph.neighbors(predecessor)
+                # successors = graph.neighbors(predecessor)
 
-                newRanking[node] += alpha * ranking[predecessor] / max(len(successors), 1)
+                if (weighted):
+                    weight = 0
+                    for weightDict in graph.get_edge_data(predecessor, node):
+                        weight += weightDict['weight']
+
+                    weight /= len(graph[predecessor][node].values())
+                else:
+                    weight = 1
+
+                newRanking[node] += alpha * ranking[predecessor] * weight / max(len(successors), 1)
 
         # check for convergence
         error = sum(abs(oldRankingValue - newRankingValue) for oldRankingValue, newRankingValue in zip(ranking.values(), newRanking.values()))
