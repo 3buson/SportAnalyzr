@@ -63,5 +63,4 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
 
                 graph.add_edge(int(homeClub), int(awayClub), weight=weight)
 
-
     return graph
