@@ -1,6 +1,5 @@
 import os
 import csv
-from twisted.application import strports
 
 import utils
 
@@ -598,7 +597,7 @@ def main():
     connection = utils.connectToDB()
 
     csvFilename = raw_input('Please enter CSV filename: ')
-    csvPath     = '../FileConqueror/csv/'
+    csvPath     = '../FileConqueror/csv/matches/'
     csvFile     = csvPath + csvFilename
 
     leagueInput = raw_input('Please enter what kind of data CSV file includes [NBA/football/various]: ')

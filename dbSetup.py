@@ -30,7 +30,8 @@ def main():
                         `id` INT NOT NULL AUTO_INCREMENT,
                         `acronym` VARCHAR(45),
                         `name` VARCHAR(255),
-                        PRIMARY KEY (`id`)
+                        PRIMARY KEY (`id`),
+                        CONSTRAINT uk_leagues UNIQUE (`acronym`, `name`)
                      );
                    ''')
 
@@ -42,7 +43,8 @@ def main():
                         `name` VARCHAR(255),
                         `league_id` INT,
                         PRIMARY KEY (`id`),
-                        CONSTRAINT fk_clubs_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`)
+                        CONSTRAINT fk_clubs_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`),
+                        CONSTRAINT uk_clubs UNIQUE (`acronym`, `name`, `league_id`)
                      );
                    ''')
 
@@ -68,7 +70,8 @@ def main():
                         CONSTRAINT fk_matches_season_id FOREIGN KEY (`season_id`) REFERENCES `seasons`(`id`),
                         CONSTRAINT fk_matches_league_id FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`),
                         CONSTRAINT fk_matches_home_club_id FOREIGN KEY (`home_club_id`) REFERENCES `clubs`(`id`),
-                        CONSTRAINT fk_matches_away_club_id FOREIGN KEY (`away_club_id`) REFERENCES `clubs`(`id`)
+                        CONSTRAINT fk_matches_away_club_id FOREIGN KEY (`away_club_id`) REFERENCES `clubs`(`id`),
+                        CONSTRAINT uk_matches UNIQUE (`season_id`, `date`, `home_club_id`, `away_club_id`)
                      );
                    ''')
 

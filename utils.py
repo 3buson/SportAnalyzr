@@ -13,7 +13,7 @@ def connectToDB():
 
     while connection is None:
         try:
-            connection = pyodbc.connect('DSN=SportAnalyzr')
+            connection = pyodbc.connect('DSN=SportAnalyzr2')
 
         except Exception, e:
             print "\n[DB connector]  Error connecting to database. Trying again in 1 sec.", e

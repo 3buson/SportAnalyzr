@@ -17,10 +17,6 @@ stdPageRankAlpha    = 0.85
 allPageRankAlphas   = [0.001, 0.15, 0.5, 0.85, 0.999]
 
 
-# --- DATABASE --- #
-databaseString = 'DRIVER=(MySQL);SERVER=localhost;DATABASE=sportnetwork;UID=root;PWD=*****'
-
-
 # --- URLS --- #
 urls = dict()
 
