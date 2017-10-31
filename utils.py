@@ -1,9 +1,13 @@
 import time
 import pyodbc
+import warnings
 import traceback
 
 
 __author__ = '3buson'
+
+
+mode = 'normal'
 
 
 ### --- DATABASE FUNCTIONS --- ###
@@ -22,3 +26,7 @@ def connectToDB():
         time.sleep(1)
 
     return connection
+
+
+def ignoreWarnings():
+    warnings.simplefilter("ignore")

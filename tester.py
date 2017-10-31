@@ -60,14 +60,17 @@ __author__ = '3buson'
 
 
 def main():
+    # set log output level
+    utils.mode = 'normal'
+
     # NBA
     # leagues = [14]
     # top football
-    # leagues = [7, 17, 22, 36, 47]
+    leagues = [7, 17, 22, 36, 47]
     # NBA + top football
     # leagues = [7, 14, 17, 22, 36, 47]
     # NBA + top football extended
-    leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
+    # leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
     # top football extended
     # leagues = [7, 11, 17, 20, 22, 27, 30, 36, 43, 47]
     # hockey

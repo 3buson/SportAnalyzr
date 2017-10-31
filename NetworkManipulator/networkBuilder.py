@@ -22,9 +22,11 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, p
 
 
 def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True, simpleWeights=False, logWeights=False):
-    print "\n[Network Builder]  Creating network for leagueId %d, seasonId %d, competition stage %s..." %\
+    print "[Network Builder]  Creating network for leagueId %d, seasonId %d, competition stage %s..." %\
           (leagueId, seasonId, competitionStage)
-    print "[Network Builder]  Network properties: directed=%d, weighted=%d" % (directed, weighted)
+
+    if utils.mode == 'debug':
+        print "[Network Builder]  Network properties: directed=%d, weighted=%d" % (directed, weighted)
 
     connection = utils.connectToDB()
 

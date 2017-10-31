@@ -16,6 +16,7 @@ __author__ = '3buson'
 
 
 def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBySeason, analyzeOverTime, hasLogWeights, hasSimpleWeights, printToFile, printToCsv, colors):
+    utils.ignoreWarnings()
     timeStartInitial = time.time()
 
     for leagueId in leagues:
@@ -46,7 +47,6 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
                 file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.csv', 'w')
             else:
                 file = open(outputFolderPrefix + outputFileBaseName + outputFileSuffix + '.txt', 'w')
-                sys.stdout = file
 
         allSeasons = list(map(lambda season: season[0], databaseBridger.getAllSeasonsForLeague(connection, leagueId)))
 
@@ -147,6 +147,7 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
 def main():
     connection = utils.connectToDB()
+    utils.ignoreWarnings()
 
     leaguesInput  = raw_input('Please enter desired league ids separated by comma (all for all of them): ')
     seasonsInput  = raw_input('Please enter desired seasons separated by comma (all for all of them): ')

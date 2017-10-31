@@ -10,6 +10,7 @@ from scipy import stats
 from operator import add
 from collections import deque, Counter
 
+import utils
 import constants
 import networkBuilder
 
@@ -648,7 +649,8 @@ def getSumOfDegrees(graph, inDegrees=True):
 
 
 def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlpha):
-    print "\n[Network Analyzr]  Calculating PageRank scores, alpha: %f" % alpha
+    if utils.mode == 'debug':
+        print "\n[Network Analyzr]  Calculating PageRank scores, alpha: %f" % alpha
 
     startTime  = time.time()
     ranking    = dict()
@@ -665,7 +667,7 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
     iterations = 0
 
     while iterations < maxiter:
-        if iterations % 10 == 0:
+        if iterations % 10 == 0 and utils.mode == 'debug':
             print "[Network Analyzr]  Iteration %d" % iterations
 
         dp = 0
@@ -724,13 +726,15 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
 
     timeSpent = time.time() - startTime
 
-    print "[Network Analyzr]  PageRank calculation done, time spent: %f s\n" % timeSpent
+    if utils.mode == 'debug':
+        print "[Network Analyzr]  PageRank calculation done, time spent: %f s\n" % timeSpent
 
     return ranking
 
 
 def calculateBetweennessCentrality(graph):
-    print "\n[Network Analyzr]  calculating Betweenness scores"
+    if utils.mode == 'debug':
+        print "\n[Network Analyzr]  calculating Betweenness scores"
 
     startTime = time.time()
     cb        = dict()
@@ -740,7 +744,7 @@ def calculateBetweennessCentrality(graph):
         cb[i] = 0
 
     for node in graph.nodes():
-        if node % 500 == 0:
+        if node % 500 == 0 and utils.mode == 'debug':
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
@@ -789,13 +793,15 @@ def calculateBetweennessCentrality(graph):
 
     timeSpent = time.time() - startTime
 
-    print "[Network Analyzr]  Betweenness calculation done, time spent: %f s\n" % timeSpent
+    if utils.mode == 'debug':
+        print "[Network Analyzr]  Betweenness calculation done, time spent: %f s\n" % timeSpent
 
     return cb
 
 
 def calculateBridgenessCentrality(graph):
-    print "\n[Network Analyzr]  calculating weighted Bridgeness scores"
+    if utils.mode == 'debug':
+        print "\n[Network Analyzr]  calculating weighted Bridgeness scores"
 
     startTime = time.time()
     cb        = dict()
@@ -807,7 +813,7 @@ def calculateBridgenessCentrality(graph):
     for node in graph.nodes():
         sp = nx.shortest_path_length(graph, node)
 
-        if node % 500 == 0:
+        if node % 500 == 0 and utils.mode == 'debug':
             print "[Network Analyzr]  Processed %d nodes" % (node)
 
         S = list()
@@ -856,7 +862,8 @@ def calculateBridgenessCentrality(graph):
 
     timeSpent = time.time() - startTime
 
-    print "[Network Analyzr]  Bridgeness calculation done, time spent: %f s\n" % timeSpent
+    if utils.mode == 'debug':
+        print "[Network Analyzr]  Bridgeness calculation done, time spent: %f s\n" % timeSpent
 
     return cb
 
@@ -884,7 +891,7 @@ def analyzeMisc(FNGraph):
     nodes   = FNGraph.GetNodes()
 
     for sourceNode in FNGraph.Nodes():
-        if i % 100 == 0:
+        if i % 100 == 0 and utils.mode == 'debug':
             print "\t\tCalculated for %d nodes" % i
 
         NIdToDistH = snap.TIntH()
@@ -912,8 +919,10 @@ def createAndAnalyzeNetwork(leagueId, leagueString, seasonId, competitionStage, 
     numberOfEdges = clubsNetwork.number_of_edges()
 
     print "\n[Network Analyzr]  Network successfully created"
-    print "[Network Analyzr]  Number of nodes: %d" % numberOfNodes
-    print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
+
+    if utils.mode == 'debug':
+        print "[Network Analyzr]  Number of nodes: %d" % numberOfNodes
+        print "[Network Analyzr]  Number of edges: %d" % numberOfEdges
 
     filenamePrefix = 'output/'
 
@@ -952,8 +961,10 @@ def createAndAnalyzeNetworksOverTime(leagueId, leagueString, seasons, competitio
         clubsNetworks[season] = clubsNetwork
 
         print "[Network Analyzr]  Network for season %s successfully created" % season
-        print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
-        print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
+
+        if utils.mode == 'debug':
+            print "[Network Analyzr]  Number of nodes: %d" % clubsNetwork.number_of_nodes()
+            print "[Network Analyzr]  Number of edges: %d" % clubsNetwork.number_of_edges()
 
     for property in ['nodes', 'edges', 'degrees', 'inDegrees', 'outDegrees', 'pageRank']:
         print "[Network Analyzr]  Analyzing %s over time..." % property
