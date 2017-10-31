@@ -70,7 +70,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
             else:
                 label = None
 
-                pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
+            pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
     pyplot.legend(loc='best', prop={'size': 11})
 
