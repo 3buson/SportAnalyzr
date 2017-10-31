@@ -572,7 +572,7 @@ def parseBetsCSVFileByGame(csvsFolder, delimiter):
                                 else:
                                     oddsDict['NBA'][eventId][odds] += volumeMatched
 
-    file = open('volume_uniformity_per_game.csv', 'w')
+    file = open('FileConqueror/csv/bets/volume_uniformity_per_game.csv', 'w')
     writer = csv.writer(file)
     writer.writerow(['league', 'uniformity', 'betsVolume'])
 
@@ -581,8 +581,13 @@ def parseBetsCSVFileByGame(csvsFolder, delimiter):
             uniformity = 0
             totalVolumeMatched = sum(eventDict.values())
 
+            oddsSum = 0
+            # normalize odds to sum up to 1
             for odds, volumeMatched in eventDict.iteritems():
-                uniformity += float(odds) * float(volumeMatched) / totalVolumeMatched
+                oddsSum += odds
+
+            for odds, volumeMatched in eventDict.iteritems():
+                uniformity += float(odds/oddsSum) * float(volumeMatched) / totalVolumeMatched
 
             if uniformity != 0:
                 uniformity = 1.0 / uniformity

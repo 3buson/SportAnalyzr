@@ -67,9 +67,9 @@ def main():
     # NBA + top football
     # leagues = [7, 14, 17, 22, 36, 47]
     # NBA + top football extended
-    # leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
+    leagues = [7, 11, 14, 17, 20, 22, 27, 30, 36, 43, 47]
     # top football extended
-    leagues = [7, 11, 17, 20, 22, 27, 30, 36, 43, 47]
+    # leagues = [7, 11, 17, 20, 22, 27, 30, 36, 43, 47]
     # hockey
     # leagues = [1, 8, 15, 21, 25, 31, 38, 42]
     # handball

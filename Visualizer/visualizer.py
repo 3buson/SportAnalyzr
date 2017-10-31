@@ -53,6 +53,8 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
+    legendHandles = []
+
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
 
@@ -63,14 +65,14 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
             xsParsed = xs
 
         if logScale:
-            pyplot.loglog(xsParsed, ys, color=colors[idx], label=label)
+            legendHandles.append(pyplot.loglog(xsParsed, ys, color=colors[idx], label=label))
         else:
             if labels is not None:
                 label = labels[idx]
             else:
                 label = None
 
-            pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
+                legendHandles.append(pyplot.plot(xsParsed, ys, color=colors[idx], label=label))
 
     pyplot.legend(loc='best', prop={'size': 11})
 
@@ -96,6 +98,8 @@ def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=No
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
+    legendHandles = []
+
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
 
@@ -108,7 +112,7 @@ def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=No
         ysAppx = numpy.poly1d(numpy.polyfit([float(x) for x in xsParsed], [float(y) for y in ys], 1))([float(x) for x in xsParsed])
 
         if logScale:
-            pyplot.loglog(xsParsed, ysAppx, color=colors[idx], label=label)
+            legendHandles.append(pyplot.loglog(xsParsed, ysAppx, color=colors[idx], label=label))
             # pyplot.loglog(xsParsed, ys, color=colors[idx])
         else:
             if labels is not None:
@@ -116,10 +120,10 @@ def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=No
             else:
                 label = None
 
-            pyplot.plot(xsParsed, ysAppx, color=colors[idx], label=label)
+            legendHandles.append(pyplot.plot(xsParsed, ysAppx, color=colors[idx], label=label))
             # pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(legendHandles, loc='best', prop={'size': 11})
 
     if title:
         pyplot.title(title)

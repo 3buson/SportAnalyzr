@@ -692,12 +692,21 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
 
                 # successors = graph.neighbors(predecessor)
 
-                if (weighted):
+                if weighted:
                     weight = 0
-                    for weightDict in graph.get_edge_data(predecessor, node):
-                        weight += weightDict['weight']
+                    numWeights = 0
+                    for weightKey, weightDictValue in graph.get_edge_data(predecessor, node).iteritems():
+                        weightValue = weightDictValue['weight']
 
-                    weight /= len(graph[predecessor][node].values())
+                        # ignore ties
+                        if weightValue != 0:
+                            weight += weightValue
+                            numWeights += 1
+
+                    if numWeights != 0:
+                        weight /= numWeights
+                    else:
+                        weight = 0
                 else:
                     weight = 1
 

@@ -153,8 +153,7 @@ def main():
             # inverted - most recent season is first
             attendance_array.reverse()
 
-            attendance_array_string = ', '.join([str(v) for v in attendance_array])
-
+            # attendance_array_string = ', '.join([str(v) for v in attendance_array])
             # print "[Correlation Tester]:  Attendance array for league %s: %s" % (league, attendance_array_string)
 
             rownum = 0
@@ -173,8 +172,7 @@ def main():
             else:
                 bets_array = []
 
-            bets_array_string = ', '.join([str(v) for v in bets_array])
-
+            # bets_array_string = ', '.join([str(v) for v in bets_array])
             # print "[Correlation Tester]:  Bets volume array for league %s: %s" % (league, bets_array_string)
 
             with open(properties_csv, 'rb') as f:
@@ -313,8 +311,7 @@ def main():
             # inverted - most recent season is first
             value_array.reverse()
 
-            value_array_string = ', '.join([str(v) for v in value_array])
-
+            # value_array_string = ', '.join([str(v) for v in value_array])
             # print "[Correlation Tester]:  League value array for league %s: %s" % (league, value_array_string)
 
 
@@ -337,8 +334,7 @@ def main():
             # inverted - most recent season is first
             attendance_array.reverse()
 
-            attendance_array_string = ', '.join([str(v) for v in attendance_array])
-
+            # attendance_array_string = ', '.join([str(v) for v in attendance_array])
             # print "[Correlation Tester]:  Attendance array for league %s: %s" % (league, attendance_array_string)
 
             rownum = 0
@@ -357,8 +353,7 @@ def main():
             else:
                 bets_array = []
 
-            bets_array_string = ', '.join([str(v) for v in bets_array])
-
+            # bets_array_string = ', '.join([str(v) for v in bets_array])
             # print "[Correlation Tester]:  Bets volume array for league %s: %s" % (league, bets_array_string)
 
 
