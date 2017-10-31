@@ -149,9 +149,7 @@ def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xL
     # check if we have the same ammount of seasons for all leagues
     for c in range(1, len(ysDoubleArray)):
         if len(ysDoubleArray[c]) != len(ysDoubleArray[0]):
-            print len(ysDoubleArray[c])
-            print len(ysDoubleArray[0])
-
+            print "[Visualizer]  Error! Number of seasons not same, cannot create ranks graph! Lengths: %d, %d" % (len(ysDoubleArray[c]), len(ysDoubleArray[0]))
             return False
 
     # create ranks double array

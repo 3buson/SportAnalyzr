@@ -11,58 +11,94 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
         if competitionStage == 'all':
             cursor.execute('''
                             SELECT
-                                seasonId, date, home_club_id, away_club_id,
-                                home_score, away_score, home_odds, away_odds,
-                                home_odds_prog, away_odds_prog, extra_time
+                                m.season_id, m.date, m.home_club_id, m.away_club_id,
+                                m.home_score, m.away_score, m.home_odds, m.away_odds,
+                                m.home_odds_prog, m.away_odds_prog, m.extra_time,
+                                hc.name, ac.name
                             FROM
-                                matches
+                                matches m
+                            JOIN
+                                clubs hc
+                            ON
+                                hc.id = m.home_club_id
+                            JOIN
+                                clubs ac
+                            ON
+                                ac.id = m.away_club_id
                             WHERE
-                                leagueId = %s
+                                m.leagueId = %s
                             ''' %
                             leagueId)
         else:
             cursor.execute('''
                             SELECT
-                                seasonId, date, home_club_id, away_club_id,
-                                home_score, away_score, home_odds, away_odds,
-                                home_odds_prog, away_odds_prog, extra_time
+                                m.season_id, m.date, m.home_club_id, m.away_club_id,
+                                m.home_score, m.away_score, m.home_odds, m.away_odds,
+                                m.home_odds_prog, m.away_odds_prog, m.extra_time,
+                                hc.name, ac.name
                             FROM
-                                matches
+                                matches m
+                            JOIN
+                                clubs hc
+                            ON
+                                hc.id = m.home_club_id
+                            JOIN
+                                clubs ac
+                            ON
+                                ac.id = m.away_club_id
                             WHERE
-                                leagueId = %s
+                                m.leagueId = %s
                             AND
-                                stage = "%s"
+                                m.stage = "%s"
                             ''' %
                            (leagueId, competitionStage))
     else:
         if competitionStage == 'all':
             cursor.execute('''
                             SELECT
-                                season_id, date, home_club_id, away_club_id,
-                                home_score, away_score, home_odds, away_odds,
-                                home_odds_prog, away_odds_prog, extra_time
+                                m.season_id, m.date, m.home_club_id, m.away_club_id,
+                                m.home_score, m.away_score, m.home_odds, m.away_odds,
+                                m.home_odds_prog, m.away_odds_prog, m.extra_time,
+                                hc.name, ac.name
                             FROM
-                                matches
+                                matches m
+                            JOIN
+                                clubs hc
+                            ON
+                                hc.id = m.home_club_id
+                            JOIN
+                                clubs ac
+                            ON
+                                ac.id = m.away_club_id
                             WHERE
-                                league_id = %s
+                                m.league_id = %s
                             AND
-                                season_id IN (%s)
+                                m.season_id IN (%s)
                             ''' %
                            (leagueId, seasonIds))
         else:
             cursor.execute('''
                             SELECT
-                                season_id, date, home_club_id, away_club_id,
-                                home_score, away_score, home_odds, away_odds,
-                                home_odds_prog, away_odds_prog, extra_time
+                                m.season_id, m.date, m.home_club_id, m.away_club_id,
+                                m.home_score, m.away_score, m.home_odds, m.away_odds,
+                                m.home_odds_prog, m.away_odds_prog, m.extra_time,
+                                hc.name, ac.name
                             FROM
-                                matches
+                                matches m
+                            JOIN
+                                clubs hc
+                            ON
+                                hc.id = m.home_club_id
+                            JOIN
+                                clubs ac
+                            ON
+                                ac.id = m.away_club_id
                             WHERE
-                                league_id = %s
+                                m.league_id = %s
                             AND
-                                season_id IN (%s)
+                                m.season_id IN (%s)
                             AND
-                                stage = "%s"
+                                m.stage = "%s"
                             ''' %
                            (leagueId, seasonIds, competitionStage))
 

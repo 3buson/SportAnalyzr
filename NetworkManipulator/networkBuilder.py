@@ -38,8 +38,11 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
     matchesData = databaseBridger.getAllMatches(connection, leagueId, seasonId, competitionStage)
 
     for matchRecord in matchesData:
-        homeClub = matchRecord[2]
-        awayClub = matchRecord[3]
+        homeClub = int(matchRecord[2])
+        awayClub = int(matchRecord[3])
+
+        homeClubName = matchRecord[11]
+        awayClubName = matchRecord[12]
 
         homeScore = matchRecord[4]
         awayScore = matchRecord[5]
@@ -48,21 +51,27 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
 
         weight = 1
 
+        if not graph.has_node(homeClub):
+            graph.add_node(homeClub, name=homeClubName)
+
+        if not graph.has_node(awayClub):
+            graph.add_node(awayClub, name=awayClubName)
+
         if simpleWeights:
             if homeScore:
-                graph.add_edge(int(awayClub), int(homeClub), weight=homeScore)
+                graph.add_edge(awayClub, homeClub, weight=homeScore)
             if awayScore:
-                graph.add_edge(int(homeClub), int(awayClub), weight=awayScore)
+                graph.add_edge(homeClub, awayClub, weight=awayScore)
         else:
             if homeScore > awayScore:
                 if weighted:
                     weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
 
-                graph.add_edge(int(awayClub), int(homeClub), weight=weight)
+                graph.add_edge(awayClub, homeClub, weight=weight)
             else:
                 if weighted:
                     weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
 
-                graph.add_edge(int(homeClub), int(awayClub), weight=weight)
+                graph.add_edge(homeClub, awayClub, weight=weight)
 
     return graph
