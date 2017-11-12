@@ -134,6 +134,8 @@ def main():
             pr_rel_entropy_array_all = []
             pr_rel_entropy_array_playoff = []
 
+            season = 0
+
             rownum = 0
             if os.path.isfile(attendance_csv):
                 with open(attendance_csv, 'rb') as f:
@@ -143,6 +145,8 @@ def main():
                         if rownum == 0:
                             rownum += 1
                         else:
+                            inverted = int(row[0]) < season
+
                             season = int(row[0])
 
                             if season > 1975 and season < 2015:
@@ -150,8 +154,9 @@ def main():
             else:
                 attendance_array = []
 
-            # inverted - most recent season is first
-            attendance_array.reverse()
+            # reverse if most recent season is first
+            if inverted:
+                attendance_array.reverse()
 
             # attendance_array_string = ', '.join([str(v) for v in attendance_array])
             # print "[Correlation Tester]:  Attendance array for league %s: %s" % (league, attendance_array_string)
@@ -289,6 +294,8 @@ def main():
             print ""
             print "-------------------------------------------------------------------------------------------------"
         else:
+            season = 0
+
             rownum = 0
             if os.path.isfile(value_csv):
                 with open(value_csv, 'rb') as f:
@@ -298,6 +305,8 @@ def main():
                         if rownum == 0:
                             rownum += 1
                         else:
+                            inverted = int(row[0]) < season
+
                             season = int(row[0])
 
                             if season > 1999 and season < 2016:
@@ -308,12 +317,14 @@ def main():
             else:
                 value_array = []
 
-            # inverted - most recent season is first
-            value_array.reverse()
+            # reverse if most recent season is first
+            if inverted:
+                value_array.reverse()
 
             # value_array_string = ', '.join([str(v) for v in value_array])
             # print "[Correlation Tester]:  League value array for league %s: %s" % (league, value_array_string)
 
+            season = 0
 
             rownum = 0
             if os.path.isfile(attendance_csv):
@@ -324,6 +335,8 @@ def main():
                         if rownum == 0:
                             rownum += 1
                         else:
+                            inverted = int(row[0]) < season
+
                             season = int(row[0])
 
                             if season > 1999 and season < 2016:
@@ -331,8 +344,9 @@ def main():
             else:
                 attendance_array = []
 
-            # inverted - most recent season is first
-            attendance_array.reverse()
+            # reverse if most recent season is first
+            if inverted:
+                attendance_array.reverse()
 
             # attendance_array_string = ', '.join([str(v) for v in attendance_array])
             # print "[Correlation Tester]:  Attendance array for league %s: %s" % (league, attendance_array_string)
@@ -514,8 +528,8 @@ def main():
 
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game, correlation_dict_per_game, 'Uniformity per game from bets and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Attendance Correlation Over Leagues', 'League', 'Attendance Correlation')
-    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Bets Volume Correlation Over Leagues', 'League', 'Bets Volume Correlation')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Players Value (average of club per league) Correlation Over Leagues', 'League', 'Players Value (average of club per league) Correlation')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Bets Volume Correlation Over Leagues', 'League', 'Bets Volume Correlation')
 
 
 if __name__ == "__main__":
