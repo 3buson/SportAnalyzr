@@ -1,0 +1,32 @@
+Club    2011/12 2012/13
+Paris Saint Germain 42890   43235
+Lille OSC   16970   40590
+Olympique Marseille 40445   33475
+Olympique Lyonnais  33065   32085
+AS Saint-Etienne    21480   22995
+Girondins de Bordeaux   20710   19400
+FC Nantes Atlantiques   13420   18670
+Stade Rennais   20560   18340
+Toulouse    21445   17735
+Montpellier Herault SC  17490   17080
+RC Lens 21775   16180
+AS Nancy    15330   15595
+Stade de Reims  12850   15575
+Valenciennes    15375   15470
+FC Lorient 56   15640   15245
+Troyes  10785   13835
+FC Sochaux  14080   13495
+Stade Brestois  13540   11795
+SC Bastia   9905    11010
+OGC Nice    9205    10270
+Evian Thonon Gaillard FC
+(Croix de Savoie 74)    11820   10210
+SM Caen 15280   10130
+En Avant de Guingamp    9535    9505
+Dijon FCO   13595   8710
+FC Metz 9425    8665
+Le Havre AC 8040    8520
+Angers SCO  6950    8380
+Le Mans 8190    7765
+AC Ajaccio  6340    6800
+RC Strasbourg       6355

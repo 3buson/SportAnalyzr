@@ -91,9 +91,9 @@ ENV/
 # Pycharm
 .idea/
 
-# downloaded CSV and HTML files
+# raw bets files
+FileConqueror/csv/bets/raw
 FileConqueror/html
-FileConqueror/csv
 
 # output of SportAnalyzr
 output/*

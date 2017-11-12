@@ -1,0 +1,31 @@
+Club    Average 11/12   Average 12/13   Country
+Ajax    50145   50490   Neths
+Feyenoord   44605   45325   Neths
+PSV Eindhoven   33375   33175   Neths
+FC Twente   27705   29450   Neths
+SC Heerenveen   25305   24680   Neths
+Club Brugge 24160   24430   Belgium
+FC Groningen    21820   21075   Neths
+RSC Anderlecht  22255   20675   Belgium
+KRC Genk    21820   20590   Belgium
+Standard Liege  24615   20415   Belgium
+Vitesse Arnhem  17530   18425   Neths
+FC Utrecht  19595   17510   Neths
+NAC Breda   17685   17325   Neths
+AZ Alkmaar  16365   16285   Neths
+Roda JC 14350   13515   Neths
+NEC 12160   11925   Neths
+Willem II   9545    11315   Neths
+PEC Zwolle (FC Zwolle)  8555    10760   Neths
+ADO Den Haag    12155   10505   Neths
+KV Mechelen 10250   10160   Belgium
+KAA Gent    10985   10090   Belgium
+Cercle Brugge   8470    8495    Belgium
+Heracles Almelo 8455    8430    Neths
+Oud-Heverlee Leuven 7280    8000    Belgium
+de Graafschap   12035   7800    Neths
+SV Zulte-Waregem    7440    7690    Belgium
+Beerschot AC (Germinal BA)  7700    7520    Belgium
+KV Kortrijk 6930    7200    Belgium
+Sparta  7090    7065    Neths
+VVV Venlo   7515    6765    Neths

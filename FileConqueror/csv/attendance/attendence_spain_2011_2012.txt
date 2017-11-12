@@ -1,0 +1,21 @@
+Club    2011/12 2012/13
+Barcelona   75800   71000
+Real Madrid 74575   70000
+Atletico de Madrid  43040   44295
+Valencia    38265   36920
+Athletic Bilbao 35055   36105
+Real Betis  37405   34985
+Deportivo La Coruna 26440   29500
+Sevilla 35685   28025
+Malaga CF   28620   27110
+Real Sociedad   23730   23365
+Real Zaragoza   24945   22360
+RCD Espanol 23680   20975
+Celta Vigo  12500   19945
+Granada CF  21525   19670
+CA Osasuna  15850   16335
+Real Vallodolid 9730    16310
+Real Sporting Gijon 21660   15720
+Elche CF    8670    14955
+Levante UD  13225   14790
+Real Mallorca   13205   14450

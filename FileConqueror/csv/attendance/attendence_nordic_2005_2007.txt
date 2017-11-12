@@ -1,0 +1,45 @@
+Club    Average 05/06   Average 06/07   Average 07/08   Country
+FC Copenhagen   21550   23790   19455   Denmark
+Rosenborg BK    19480   19905   18955   Norway
+SK Brann    16690   17225   16955   Norway
+Brondby IF  16135   13945   16070   Denmark
+AIK 21435   20465   15535   Sweden
+Viking FK   13915   15845   15380   Norway
+Valerenga   13870   13835   12700   Norway
+Fredrikstad FK  8100    11800   11525   Norway
+Malmo FF    13665   13365   11195   Sweden
+Hammarby IF 11795   13505   11145   Sweden
+Helsinborgs IF  12410   12000   10495   Sweden
+Alesunds FK 9945    10420   10365   Norway
+Djugardens IF   13360   14150   10170   Sweden
+Aarhus GF   7325    8810    9825    Denmark
+IFK Gothenburg  10280   15800   9630    Sweden
+IF Elfsborg 12175   11865   9514    Sweden
+Odense Boldklub 8195    7895    9010    Denmark
+Aalborg BK  6825    8610    8945    Denmark
+FC Midtjylland  7195    8715    8925    Denmark
+Lillestrom SK   8615    9015    8790    Norway
+Orebro SK   5360    8820    8660    Sweden
+Molde FK    6125    6340    8205    Norway
+Start Kristiansand  7675    11215   7490    Norway
+Esbjerg FB  6900    6835    6800    Denmark
+IFK Norrkoping  4645    7375    6650    Sweden
+SKF Lyn 7060    7665    6645    Norway
+Randers FC  4030    6525    6620    Denmark
+Kalmar FF   5200    6220    6105    Sweden
+Halmstadt BK    6000    7360    6035    Sweden
+Stromsgodset    4075    6805    5915    Norway
+Stabaek IF  5055    5570    5835    Norway
+Bodo / Glimt SFK    3235    3710    5505    Norway
+Tromso IL   5070    6055    5480    Norway
+GAIS    7075    6885    5225    Sweden
+Odd-Grenland    4915    5335    5165    Norway
+Hamarkameratene Toppfotball 5505    3345    5125    Norway
+Vejle Boldklub  2560    4480    4650    Denmark
+GIF Sundsvall   2955    3825    4595    Sweden
+HJK Helsinki    5570    4850    4515    Finland
+TPS Turku   3570    5295    4500    Finland
+Tippeligaen (average)   9100    9100    9810    Norway
+SAS (average)   7955    8105    8475    Denmark
+Allsvenskan (average)   9420    10260   7790    Sweden
+Veikkausliiga (average) 2910    2975    2635    Finland

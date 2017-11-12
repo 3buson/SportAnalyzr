@@ -1,0 +1,31 @@
+Club    2007/08 2008/09 2009/10
+Borussia Dortmund   72500   74830   77245
+Bayern Munich   69000   69000   69000
+Schalke 04  61275   61385   61325
+Hamburg SV  55365   54775   55240
+FC Koln 43740   49310   48060
+Eintracht Frankfurt 48325   47010   47205
+Hertha BSC  45440   52155   46680
+Borussia Munchengladbach    40425   47375   46410
+FC Nurnberg 43450   33625   42330
+VfB Stuttgart   50445   51925   41065
+Hannover 96 40235   41860   38245
+Werder Bremen   40310   40475   36015
+Kaiserslautern  27970   34425   35395
+TSG 1899 Hoffenheim 6030    28075   29690
+Bayer Leverkusen    22295   26830   29295
+VfL Wolfsburg   24360   27410   29230
+VfL Bochum  24405   25515   28455
+Fortuna Dusseldorf  12965   14875   28000
+SC Freiburg 16540   16455   22955
+Alemania Aachen 19475   19375   22255
+Munich 1860 35070   28110   21630
+FC St. Pauli    18550   22365   20805
+Mainz   19920   19540   20145
+Karlsruher  28840   28060   17960
+FC Augsberg 17235   15575   17625
+Arminia Bielefeld   21535   23465   14780
+Dynamo Dresden  9980    10950   14395
+FC Union Berlin 5335    7145    14215
+SV Duisberg 25040   14750   14070
+Hansa Rostock   20355   14780   13895

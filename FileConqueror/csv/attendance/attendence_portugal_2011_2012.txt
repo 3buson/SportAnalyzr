@@ -1,0 +1,11 @@
+Club    Ave. 2011/12    Ave. 2012/13
+SL Benfica  42,460  42,365
+FC Porto    35,175  30,280
+Sporting CP 24,855  26,250
+Vitoria Guimares    13,950  12,875
+Sporting Braga  15,170  12,060
+Académica Coimbra   4,560   4,680
+Gil Vicente 5,005   4,230
+Beira Mar   4,030   4,160
+CS Maritimo 3,440   3,705
+Vitoria Setubal 3,920   3,170

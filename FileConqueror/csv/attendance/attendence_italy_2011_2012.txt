@@ -1,0 +1,32 @@
+Club    2011/12 2012/13
+FC Internazionale   44805   46550
+AC Milan    49020   43650
+AS Roma 36220   40180
+SS Calcio Napoli    39805   39635
+Juventus    37545   38600
+SS Lazio    32410   31990
+Fiorentina  21410   25655
+UC Sampdoria    20855   23125
+Bologna FC 1909 19255   21435
+Genoa C & FC 1893   18700   19740
+US Palermo  19220   18285
+Torino Calcio   15895   15615
+Udinese Calcio  18595   15505
+Hellas Verona FC    14085   15400
+Atalanta Bergamasca
+Calcio  15490   15395
+Catania Calcio  15385   13860
+AC Parma    13645   12740
+Pescara Calcio  13940   12235
+AS Chievo Verona    9650    11555
+Siena AC    10130   9580
+AC Cesena   16410   9550
+Cagliari Calcio 10700   8550
+Vicenza Calcio  6220    6930
+AS Bari 5275    6590
+AC Perugia  2905    5910
+AC Padova   8095    5875
+Spezia AC   4880    5725
+Novara Calcio   10955   5675
+Livorno AS  4820    5665
+Ternana Calcio  5315    5465

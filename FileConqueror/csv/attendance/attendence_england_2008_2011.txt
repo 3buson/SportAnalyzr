@@ -1,0 +1,32 @@
+
+Club    Average 08/09   Average 09/10   Average 10/11
+Manchester Utd. 75,305  74,865  75,110
+Arsenal 60,040  59,925  60,025
+Newcastle Utd.  48,750  43,390  47,715
+Manchester City 42,900  45,515  45,905
+Liverpool   43,610  42,865  42,820
+Chelsea 41,590  41,425  41,435
+Sunderland  40,170  40,355  40,010
+Aston Villa 39,810  38,575  37,195
+Everton 35,710  36,725  36,040
+Tottenham Hotspur   35,930  35,795  35,705
+West Ham Utd.   34,210  33,685  33,490
+Wolverhampton Wanderers 24,155  28,365  27,925
+Leeds United    23,810  24,820  27,300
+Stoke City  27,020  27,160  26,855
+Derby County    29,205  29,205  26,020
+Birmingham City 19,080  25,240  25,460
+Norwich City    24,545  24,670  25,385
+Blackburn Rovers    23,480  25,420  25,005
+Fulham  24,340  23,890  25,000
+West Bromwich Albion    25,830  22,200  24,685
+Leicester City  20,250  23,940  23,665
+Nottingham Forest   22,300  23,830  23,275
+Cardiff City    18,000  20,715  23,195
+Bolton Wanderers    22,485  21,880  22,870
+Southampton 17,850  20,980  22,160
+Hull City   24,815  24,390  21,170
+Sheffield United    26,025  25,120  20,630
+Ipswich Town    20,960  20,840  19,615
+Sheffield Wednesday 21,540  23,180  17,820
+Reading 19,935  17,410  17,680

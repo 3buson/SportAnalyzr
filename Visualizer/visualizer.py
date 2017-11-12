@@ -342,8 +342,9 @@ def getPDFYValuesFromDict(input, numberOfBins=12):
     p, x = numpy.histogram(sortedValues, numberOfBins)
     x = x[:-1] + (x[1] - x[0]) / 2           # convert bin edges to centers
     p = [float(prob) / sum(p) for prob in p] # divide every element by sum to get [0,1) range
+    width = x[1] - x[0]
 
-    return x.tolist(), p
+    return x.tolist(), p, width
 
 
 def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b', numberOfBins=12):
@@ -365,9 +366,9 @@ def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
     if yLabel:
         pyplot.ylabel(yLabel)
 
-    x, p = getPDFYValuesFromDict(input, numberOfBins)
+    x, p, width = getPDFYValuesFromDict(input, numberOfBins)
 
-    pyplot.bar(x, p, color=color)
+    pyplot.bar(x, p, width, color=color)
 
     if filename:
         pyplot.savefig(filename)

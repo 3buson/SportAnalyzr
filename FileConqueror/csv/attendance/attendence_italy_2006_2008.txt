@@ -1,0 +1,31 @@
+Club    2006/07 2007/08 2008/09
+AC Milan    47115   56640   59730
+FC Internazionale   48285   51210   55345
+SS Calcio Napoli    30150   40780   39850
+AS Roma 38720   37275   39395
+SS Lazio    25050   21485   34625
+Fiorentina  28305   31385   31200
+Genoa C & FC 1893   19935   24475   26575
+UC Sampdoria    19035   21890   23325
+US Palermo  23800   25540   23230
+Juventus    18075   20930   21220
+Bologna FC 1909 10950   11675   20760
+Catania Calcio  9370    17605   18165
+Torino Calcio   20575   19225   17550
+Udinese Calcio  14645   15670   16880
+AS Bari 7680    3355    15345
+AS Chievo Verona    6365    5650    13350
+Cagliari Calcio 10520   12260   12440
+Atalanta Bergamasca Calcio  11600   10110   12230
+US Lecce    6190    6705    12170
+Reggina Calcio  12580   13145   11805
+Salernitana Sport   4020    11525   11440
+Siena AC    7995    10350   11025
+Hellas Verona FC    9445    10865   10930
+AC Parma    14640   15425   10300
+Pisa Calcio 6655    11150   9675
+Livorno AS  8025    9900    7850
+Vicenza Calcio  5705    6550    7390
+AC Cesena   8560    6890    7145
+Mantova Calcio  8605    8250    6420
+Triestina USC   7565    6360    5730

@@ -1,0 +1,31 @@
+Club    2005/06 2006/07 2007/08 2008/09
+Real Madrid 71545   71530   76235   71960
+Barcelona   73225   74070   67560   71300
+Atletico de Madrid  38685   42315   45255   44605
+Sevilla 40245   43630   39555   41505
+Valencia    43105   40370   40710   38265
+Real Betis  38420   38735   37420   37135
+Athletic Bilbao 36895   37160   36265   35000
+Malaga CF   19315   14715   20000   24850
+RCD Espanyol    22335   20195   21870   23835
+Real Sporting Gijon 10000   11685   16770   22945
+Villareal   18485   18630   19395   19160
+Real RC de Santander    14720   16220   17520   18555
+Deportivo La Coruna 19105   16620   17800   18315
+Real Sociedad   22525   23075   20130   18095
+Osasuna 16065   16710   17225   17825
+Real Zaragoza   28160   27870   30710   17555
+Real Valladolid 8965    9235`   17605   17415
+Recreativo de Huelva    9930    18225   17275   16335
+Real Mallorca   15845   16605   17840   15185
+UD Las Palmas       13230   11640   14200
+CD Tenerife 8130    9660    10710   13235
+Real Murcia 5810    12230   23500   12840
+Almeria 5675    8950    15555   12715
+Getafe  12765   11055   10665   10500
+Hercules CF Alicante    8415    7570    7620    9890
+Rayo Vallecano              8250
+Cordoba         9985    8215
+Numancia    5210    4760    5050    8095
+CD Castellon    9085    10045   9975    8050
+Xerex   11175   7695    7960    7225

@@ -1,0 +1,31 @@
+Rank    Club    Average 07/08   Average 08/09   Average 09/10
+1   Manchester Utd. 75,690  75,305  74,865
+2   Arsenal 60,070  60,040  59,925
+3   Manchester City 42,125  42,900  45,513
+4   Newcastle Utd.  51,320  48,750  43,390
+5   Liverpool   43,530  43,610  42,865
+6   Chelsea 41,395  41,590  41,420
+7   Sunderland  43,345  40,170  40,355
+8   Aston Villa 39,870  39,810  38,575
+9   Everton 36,955  35,710  36,725
+10  Tottenham Hotspur   35,965  35,930  35,795
+11  West Ham Utd.   34,600  34,210  33,685
+12  Derby County    30,870  29,205  29,205
+13  Wolverhampton Wanderers 23,500  24,155  28,365
+14  Stoke City  16,825  27,020  27,160
+15  Blackburn Rovers    23,945  23,480  25,425
+16  Birmingham City 26,180  19,080  25,245
+17  Sheffield United    25,630  26,025  25,120
+18  Leeds United    26,545  23,810  24,820
+19  Norwich City    24,525  24,545  24,675
+20  Hull City   18,025  24,815  24,390
+21  Leicester City  23,510  20,250  23,945
+22  Fulham  23,770  24,340  23,900
+23  Nottingham Forest   19,955  22,300  23,830
+24  Sheffield Wednesday 21,420  21,540  23,180
+25  West Bromwich Albion    22,310  25,830  22,200
+26  Bolton Wanderers    20,900  22,485  21,880
+27  Southampton 21,255  17,850  20,980
+28  Ipswich Town    21,930  20,960  20,840
+29  Cardiff City    13,940  18,000  20,715
+30  Burnley 12,365  13,080  20,655

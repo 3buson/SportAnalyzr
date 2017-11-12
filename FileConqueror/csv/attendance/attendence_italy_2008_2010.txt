@@ -1,0 +1,32 @@
+Club    2008/09 2009/10 2010/11
+FC Internazionale   55345   56195   59695
+AC Milan    59730   42810   53915
+SS Calcio Napoli    39850   40795   45610
+AS Roma 39395   40975   33950
+SS Lazio    34625   36150   29120
+US Palermo  23230   25015   24810
+Fiorentina  31200   27425   23610
+Genoa C & FC 1893   26585   25585   23465
+UC Sampdoria    23325   25240   23330
+Juventus    21220   22925   21965
+Bologna FC 1909 20760   19470   19810
+AS Bari 15345   25390   19750
+Atalanta Bergamasca
+Calcio  12230   12915   18735
+Udinese Calcio  16880   17355   17555
+AC Cesena   7145    11270   16470
+AC Parma    10300   17060   14525
+Catania Calcio  18165   15340   13730
+Cagliari Calcio 12440   14650   13000
+AS Chievo Verona    13350   11925   12675
+Torino Calcio   17550   13585   11415
+US Lecce    12170   7845    10730
+Hellas Verona FC    10930   14330   10550
+Brescia Calcio  2995    3940    8405
+Pescara Calcio  1570    8955    8050
+Siena AC    11025   11240   7280
+AC Padova   4225    6985    6360
+Ascoli Calcio 1989  5235    4940    6010
+Vicenza Calcio  7390    7320    5740
+Novara Calcio   2240    3785    5450
+Modena FC   5635    5785    5285

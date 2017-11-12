@@ -1,0 +1,21 @@
+Club    Average 2006/07 Average 2007/08 Average 2008/09
+Celtic  57925   56675   57670
+Rangers 49955   49145   49535
+Hearts  16935   15960   14400
+Aberdeen    12475   11995   12930
+Hibernian   14585   13885   12685
+Dundee Utd  7145    8530    8655
+Kilmarnock  7565    6180    5725
+Falkirk 5385    5570    5640
+Motherwell  5875    6600    5520
+St. Mirren  5610    4545    5410
+Inverness Caledonian Thistle    4880    4755    4455
+Dundee  3880    4250    3955
+Hamilton Academical 1715    2470    3825
+Saint Johnstone 2810    2915    3515
+Dunfermline Athletic    6105    3530    3110
+Partick Thistle 2590    2610    2965
+Queen of the South  2210    2030    2680
+Greenock Morton 2765    2730    2250
+Raith Rovers    1935    1785    2225
+Ross County 2305    2245    2165

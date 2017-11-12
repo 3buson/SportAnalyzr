@@ -1,0 +1,31 @@
+Club    2006/07 2007/08 2008/09
+Olympique Marseille 51600   52600   52275
+Paris Saint Germain 36360   36945   40900
+Olympique Lyonnais  38545   37295   37295
+RC Lens 34260   34655   29840
+AS Saint-Etienne    29390   29235   28170
+Girondins de Bordeaux   24900   25490   26955
+FC Nantes Atlantiques   30160   22770   24240
+Stade Rennais   25135   25640   24065
+Toulouse    21570   20180   20090
+SM Caen 16205   19655   18915
+AS Nancy    18335   18740   18005
+LOSC Lille  14560   17240   17915
+Grenoble Foot 38    5775    10000   17215
+FC Sochaux  14675   15930   14660
+RC Strasbourg   15570   19400   14195
+Le Havre AC 10195   11630   13570
+AJ Auxerre  10400   10590   12915
+Valenciennes    14810   13800   12865
+Stade de Reims  6485    6860    11495
+FC Lorient 56   13580   12305   11400
+OGC Nice    11335   11280   10625
+Le Mans 11330   11065   10410
+Troyes  12700   10110   9810
+FC Metz 12290   13915   9665
+En Avant de Guingamp    8900    9045    9435
+Montpellier Herault SC  7060    7245    9400
+Amiens SC   7840    9425    9370
+Nimes Olympique 5890    6535    9195
+Sedan   14130   9590    8770
+AS Monaco   11065   10830   8510

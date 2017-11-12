@@ -1,0 +1,11 @@
+Club    2005/06 2006/07 2007/08 2008/09
+FC Porto    38680   38870   38630   38765
+SL Benfica  43055   39010   37560   35700
+Sporting CP 31640   33285   29380   26515
+Vitoria Guimares    15980   14000   19575   16580
+Sporting Braga  11550   12230   15615   10550
+Académica Coimbra   9865    8750    6870    5975
+Belenenses  5365    4005    2810    5075
+CS Maritimo 4325    4165    5825    4940
+Leixoes SC  3200    3500    5035    4175
+Vitoria Setubal 3835    3425    3255    3835
