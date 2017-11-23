@@ -464,6 +464,9 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
     if directed:
         filenameSuffix += '_directed'
 
+        sumOfInDegrees = getSumOfDegrees(graph)
+        sumOfOutDegrees = getSumOfDegrees(graph, False)
+
         # in degrees
         if not os.path.exists(filenamePrefix + 'inDegrees/' + competitionStage):
             os.makedirs(filenamePrefix + 'inDegrees/' + competitionStage)
@@ -474,6 +477,13 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
 
         visualizer.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
                          False, title, 'Node', 'In Degree', filename)
+
+        title = 'In Degrees Weight Sum' + `seasonId` + ' Stage: ' + competitionStage
+        filename = filenamePrefix + 'inDegrees/' + competitionStage + \
+                   '/inDegreesWeightSum' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
+
+        visualizer.createGraph(xs, sorted(sumOfInDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
+                               False, title, 'Node', 'In Degree Weight Sum', filename)
 
         # out degrees
         if not os.path.exists(filenamePrefix + 'outDegrees/' + competitionStage):
@@ -539,9 +549,6 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         titlePDFWeightOut    = 'Out Degrees Weight Sum PDF ' + `seasonId` + ' Stage: ' + competitionStage
         filenamePDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                                 '/outDegrees' + filenameSuffix + '_weight_sum_PDF_' + `seasonId` + '_stage_' + competitionStage
-
-        sumOfInDegrees  = getSumOfDegrees(graph)
-        sumOfOutDegrees = getSumOfDegrees(graph, False)
 
         strengthsLimit = max(sumOfInDegrees)
 

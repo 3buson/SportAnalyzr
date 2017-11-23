@@ -28,6 +28,10 @@ def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
                     rownum += 1
                 else:
                     league = row[0]
+
+                    if constants.leagueNames.has_key(league):
+                        league = constants.leagueNames[league]
+
                     uniformity = float(row[1])
                     betsVolume = float(row[2])
 
