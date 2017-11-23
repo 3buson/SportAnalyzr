@@ -18,7 +18,7 @@ __author__ = '3buson'
 ### --- PLOTTING FUNCTIONS --- ###
 
 def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, title=None, xLabel=None, yLabel=None, filename=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -49,7 +49,7 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
 
 
 def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(13, 13)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -72,7 +72,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
             pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(loc='best', prop={'size': 13})
 
     if title:
         pyplot.title(title)
@@ -92,7 +92,7 @@ def createMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=
 
 
 def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -119,7 +119,7 @@ def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=No
             pyplot.plot(xsParsed, ysAppx, color=colors[idx], label=label)
             # pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(loc='best', prop={'size': 13})
 
     if title:
         pyplot.title(title)
@@ -139,7 +139,7 @@ def createMultiGraphAppxWithDev(ysMin=None, ysMax=None, logScale=False, title=No
 
 
 def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -185,7 +185,7 @@ def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xL
 
             pyplot.plot(xsParsed, ys, color=colors[idx], label=label)
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(loc='best', prop={'size': 13})
 
     if title:
         pyplot.title(title)
@@ -205,7 +205,7 @@ def createRanksMultiGraph(ysMin=None, ysMax=None, logScale=False, title=None, xL
 
 
 def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ys1=None, ys2=None, ys1Deviation=None, ys2Deviation=None, labels=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -242,7 +242,7 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
         pyplot.plot(xs, deviationUp,   'r--')
         pyplot.plot(xs, deviationDown, 'r--')
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(loc='best', prop={'size': 13})
 
     if title:
         pyplot.title(title)
@@ -262,7 +262,7 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
 
 
 def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None, yLabel=None, filename=None, xs=None, ysDoubleArray=None, ysDeviationDoubleArray=None, colors=['b', 'k', 'r', 'm', 'g'], labels=None):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -284,7 +284,7 @@ def createMultiGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=None
         pyplot.plot(xs, deviationUp,   colors[idx] + '--')
         pyplot.plot(xs, deviationDown, colors[idx] + '--')
 
-    pyplot.legend(loc='best', prop={'size': 11})
+    pyplot.legend(loc='best', prop={'size': 13})
 
     if title:
         pyplot.title(title)
@@ -311,7 +311,7 @@ def getCDFYValuesFromDict(input):
 
 
 def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
-    pyplot.figure(figsize=(15, 15))
+    pyplot.figure(figsize=(12, 12))
     pyplot.ticklabel_format(useOffset=False)
 
     if xsMin is not None and xsMax is not None:
@@ -348,7 +348,7 @@ def getPDFYValuesFromDict(input, numberOfBins=12):
 
 
 def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, color='b', numberOfBins=12):
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -620,7 +620,7 @@ def visualizeCorrelationAndIntervalsOverLeagues(folderName, filename, correlatio
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
-    ax = pyplot.figure(figsize=(15, 15)).gca()
+    ax = pyplot.figure(figsize=(13, 13)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -657,7 +657,7 @@ def visualizeCorrelationAndIntervalsOverLeagues(folderName, filename, correlatio
     x = range(0, 2 * len(leagues), 2)
     pyplot.xticks(x, leagues, rotation=30)
 
-    pyplot.legend(handles=[pearson, spearman], loc='best', prop={'size': 11})
+    pyplot.legend(handles=[pearson, spearman], loc='best', prop={'size': 13})
 
     if filename:
         pyplot.savefig(folderName + filename)
