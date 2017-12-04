@@ -21,7 +21,7 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, p
     else:
         weight = alpha * ((loserScore - winnerScore) / (winnerScore + loserScore))
 
-    return 1 / (1 + math.exp(weight))
+    return 1 / (1 + math.exp(-weight))
 
     if extraTime and penalizeExtraTime:
         weight = 1.0 / winnerScore
