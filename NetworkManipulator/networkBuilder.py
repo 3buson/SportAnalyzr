@@ -10,6 +10,19 @@ __author__ = '3buson'
 
 
 def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, penalizeExtraTime=False):
+    # improved weights
+    if winnerScore > 15:
+        alpha = 1
+    else:
+        alpha = 2
+
+    if winnerScore == 0 and loserScore == 0:
+        weight = 0
+    else:
+        weight = alpha * ((loserScore - winnerScore) / (winnerScore + loserScore))
+
+    return 1 / (1 + math.exp(-weight))
+
     if extraTime and penalizeExtraTime:
         weight = 1.0 / winnerScore
     else:
@@ -57,21 +70,28 @@ def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=T
         if not graph.has_node(awayClub):
             graph.add_node(awayClub, name=awayClubName)
 
-        if simpleWeights:
-            if homeScore:
-                graph.add_edge(awayClub, homeClub, weight=homeScore)
-            if awayScore:
-                graph.add_edge(homeClub, awayClub, weight=awayScore)
-        else:
-            if homeScore > awayScore:
-                if weighted:
-                    weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
+        # if simpleWeights:
+        #     if homeScore:
+        #         graph.add_edge(awayClub, homeClub, weight=homeScore)
+        #     if awayScore:
+        #         graph.add_edge(homeClub, awayClub, weight=awayScore)
+        # else:
+        #     if homeScore > awayScore:
+        #         if weighted:
+        #             weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
+        #
+        #         graph.add_edge(awayClub, homeClub, weight=weight)
+        #     else:
+        #         if weighted:
+        #             weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
+        #
+        #         graph.add_edge(homeClub, awayClub, weight=weight)
 
-                graph.add_edge(awayClub, homeClub, weight=weight)
-            else:
-                if weighted:
-                    weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
+        # improved weights
+        weight = calculateEdgeWeight(homeScore, awayScore, bool(extraTime), logWeights)
+        graph.add_edge(awayClub, homeClub, weight=weight)
 
-                graph.add_edge(homeClub, awayClub, weight=weight)
+        weight = calculateEdgeWeight(awayScore, homeScore, bool(extraTime), logWeights)
+        graph.add_edge(homeClub, awayClub, weight=weight)
 
     return graph

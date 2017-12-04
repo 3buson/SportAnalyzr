@@ -49,7 +49,7 @@ leagues['B1']  = 'Belgium Pro League'
 leagues['G1']  = 'Greece Super League'
 leagues['P1']  = 'Portugal Liga NOS'
 leagues['T1']  = 'Turkey Super Lig'
-leagues['N1']  = 'Netherlands Eredevisie'
+leagues['N1']  = 'Netherlands Eredivisie'
 leagues['I1']  = 'Italy Serie A'
 leagues['I2']  = 'Italy Serie B'
 leagues['D1']  = 'Germany 1. Bundesliga'
@@ -89,6 +89,20 @@ leagues['FRV'] = 'France Pro Volleyball League'
 leagues['GEV'] = 'Germany Volleyball League'
 leagues['ITV'] = 'Italy Serie Volleyball League'
 leagues['POV'] = 'Poland Plusliga Volleyball League'
+
+
+leagueNames = dict()
+leagueNames['GER'] = 'Germany 1. Bundesliga'
+leagueNames['FRA'] = 'France Ligue 1.'
+leagueNames['BEL'] = 'Belgium Pro Liga'
+leagueNames['ESP'] = 'Spain LaLiga'
+leagueNames['TUR'] = 'Turkey Super Lig'
+leagueNames['ENG'] = 'English Premier League'
+leagueNames['SCO'] = 'Scotland Premier League'
+leagueNames['ITA'] = 'Italy Serie A'
+leagueNames['GRE'] = 'Greece Super League'
+leagueNames['NBA'] = 'National Basketball League'
+leagueNames['NED'] = 'Netherlands Eredivisie'
 
 
 # --- CLUBS DICTS --- #
