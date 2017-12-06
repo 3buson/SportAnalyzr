@@ -92,17 +92,39 @@ leagues['POV'] = 'Poland Plusliga Volleyball League'
 
 
 leagueNames = dict()
-leagueNames['GER'] = 'Germany 1. Bundesliga'
-leagueNames['FRA'] = 'France Ligue 1.'
-leagueNames['BEL'] = 'Belgium Pro Liga'
-leagueNames['ESP'] = 'Spain LaLiga'
-leagueNames['TUR'] = 'Turkey Super Lig'
-leagueNames['ENG'] = 'English Premier League'
+leagueNames['GER'] = '  Germany 1. Bundesliga'
+leagueNames['FRA'] = '         France Ligue 1'
+leagueNames['BEL'] = '       Belgium Pro Liga'
+leagueNames['ESP'] = '           Spain LaLiga'
+leagueNames['TUR'] = '       Turkey Super Lig'
+leagueNames['ENG'] = ' English Premier League'
 leagueNames['SCO'] = 'Scotland Premier League'
-leagueNames['ITA'] = 'Italy Serie A'
-leagueNames['GRE'] = 'Greece Super League'
-leagueNames['NBA'] = 'National Basketball League'
-leagueNames['NED'] = 'Netherlands Eredivisie'
+leagueNames['ITA'] = '          Italy Serie A'
+leagueNames['GRE'] = '    Greece Super League'
+leagueNames['NBA'] = '                    NBA'
+leagueNames['NED'] = ' Netherlands Eredivisie'
+
+leagueNames['National Basketball Association'] = '                    NBA'
+leagueNames['Italy Serie A']                   = '          Italy Serie A'
+leagueNames['Spain LaLiga']                    = '           Spain LaLiga'
+leagueNames['England Premier League']          = ' England Premier League'
+leagueNames['Germany 1. Bundesliga']           = '  Germany 1. Bundesliga'
+leagueNames['France Ligue 1']                  = '         France Ligue 1'
+leagueNames['Netherlands Eredevisie']          = ' Netherlands Eredevisie'
+leagueNames['Portugal Liga NOS']               = '      Portugal Liga NOS'
+
+leagueIds = dict()
+leagueIds['GER'] = 47
+leagueIds['FRA'] = 36
+leagueIds['BEL'] = 43
+leagueIds['ESP'] = 22
+leagueIds['TUR'] = 27
+leagueIds['ENG'] = 17
+leagueIds['SCO'] = 11
+leagueIds['ITA'] = 7
+leagueIds['GRE'] = 6
+leagueIds['NBA'] = 14
+leagueIds['NED'] = 30
 
 
 # --- CLUBS DICTS --- #

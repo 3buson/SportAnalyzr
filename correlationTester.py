@@ -1,13 +1,161 @@
 import os
 import csv
 
-import constants
-
 import numpy
+
+import constants
 from Visualizer import visualizer
+from NetworkManipulator import networkBuilder
+from NetworkManipulator import networkAnalyzr
 from NetworkManipulator import correlationAnalyzr
 
 __author__ = '3buson'
+
+def correlationOfUniformityFromNetworksAndBetsPerGame(confidenceInterval, bootstrapSamples):
+    bets_uniformity_per_game_csv = 'FileConqueror/csv/bets/volume_uniformity_per_game.csv'
+
+    correlation_dict = dict()
+    correlation_dict_per_league = dict()
+
+    correlation_arrays_uniformity_combined = []
+    correlation_arrays_betsVolume_combined = []
+
+    # build networks and compute stats
+    rankingsDict = dict()
+    for season in [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015]:
+        rankingsDict[season] = dict()
+
+        for leagueName, leagueId in constants.leagueIds.iteritems():
+            rankingsDict[season][leagueId] = dict()
+
+            network = networkBuilder.buildNetwork(leagueId, season, 'regular', True, True, False, False)
+            pageRank = networkAnalyzr.calculatePageRank(network, True, True)
+            sortedPageRank = sorted(pageRank.iteritems(), key=lambda (k,v): (v,k))
+
+            nodes = network.nodes(data=True)
+            nodeMap = dict()
+            for node in nodes:
+                nodeMap[node[0]] = node[1]['name']
+
+            ranking = 1
+            for (nodeId, pageRankValue) in sortedPageRank:
+                rankingsDict[season][leagueId][nodeMap[nodeId]] = ranking
+                ranking += 1
+
+    rownum = 0
+    if os.path.isfile(bets_uniformity_per_game_csv):
+        with open(bets_uniformity_per_game_csv, 'rb') as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                # skip header
+                if rownum == 0:
+                    rownum += 1
+                else:
+                    league = row[0]
+
+                    if league in constants.leagueIds:
+                        leagueId = constants.leagueIds[league]
+                        league = constants.leagueNames[league]
+
+                        season = int(row[3])
+                        betsVolume = float(row[2])
+
+                        try:
+                            if 'v' in row[4]:
+                                homeClubName = row[4].split(' v ')[0].strip()
+                                awayClubName = row[4].split(' v ')[1].strip()
+                            else:
+                                homeClubName = row[4].split(' @ ')[0].strip()
+                                awayClubName = row[4].split(' @ ')[1].strip()
+                        except Exception, e:
+                            continue
+
+                        if homeClubName not in rankingsDict[season][leagueId] and 'U1' not in homeClubName:
+                            for clubName, ranking in rankingsDict[season][leagueId].iteritems():
+                                if homeClubName in clubName or clubName in homeClubName:
+                                    orgHomeClubname = homeClubName
+                                    homeClubName = clubName
+                                    break
+
+                        if awayClubName not in rankingsDict[season][leagueId] and 'U1' not in awayClubName:
+                            for clubName, ranking in rankingsDict[season][leagueId].iteritems():
+                                if awayClubName in clubName or clubName in awayClubName:
+                                    orgAwayClubName = awayClubName
+                                    awayClubName = clubName
+                                    break
+
+                        if homeClubName in rankingsDict[season][leagueId] and awayClubName in rankingsDict[season][leagueId]:
+                            try:
+                                uniformity = abs(rankingsDict[season][leagueId][homeClubName] - rankingsDict[season][leagueId][awayClubName])
+                            except Exception, e:
+                                break
+
+                            if league in correlation_dict.keys():
+                                correlation_dict[league]['uniformity'].append(uniformity)
+                                correlation_dict[league]['betsVolume'].append(betsVolume)
+                            else:
+                                correlation_dict[league] = {
+                                    'uniformity': [uniformity],
+                                    'betsVolume': [betsVolume]
+                                }
+                        else:
+                            # ignore U1x matches, we only have 1st league
+                            if 'U1' not in homeClubName and 'U1' not in awayClubName:
+                                "[Correlation Tester]:  Cannot find rankings for match between %s and %s!" % (homeClubName, awayClubName)
+                    else:
+                        print "[Correlation Tester]:  Cannot find league id for league acronym %s!" % league
+
+
+    for league, correlation_arrays in correlation_dict.iteritems():
+        uniformities = correlation_arrays['uniformity']
+        betsVolumes = correlation_arrays['betsVolume']
+
+        [pearson, pp] = correlationAnalyzr.calculateCorrelation(uniformities, betsVolumes, 'pearson')
+        [spearman, sp] = correlationAnalyzr.calculateCorrelation(uniformities, betsVolumes, 'spearman')
+
+        [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(uniformities, betsVolumes, 'pearson', confidenceInterval, bootstrapSamples)
+        [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(uniformities, betsVolumes, 'spearman', confidenceInterval, bootstrapSamples)
+
+        correlation_arrays_uniformity_combined = correlation_arrays_uniformity_combined + uniformities
+        correlation_arrays_betsVolume_combined = correlation_arrays_betsVolume_combined + betsVolumes
+
+        print "[Correlation Tester]:  Bets Volume and Uniformity correlation for league %s:" \
+              "\n\tPearson: %f, p: %f" \
+              "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
+              "\n\tSpearman: %f, p: %f" \
+              "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
+              (
+              league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples,
+              confidenceInterval, sLower, sUpper)
+
+        correlation_dict_per_league[league] = {
+            'pearson': pearson,
+            'pearsonLower': pLower,
+            'pearsonUpper': pUpper,
+            'spearman': spearman,
+            'spearmanLower': sLower,
+            'spearmanUpper': sUpper
+        }
+
+    print ""
+
+    [pearson, pp] = correlationAnalyzr.calculateCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'pearson')
+    [spearman, sp] = correlationAnalyzr.calculateCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'spearman')
+
+    [pLower, pUpper] = correlationAnalyzr.bootstrapCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'pearson', confidenceInterval, bootstrapSamples)
+    [sLower, sUpper] = correlationAnalyzr.bootstrapCorrelation(correlation_arrays_uniformity_combined, correlation_arrays_betsVolume_combined, 'spearman', confidenceInterval, bootstrapSamples)
+
+    print "[Correlation Tester]:  Bets Volume and Uniformity correlation for all leagues combined:" \
+          "\n\tPearson: %f, p: %f" \
+          "\n\t%d samples for confidence interval %d%%: [%f, %f] " \
+          "\n\tSpearman: %f, p: %f" \
+          "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
+          (pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
+
+    print ""
+    print "-------------------------------------------------------------------------------------------------"
+
+    return correlation_dict_per_league
 
 def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
     bets_uniformity_per_game_csv = 'FileConqueror/csv/bets/volume_uniformity_per_game.csv'
@@ -29,7 +177,7 @@ def correlationOfUniformityAndBetsPerGame(confidenceInterval, bootstrapSamples):
                 else:
                     league = row[0]
 
-                    if constants.leagueNames.has_key(league):
+                    if league in constants.leagueNames:
                         league = constants.leagueNames[league]
 
                     uniformity = float(row[1])
@@ -292,8 +440,7 @@ def main():
                       "\n\t%d samples for confidence interval %d%%: [%f, %f] " % \
                       (league, pearson, pp, bootstrapSamples, confidenceInterval, pLower, pUpper, spearman, sp, bootstrapSamples, confidenceInterval, sLower, sUpper)
             else:
-                print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (
-                league, len(bets_array), len(pr_rel_entropy_array_reduced))
+                print "[Correlation Tester]:  Error! Arrays do not match for league %s. Length %d, %d" % (league, len(bets_array), len(pr_rel_entropy_array_reduced))
 
             print ""
             print "-------------------------------------------------------------------------------------------------"
@@ -526,10 +673,12 @@ def main():
     # Visualizations
     folderName = 'output/graphs/correlation/'
     filename_uniformity_bets_per_game = 'uniformity_bets_correlation_per_game_over_leagues'
+    filename_uniformity_bets_per_game_networks = 'uniformity_networks_bets_correlation_per_game_over_leagues'
     filename_attendance = 'attendance_correlation_over_leagues'
     filename_bets = 'bets_correlation_over_leagues'
     filename_league_value = 'league_value_correlation_over_leagues'
 
+    # visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game_networks, correlation_dict_per_game_networks, 'Uniformity per game from networks and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game, correlation_dict_per_game, 'Uniformity per game from bets and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Attendance Correlation Over Leagues', 'League', 'Attendance Correlation')
     visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Players Value (average of club per league) Correlation Over Leagues', 'League', 'Players Value (average of club per league) Correlation')
@@ -538,3 +687,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # folderName = 'output/graphs/correlation/'
+    # filename_uniformity_bets_per_game_networks = 'uniformity_networks_bets_correlation_per_game_over_leagues'
+    # correlation_dict_per_game_networks = correlationOfUniformityFromNetworksAndBetsPerGame(95, 1000)
+    #
+    # visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game_networks, correlation_dict_per_game_networks, 'Uniformity per game from networks and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')

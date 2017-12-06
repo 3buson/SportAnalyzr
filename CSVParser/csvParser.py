@@ -1,5 +1,7 @@
 import os
 import csv
+import codecs
+
 
 import utils
 
@@ -332,7 +334,7 @@ def parseBetsCSVFile(csvsFolder, delimiter):
                                 betsDict['ESP'][season] += float(row[11])
                             else:
                                 betsDict['ESP'][season] = float(row[11])
-                        if 'Bundesliga/' in leagueString:
+                        if 'Bundesliga/' in leagueString and 'German' in leagueString:
                             if 'GER' not in betsDict.keys():
                                 betsDict['GER'] = dict()
 
@@ -416,6 +418,8 @@ def parseBetsCSVFileByGame(csvsFolder, delimiter):
     numFiles = len(os.listdir(csvsFolder))
     oddsDict = dict()
     uniformityDict = dict()
+    eventOponentsDict = dict()
+    eventSeasonsDict = dict()
 
     for csvFile in os.listdir(csvsFolder):
         filenum += 1
@@ -424,157 +428,179 @@ def parseBetsCSVFileByGame(csvsFolder, delimiter):
 
         rownum = 0
         with open(csvsFolder + csvFile, 'rb') as f:
-            reader = csv.reader(f, delimiter=delimiter)
+            try:
+                reader = csv.reader(f, delimiter=delimiter)
 
-            for row in reader:
-                # skip header
-                if rownum == 0:
-                    rownum += 1
-                else:
-                    betType = row[5].strip()
+                for row in reader:
+                    # skip header
+                    if rownum == 0:
+                        rownum += 1
+                    else:
+                        betType = row[5].strip()
 
-                    if (betType == 'Match Odds'):
-                        eventId = row[1]
-                        leagueString = row[3].strip()
-                        odds = float(row[9])
-                        volumeMatched = float(row[11])
+                        if (betType == 'Match Odds'):
+                            eventId = row[1]
+                            leagueString = row[3].strip()
+                            eventOponents = row[3].split('/')[-1]
+                            odds = float(row[9])
+                            volumeMatched = float(row[11])
 
-                        if 'Barclays Premiership' in leagueString or 'Barclays Premier League' in leagueString:
-                            if 'ENG' not in oddsDict.keys():
-                                oddsDict['ENG'] = dict()
-                                uniformityDict['ENG'] = dict()
+                            try:
+                                eventSeason = int(row[4].split(' ')[0].split('-')[-1])
+                                if int(row[4].split(' ')[0].split('-')[1]) < 8:
+                                    eventSeason -= 1
+                            except Exception, e:
+                                try:
+                                    eventSeason = int(row[4].split(' ')[0].split('/')[-1])
+                                    if int(row[4].split(' ')[0].split('/')[1]) < 8:
+                                        eventSeason -= 1
+                                except Exception, e:
+                                    print e
+                                    print row
+                                    continue
 
-                            if eventId not in oddsDict['ENG'].keys():
-                                oddsDict['ENG'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['ENG'][eventId].keys():
-                                    oddsDict['ENG'][eventId][odds] = volumeMatched
+                            eventOponentsDict[eventId] = eventOponents
+                            eventSeasonsDict[eventId] = eventSeason
+
+                            if 'Barclays Premiership' in leagueString or 'Barclays Premier League' in leagueString:
+                                if 'ENG' not in oddsDict.keys():
+                                    oddsDict['ENG'] = dict()
+                                    uniformityDict['ENG'] = dict()
+
+                                if eventId not in oddsDict['ENG'].keys():
+                                    oddsDict['ENG'][eventId] = dict()
                                 else:
-                                    oddsDict['ENG'][eventId][odds] += volumeMatched
-                        if 'Spanish Soccer/Primera Division' in leagueString:
-                            if 'ESP' not in oddsDict.keys():
-                                oddsDict['ESP'] = dict()
-                                uniformityDict['ESP'] = dict()
+                                    if not odds in oddsDict['ENG'][eventId].keys():
+                                        oddsDict['ENG'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['ENG'][eventId][odds] += volumeMatched
+                            if 'Spanish Soccer/Primera Division' in leagueString:
+                                if 'ESP' not in oddsDict.keys():
+                                    oddsDict['ESP'] = dict()
+                                    uniformityDict['ESP'] = dict()
 
-                            if eventId not in oddsDict['ESP'].keys():
-                                oddsDict['ESP'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['ESP'][eventId].keys():
-                                    oddsDict['ESP'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['ESP'].keys():
+                                    oddsDict['ESP'][eventId] = dict()
                                 else:
-                                    oddsDict['ESP'][eventId][odds] += volumeMatched
-                        if 'Bundesliga/' in leagueString:
-                            if 'GER' not in oddsDict.keys():
-                                oddsDict['GER'] = dict()
-                                uniformityDict['GER'] = dict()
+                                    if not odds in oddsDict['ESP'][eventId].keys():
+                                        oddsDict['ESP'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['ESP'][eventId][odds] += volumeMatched
+                            if 'Bundesliga/' in leagueString:
+                                if 'GER' not in oddsDict.keys():
+                                    oddsDict['GER'] = dict()
+                                    uniformityDict['GER'] = dict()
 
-                            if eventId not in oddsDict['GER'].keys():
-                                oddsDict['GER'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['GER'][eventId].keys():
-                                    oddsDict['GER'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['GER'].keys():
+                                    oddsDict['GER'][eventId] = dict()
                                 else:
-                                    oddsDict['GER'][eventId][odds] += volumeMatched
-                        if 'Serie A' in leagueString:
-                            if 'ITA' not in oddsDict.keys():
-                                oddsDict['ITA'] = dict()
-                                uniformityDict['ITA'] = dict()
+                                    if not odds in oddsDict['GER'][eventId].keys():
+                                        oddsDict['GER'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['GER'][eventId][odds] += volumeMatched
+                            if 'Serie A' in leagueString:
+                                if 'ITA' not in oddsDict.keys():
+                                    oddsDict['ITA'] = dict()
+                                    uniformityDict['ITA'] = dict()
 
-                            if eventId not in oddsDict['ITA'].keys():
-                                oddsDict['ITA'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['ITA'][eventId].keys():
-                                    oddsDict['ITA'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['ITA'].keys():
+                                    oddsDict['ITA'][eventId] = dict()
                                 else:
-                                    oddsDict['ITA'][eventId][odds] += volumeMatched
-                        if 'Ligue 1 Orange' in leagueString:
-                            if 'FRA' not in oddsDict.keys():
-                                oddsDict['FRA'] = dict()
-                                uniformityDict['FRA'] = dict()
+                                    if not odds in oddsDict['ITA'][eventId].keys():
+                                        oddsDict['ITA'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['ITA'][eventId][odds] += volumeMatched
+                            if 'Ligue 1 Orange' in leagueString:
+                                if 'FRA' not in oddsDict.keys():
+                                    oddsDict['FRA'] = dict()
+                                    uniformityDict['FRA'] = dict()
 
-                            if eventId not in oddsDict['FRA'].keys():
-                                oddsDict['FRA'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['FRA'][eventId].keys():
-                                    oddsDict['FRA'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['FRA'].keys():
+                                    oddsDict['FRA'][eventId] = dict()
                                 else:
-                                    oddsDict['FRA'][eventId][odds] += volumeMatched
-                        if 'Dutch Soccer/Eredivisie' in leagueString:
-                            if 'NED' not in oddsDict.keys():
-                                oddsDict['NED'] = dict()
-                                uniformityDict['NED'] = dict()
+                                    if not odds in oddsDict['FRA'][eventId].keys():
+                                        oddsDict['FRA'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['FRA'][eventId][odds] += volumeMatched
+                            if 'Dutch Soccer/Eredivisie' in leagueString:
+                                if 'NED' not in oddsDict.keys():
+                                    oddsDict['NED'] = dict()
+                                    uniformityDict['NED'] = dict()
 
-                            if eventId not in oddsDict['NED'].keys():
-                                oddsDict['NED'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['NED'][eventId].keys():
-                                    oddsDict['NED'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['NED'].keys():
+                                    oddsDict['NED'][eventId] = dict()
                                 else:
-                                    oddsDict['NED'][eventId][odds] += volumeMatched
-                        if 'Belgian Soccer/Jupiler League' in leagueString or 'Belgian Soccer/Belgian Jupiler League' in leagueString:
-                            if 'BEL' not in oddsDict.keys():
-                                oddsDict['BEL'] = dict()
-                                uniformityDict['BEL'] = dict()
+                                    if not odds in oddsDict['NED'][eventId].keys():
+                                        oddsDict['NED'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['NED'][eventId][odds] += volumeMatched
+                            if 'Belgian Soccer/Jupiler League' in leagueString or 'Belgian Soccer/Belgian Jupiler League' in leagueString:
+                                if 'BEL' not in oddsDict.keys():
+                                    oddsDict['BEL'] = dict()
+                                    uniformityDict['BEL'] = dict()
 
-                            if eventId not in oddsDict['BEL'].keys():
-                                oddsDict['BEL'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['BEL'][eventId].keys():
-                                    oddsDict['BEL'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['BEL'].keys():
+                                    oddsDict['BEL'][eventId] = dict()
                                 else:
-                                    oddsDict['BEL'][eventId][odds] += volumeMatched
-                        if 'Turkish Soccer/Super League' in leagueString or 'Turkish Soccer/Turkish Super League' in leagueString:
-                            if 'TUR' not in oddsDict.keys():
-                                oddsDict['TUR'] = dict()
-                                uniformityDict['TUR'] = dict()
+                                    if not odds in oddsDict['BEL'][eventId].keys():
+                                        oddsDict['BEL'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['BEL'][eventId][odds] += volumeMatched
+                            if 'Turkish Soccer/Super League' in leagueString or 'Turkish Soccer/Turkish Super League' in leagueString:
+                                if 'TUR' not in oddsDict.keys():
+                                    oddsDict['TUR'] = dict()
+                                    uniformityDict['TUR'] = dict()
 
-                            if eventId not in oddsDict['TUR'].keys():
-                                oddsDict['TUR'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['TUR'][eventId].keys():
-                                    oddsDict['TUR'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['TUR'].keys():
+                                    oddsDict['TUR'][eventId] = dict()
                                 else:
-                                    oddsDict['TUR'][eventId][odds] += volumeMatched
-                        if 'Greek Soccer/National Liga' in leagueString or 'Greek Soccer/Greek Super League' in leagueString:
-                            if 'GRE' not in oddsDict.keys():
-                                oddsDict['GRE'] = dict()
-                                uniformityDict['GRE'] = dict()
+                                    if not odds in oddsDict['TUR'][eventId].keys():
+                                        oddsDict['TUR'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['TUR'][eventId][odds] += volumeMatched
+                            if 'Greek Soccer/National Liga' in leagueString or 'Greek Soccer/Greek Super League' in leagueString:
+                                if 'GRE' not in oddsDict.keys():
+                                    oddsDict['GRE'] = dict()
+                                    uniformityDict['GRE'] = dict()
 
-                            if eventId not in oddsDict['GRE'].keys():
-                                oddsDict['GRE'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['GRE'][eventId].keys():
-                                    oddsDict['GRE'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['GRE'].keys():
+                                    oddsDict['GRE'][eventId] = dict()
                                 else:
-                                    oddsDict['GRE'][eventId][odds] += volumeMatched
-                        if 'Scottish Soccer/Scottish Premiership' in leagueString or 'Scottish Soccer/Bank of Scot Prem' in leagueString:
-                            if 'SCO' not in oddsDict.keys():
-                                oddsDict['SCO'] = dict()
-                                uniformityDict['SCO'] = dict()
+                                    if not odds in oddsDict['GRE'][eventId].keys():
+                                        oddsDict['GRE'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['GRE'][eventId][odds] += volumeMatched
+                            if 'Scottish Soccer/Scottish Premiership' in leagueString or 'Scottish Soccer/Bank of Scot Prem' in leagueString:
+                                if 'SCO' not in oddsDict.keys():
+                                    oddsDict['SCO'] = dict()
+                                    uniformityDict['SCO'] = dict()
 
-                            if eventId not in oddsDict['SCO'].keys():
-                                oddsDict['SCO'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['SCO'][eventId].keys():
-                                    oddsDict['SCO'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['SCO'].keys():
+                                    oddsDict['SCO'][eventId] = dict()
                                 else:
-                                    oddsDict['SCO'][eventId][odds] += volumeMatched
-                        if 'NBA' in leagueString:
-                            if 'NBA' not in oddsDict.keys():
-                                oddsDict['NBA'] = dict()
-                                uniformityDict['NBA'] = dict()
+                                    if not odds in oddsDict['SCO'][eventId].keys():
+                                        oddsDict['SCO'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['SCO'][eventId][odds] += volumeMatched
+                            if 'NBA' in leagueString:
+                                if 'NBA' not in oddsDict.keys():
+                                    oddsDict['NBA'] = dict()
+                                    uniformityDict['NBA'] = dict()
 
-                            if eventId not in oddsDict['NBA'].keys():
-                                oddsDict['NBA'][eventId] = dict()
-                            else:
-                                if not odds in oddsDict['NBA'][eventId].keys():
-                                    oddsDict['NBA'][eventId][odds] = volumeMatched
+                                if eventId not in oddsDict['NBA'].keys():
+                                    oddsDict['NBA'][eventId] = dict()
                                 else:
-                                    oddsDict['NBA'][eventId][odds] += volumeMatched
+                                    if not odds in oddsDict['NBA'][eventId].keys():
+                                        oddsDict['NBA'][eventId][odds] = volumeMatched
+                                    else:
+                                        oddsDict['NBA'][eventId][odds] += volumeMatched
+            except Exception, e:
+                print "[CSV Parser]  Skipping file!"
+                continue
 
     file = open('FileConqueror/csv/bets/volume_uniformity_per_game.csv', 'w')
     writer = csv.writer(file)
-    writer.writerow(['league', 'uniformity', 'betsVolume'])
+    writer.writerow(['league', 'uniformity', 'betsVolume', 'season', 'eventOponents'])
 
     for league, leagueOddsDict in oddsDict.iteritems():
         for eventId, eventDict in leagueOddsDict.iteritems():
@@ -595,7 +621,10 @@ def parseBetsCSVFileByGame(csvsFolder, delimiter):
                 eventDict['uniformity'] = uniformity
                 eventDict['betsVolume'] = totalVolumeMatched
 
-                writer.writerow([league, uniformity, totalVolumeMatched])
+                eventOponents = eventOponentsDict[eventId]
+                season = eventSeasonsDict[eventId]
+
+                writer.writerow([league, uniformity, totalVolumeMatched, season, eventOponents])
 
 
 def main():

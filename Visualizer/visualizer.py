@@ -21,6 +21,8 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
     ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
+    pyplot.tick_params(axis='x', labelsize=16)
+    pyplot.tick_params(axis='y', labelsize=16)
 
     if logScale:
         pyplot.loglog(ys, style)
@@ -35,10 +37,10 @@ def createGraph(xs, ys, xsMin, xsMax, ysMin, ysMax, style='b-', logScale=False, 
         pyplot.title(title)
 
     if xLabel:
-        pyplot.xlabel(xLabel)
+        pyplot.xlabel(xLabel, fontsize=20)
 
     if yLabel:
-        pyplot.ylabel(yLabel)
+        pyplot.ylabel(yLabel, fontsize=20)
 
     if filename:
         pyplot.savefig(filename)
@@ -208,6 +210,8 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
     ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
+    pyplot.tick_params(axis='x', labelsize=16)
+    pyplot.tick_params(axis='y', labelsize=16)
 
     if ysMin is not None and ysMax is not None:
         pyplot.ylim([ysMin, ysMax])
@@ -248,10 +252,10 @@ def createDoubleGraphWithVariance(ysMin=None, ysMax=None, title=None, xLabel=Non
         pyplot.title(title)
 
     if xLabel:
-        pyplot.xlabel(xLabel)
+        pyplot.xlabel(xLabel, fontsize=20)
 
     if yLabel:
-        pyplot.ylabel(yLabel)
+        pyplot.ylabel(yLabel, fontsize=20)
 
     if filename:
         pyplot.savefig(filename)
@@ -313,6 +317,8 @@ def getCDFYValuesFromDict(input):
 def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, filename=None, style='b-'):
     pyplot.figure(figsize=(12, 12))
     pyplot.ticklabel_format(useOffset=False)
+    pyplot.tick_params(axis='x', labelsize=16)
+    pyplot.tick_params(axis='y', labelsize=16)
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
@@ -321,10 +327,10 @@ def createCDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
         pyplot.title(title)
 
     if xLabel:
-        pyplot.xlabel(xLabel)
+        pyplot.xlabel(xLabel, fontsize=20)
 
     if yLabel:
-        pyplot.ylabel(yLabel)
+        pyplot.ylabel(yLabel, fontsize=20)
 
     pyplot.plot(sorted(input.values()), getCDFYValuesFromDict(input), style)
 
@@ -351,6 +357,8 @@ def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
     ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
+    pyplot.tick_params(axis='x', labelsize=16)
+    pyplot.tick_params(axis='y', labelsize=16)
 
     if xsMin is not None and xsMax is not None:
         pyplot.xlim([xsMin, xsMax])
@@ -361,10 +369,10 @@ def createPDFGraph(input, xsMin, xsMax, title=None, xLabel=None, yLabel=None, fi
         pyplot.title(title)
 
     if xLabel:
-        pyplot.xlabel(xLabel)
+        pyplot.xlabel(xLabel, fontsize=20)
 
     if yLabel:
-        pyplot.ylabel(yLabel)
+        pyplot.ylabel(yLabel, fontsize=20)
 
     x, p, width = getPDFYValuesFromDict(input, numberOfBins)
 
@@ -620,7 +628,7 @@ def visualizeCorrelationAndIntervalsOverLeagues(folderName, filename, correlatio
     if not os.path.exists(folderName):
         os.makedirs(folderName)
 
-    ax = pyplot.figure(figsize=(13, 13)).gca()
+    ax = pyplot.figure(figsize=(12, 12)).gca()
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     pyplot.ticklabel_format(useOffset=False)
 
@@ -654,8 +662,15 @@ def visualizeCorrelationAndIntervalsOverLeagues(folderName, filename, correlatio
         idx += 2
 
     leagues = correlationsDict.keys()
+    mappedLeagues = []
+    for league in leagues:
+        if league in constants.leagueNames:
+            mappedLeagues.append(constants.leagueNames[league])
+        else:
+            mappedLeagues.append(league)
+
     x = range(0, 2 * len(leagues), 2)
-    pyplot.xticks(x, leagues, rotation=30)
+    pyplot.xticks(x, mappedLeagues, rotation=30)
 
     pyplot.legend(handles=[pearson, spearman], loc='best', prop={'size': 13})
 

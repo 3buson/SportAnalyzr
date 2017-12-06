@@ -1,3 +1,10 @@
+# encoding=utf8
+import sys
+from math import ceil
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 import os
 import csv
 import time
@@ -188,7 +195,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
                                             'PageRank over time ' + leagueName + ' ' + competitionStage,
-                                            'Season', 'PageRank', filename,
+                                            'Sezona', 'PageRank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
 
         # multi PageRanks with different alpha
@@ -476,14 +483,14 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
                    '/inDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
         visualizer.createGraph(xs, sorted(inDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
-                         False, title, 'Node', 'In Degree', filename)
+                         False, title, 'Vozlišče', 'Vhodna stopnja', filename)
 
         title = 'In Degrees Weight Sum' + `seasonId` + ' Stage: ' + competitionStage
         filename = filenamePrefix + 'inDegrees/' + competitionStage + \
                    '/inDegreesWeightSum' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
         visualizer.createGraph(xs, sorted(sumOfInDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'b-',
-                               False, title, 'Node', 'In Degree Weight Sum', filename)
+                               False, title, 'Vozlišče', 'Vsota uteži vhodnih povezav', filename)
 
         # out degrees
         if not os.path.exists(filenamePrefix + 'outDegrees/' + competitionStage):
@@ -494,7 +501,7 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
                    '/outDegrees' + filenameSuffix + '_' + `seasonId` + '_stage_' + competitionStage
 
         visualizer.createGraph(xs, sorted(outDegrees.values(), reverse=True), 0, nodeLimit, 0, degreesLimit, 'r-',
-                         False, title, 'Node', 'Out Degree', filename)
+                         False, title, 'Vozlišče', 'Izhodna stopnja', filename)
 
         # degree distribution
         titleDistributionIn     = 'In Degrees Distribution ' + `seasonId` + ' Stage: ' + competitionStage
@@ -512,9 +519,9 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         outDegreeCountValues = sorted(inDegreeCount.values())
 
         visualizer.createGraph(inDegreeCountKeys,  inDegreeCountValues,  0, degreesLimit, 0, degreesLimit / 5, 'b-',
-                         False, titleDistributionIn,  'Degree', 'Node Count', filenameDistributionIn)
+                         False, titleDistributionIn,  'Vhodna stopnja', 'Število vozlišč', filenameDistributionIn)
         visualizer.createGraph(outDegreeCountKeys, outDegreeCountValues, 0, degreesLimit, 0, degreesLimit / 5, 'r-',
-                         False, titleDistributionOut, 'Degree', 'Node Count', filenameDistributionOut)
+                         False, titleDistributionOut, 'Izhodna stopnja', 'Število vozlišč', filenameDistributionOut)
 
         # degree weight sum CDF & PDF
         titleCDFIn     = 'In Degrees CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -530,11 +537,11 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         filenamePDFOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                         '/outDegrees' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' + competitionStage
 
-        visualizer.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'In Degree',  'Probability (CDF)', filenameCDFIn)
-        visualizer.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Out Degree', 'Probability (CDF)', filenameCDFOut, 'r-')
+        visualizer.createCDFGraph(inDegrees,  0, degreesLimit, titleCDFIn,  'Vhodna stopnja',  'Verjetnost (CDF)', filenameCDFIn)
+        visualizer.createCDFGraph(outDegrees, 0, degreesLimit, titleCDFOut, 'Izhodna stopnja', 'Verjetnost (CDF)', filenameCDFOut, 'r-')
 
-        visualizer.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'In Degree',  'Probability (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
-        visualizer.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Out Degree', 'Probability (PDF)', filenamePDFOut, 'r', numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(inDegrees,  0, degreesLimit, titlePDFIn,  'Vhodna stopnja',  'Verjetnost (PDF)', filenamePDFIn, numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(outDegrees, 0, degreesLimit, titlePDFOut, 'Izhodna stopnja', 'Verjetnost (PDF)', filenamePDFOut, 'r', numberOfBins=numberOfBins)
 
         # degree weight sum CDF & PDF
         titleCDFWeightIn     = 'In Degrees Weight Sum CDF ' + `seasonId` + ' Stage: ' + competitionStage
@@ -550,13 +557,13 @@ def analyzeDegrees(graph, directed, weighted, leagueString, seasonId, competitio
         filenamePDFWeightOut = filenamePrefix + 'outDegrees/' + competitionStage + \
                                 '/outDegrees' + filenameSuffix + '_weight_sum_PDF_' + `seasonId` + '_stage_' + competitionStage
 
-        strengthsLimit = max(sumOfInDegrees)
+        strengthsLimit = max(sumOfInDegrees) + ceil(max(sumOfInDegrees) / numberOfBins / 2)
 
-        visualizer.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'In Degree Weight Sum',  'Probability (CDF)', filenameCDFWeightIn)
-        visualizer.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Out Degree Weight Sum', 'Probability (CDF)', filenameCDFWeightOut, 'r-')
+        visualizer.createCDFGraph(sumOfInDegrees,  0, strengthsLimit, titleCDFWeightIn,  'Vsota uteži vhodnih povezav',  'Verjetnost (CDF)', filenameCDFWeightIn)
+        visualizer.createCDFGraph(sumOfOutDegrees, 0, strengthsLimit, titleCDFWeightOut, 'Vsota uteži izhodnih povezav', 'Verjetnost (CDF)', filenameCDFWeightOut, 'r-')
 
-        visualizer.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'In Degree Weight Sum',  'Probability (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
-        visualizer.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Out Degree Weight Sum', 'Probability (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(sumOfInDegrees,  0, strengthsLimit, titlePDFWeightIn,  'Vsota uteži vhodnih povezav',  'Verjetnost (PDF)', filenamePDFWeightIn, numberOfBins=numberOfBins)
+        visualizer.createPDFGraph(sumOfOutDegrees, 0, strengthsLimit, titlePDFWeightOut, 'Vsota uteži izhodnih povezav', 'Verjetnost (PDF)', filenamePDFWeightOut, 'r', numberOfBins=numberOfBins)
 
         writer.writerow(['inDegrees', 'In Degrees', competitionStage, seasonId, ' '.join(str(v) for v in inDegrees)])
         writer.writerow(['inDegreesSum', 'In Degree Weight Sum', competitionStage, seasonId, ' '.join(str(v) for v in sumOfInDegrees)])
@@ -616,9 +623,9 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
         pageRankCount = dict(Counter(pageRank.values()))
 
         visualizer.createGraph(xs, sorted(pageRank.values(), reverse=True), 0, nodeLimit, 0, yLimitPageRank, 'k-',
-                         False, title, 'Node Id',  'PageRank',  filename)
+                         False, title, 'Vozlišče',  'PageRank',  filename)
         visualizer.createGraph(pageRankCount.keys(), pageRankCount.values(), 0, nodeLimit, 0, yLimitPageRank, 'k-',
-                         False, title, 'PageRank', 'NodeCount', filenameDistribution)
+                         False, title, 'PageRank', 'Število vozlišč', filenameDistribution)
 
         # PageRank CDF & PDF
         titleCDFPageRank     = 'PageRank CDF ' + `seasonId` + ' Stage: ' + competitionStage + ' Alpha: ' + `alpha`
@@ -628,8 +635,8 @@ def analyzePageRank(graph, directed, weighted, leagueString, seasonId, competiti
         filenamePDFPageRank  = filenamePrefix + 'pageRank/' + competitionStage + \
                                '/pageRank' + filenameSuffix + '_PDF_' + `seasonId` + '_stage_' +competitionStage
 
-        visualizer.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Probability (CDF)', filenameCDFPageRank, 'k-')
-        visualizer.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Probability (CDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
+        visualizer.createCDFGraph(pageRank, 0, yLimitPageRank, titleCDFPageRank, 'PageRank',  'Verjetnost (CDF)', filenameCDFPageRank, 'k-')
+        visualizer.createPDFGraph(pageRank, 0, yLimitPageRank, titlePDFPageRank, 'PageRank',  'Verjetnost (PDF)', filenamePDFPageRank, 'k', numberOfBins=numberOfBins)
 
         writer.writerow(['pageRank', 'PageRank', competitionStage, seasonId, alpha, ' '.join(str(v) for v in pageRank)])
         writer.writerow(['pageRankKeysValues', 'PageRank Distribution', competitionStage, seasonId, alpha, ' '.join(str(v) for v in pageRankCount.keys()), ' '.join(str(v) for v in pageRankCount.values())])
@@ -691,26 +698,18 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
             else:
                 predecessors = graph.neighbors(node)
 
-            # predecessors = graph.neighbors(node)
-
             for predecessor in predecessors:
                 if directed:
                     successors = graph.successors(predecessor)
                 else:
                     successors = graph.neighbors(predecessor)
 
-                # successors = graph.neighbors(predecessor)
-
                 if weighted:
                     weight = 0
                     numWeights = 0
                     for weightKey, weightDictValue in graph.get_edge_data(predecessor, node).iteritems():
-                        weightValue = weightDictValue['weight']
-
-                        # ignore ties
-                        if weightValue != 0:
-                            weight += weightValue
-                            numWeights += 1
+                        weight += weightDictValue['weight']
+                        numWeights += 1
 
                     if numWeights != 0:
                         weight /= numWeights

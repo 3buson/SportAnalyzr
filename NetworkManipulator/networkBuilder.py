@@ -23,15 +23,15 @@ def calculateEdgeWeight(winnerScore, loserScore, extraTime, logarithmic=False, p
 
     return 1 / (1 + math.exp(-weight))
 
-    if extraTime and penalizeExtraTime:
-        weight = 1.0 / winnerScore
-    else:
-        weight = float(winnerScore - loserScore) / (max(1, winnerScore))
-
-    if logarithmic:
-        weight = math.log(1 + weight)
-
-    return weight * 10
+    # if extraTime and penalizeExtraTime:
+    #     weight = 1.0 / winnerScore
+    # else:
+    #     weight = float(winnerScore - loserScore) / (max(1, winnerScore))
+    #
+    # if logarithmic:
+    #     weight = math.log(1 + weight)
+    #
+    # return weight * 10
 
 
 def buildNetwork(leagueId, seasonId, competitionStage, directed=True, weighted=True, simpleWeights=False, logWeights=False):
