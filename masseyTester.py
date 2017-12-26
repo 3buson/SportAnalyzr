@@ -16,7 +16,7 @@ def main():
     utils.mode = 'normal'
 
     # NBA + top football
-    leagueIds = [14, 17, 22]
+    leagueIds = [47, 22, 36]
     seasonIds = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014]
 
     isDirected = True
@@ -47,9 +47,9 @@ def main():
     # Visualizations
     for leagueId in leagueIds:
         entropiesCombined = [pageRankEntropies[leagueId], masseyEntropies[leagueId]]
-        visualizer.createMultiGraph(0.85, 1, False,
+        visualizer.createMultiGraph(min(masseyEntropies[leagueId]), 1, False,
                                     'Primerjava relativne entropije PageRank in relativne entropije Masseyjeve ocene',
-                                    'Sezona', 'Relativna entropija', 'output/massey_pr_entropy_' + str(leagueId), seasonIds, entropiesCombined,
+                                    'Sezona', 'Relativna entropija', 'output/massey_pr_rel_entropy_' + str(leagueId), seasonIds, entropiesCombined,
                                     [(0, 0, 1), (1, 0, 0)], ['Relativna entropija ocene PageRank', 'Relativna entropije Masseyjeve ocene'])
 
     print "\n[Massey Tester]  Correlations:"
