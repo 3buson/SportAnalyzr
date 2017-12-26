@@ -144,6 +144,8 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
 
     print "\n[Network Analyzr]  Analysis done, total time spent: %d s" % int(round(totalTimeSpent))
 
+    return relativeEntropies
+
 
 def main():
     connection = utils.connectToDB()

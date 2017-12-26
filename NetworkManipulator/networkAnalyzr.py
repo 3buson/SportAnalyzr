@@ -231,19 +231,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
                 stdDeviation   = numpy.std(numpy.array(pageRank.values()), ddof=1)
                 stdErrorOfMean = stats.sem(numpy.array(pageRank.values()))
 
-                # entropy of PageRank
-                entropy     = 0
-                pageRankSum = sum(pageRank.values())
-                for pageRankValue in pageRank.values():
-                    p = pageRankValue / pageRankSum
-
-                    if p > 0:
-                        entropy += p * math.log(p, 2)
-                    else:
-                        print "[Network Analyzr]  Entropy is ZERO!"
-
-                entropy         = -entropy
-                relativeEntropy = entropy / math.log(graph.number_of_nodes(), 2)
+                relativeEntropy, entropy = calculatePageRankRelativeEntropy(pageRank, graph.number_of_nodes())
 
                 if average > maxY:
                     maxY = average
@@ -736,6 +724,24 @@ def calculatePageRank(graph, directed, weighted, alpha=constants.stdPageRankAlph
         print "[Network Analyzr]  PageRank calculation done, time spent: %f s\n" % timeSpent
 
     return ranking
+
+
+def calculatePageRankRelativeEntropy(pageRank, numNodes):
+    # entropy of PageRank
+    entropy = 0
+    pageRankSum = sum(pageRank.values())
+    for pageRankValue in pageRank.values():
+        p = pageRankValue / pageRankSum
+
+        if p > 0:
+            entropy += p * math.log(p, 2)
+        else:
+            print "[Network Analyzr]  Entropy is ZERO!"
+
+    entropy = -entropy
+    relativeEntropy = entropy / math.log(numNodes, 2)
+
+    return relativeEntropy, entropy
 
 
 def calculateBetweennessCentrality(graph):

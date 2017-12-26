@@ -27,6 +27,8 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                                 ac.id = m.away_club_id
                             WHERE
                                 m.leagueId = %s
+                            ORDER BY
+                                m.date
                             ''' %
                             leagueId)
         else:
@@ -50,6 +52,8 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                                 m.leagueId = %s
                             AND
                                 m.stage = "%s"
+                            ORDER BY
+                                m.date
                             ''' %
                            (leagueId, competitionStage))
     else:
@@ -74,6 +78,8 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                                 m.league_id = %s
                             AND
                                 m.season_id IN (%s)
+                            ORDER BY
+                                m.date
                             ''' %
                            (leagueId, seasonIds))
         else:
@@ -99,6 +105,8 @@ def getAllMatches(connection, leagueId, seasonIds='all', competitionStage='all')
                                 m.season_id IN (%s)
                             AND
                                 m.stage = "%s"
+                            ORDER BY
+                                m.date
                             ''' %
                            (leagueId, seasonIds, competitionStage))
 
