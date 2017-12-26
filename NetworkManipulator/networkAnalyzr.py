@@ -60,7 +60,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
         writer.writerow([property, 'Nodes', competitionStage, ' '.join(str(v) for v in ys1)])
 
         visualizer.createDoubleGraphWithVariance(0, max(ys1) + 1, 'Nodes over time ' + competitionStage,
-                                            'Season', 'Nodes', filename,
+                                            'Sezona', 'Nodes', filename,
                                             seasons, ys1, [])
 
     elif property == 'edges':
@@ -73,7 +73,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
         writer.writerow([property, 'Edges', competitionStage, ' '.join(str(v) for v in ys2)])
 
         visualizer.createDoubleGraphWithVariance(0, max(ys1 + ys2) + 1, 'Nodes and Edges over time ' + competitionStage,
-                                            'Season', 'Nodes/Edges', filename,
+                                            'Sezona', 'Nodes/Edges', filename,
                                             seasons, ys1, ys2)
     elif property == 'degrees':
         filename = folderName + 'degrees_over_time_' + competitionStage
@@ -113,7 +113,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Degrees over time ' + leagueName + ' ' + competitionStage,
-                                            'Season', 'Degrees/Degree Strengths', filename,
+                                            'Sezona', 'Degrees/Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'inDegrees':
         filename = folderName + 'in_degrees_over_time_' + competitionStage
@@ -146,7 +146,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'In Degrees over time ' + leagueName + ' ' + competitionStage,
-                                            'Season', 'In Degrees/In Degree Strengths', filename,
+                                            'Sezona', 'In Degrees/In Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
     elif property == 'outDegrees':
         filename = folderName + 'out_degrees_over_time_' + competitionStage
@@ -179,7 +179,7 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean) + map(add, ys2, ys2StdErrorOfMean)),
                                             'Out Degrees over time ' + leagueName + ' ' + competitionStage,
-                                            'Season', 'Out Degrees/Out Degree Strengths', filename,
+                                            'Sezona', 'Out Degrees/Out Degree Strengths', filename,
                                             seasons, ys1, ys2, ys1StdErrorOfMean, ys2StdErrorOfMean)
 
     elif property == 'pageRank':
@@ -194,8 +194,8 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
             ys1StdErrorOfMean.append(stats.sem(numpy.array(pageRank.values())))
 
         visualizer.createDoubleGraphWithVariance(0, max(map(add, ys1, ys1StdErrorOfMean)),
-                                            'PageRank over time ' + leagueName + ' ' + competitionStage,
-                                            'Sezona', 'PageRank', filename,
+                                            'Povprečna ocena PageRank skozi čas ' + leagueName,
+                                            'Sezona', 'Povprečna ocena PageRank', filename,
                                             seasons, ys1, [], ys1StdErrorOfMean, [])
 
         # multi PageRanks with different alpha
@@ -273,26 +273,26 @@ def analyzeNetworkPropertyOverTime(graphsDict, directed, weighted, property, com
         labels = ['alpha: ' + str(alpha) for alpha in alphas]
 
         # multi alpha PageRank average and std deviation/error of the mean over time
-        visualizer.createMultiGraphWithVariance(0, maxY + maxError, 'Average PageRank ' + leagueName + ' ' + competitionStage,
-                                           'Season', 'Average PageRank', filename,
+        visualizer.createMultiGraphWithVariance(0, maxY + maxError, 'Povprečna ocena PageRank ' + leagueName,
+                                           'Sezona', 'Povprečna ocena PageRank', filename,
                                            seasons, ysCombined, ysStdErrorOfMeanCombined, colors, labels)
 
         # multi alpha PageRank std deviation over time
         visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in stdDeviationCombined), False,
-                               'PageRank STD dev ' + leagueName + ' ' + competitionStage,
-                               'Season', 'PageRank STD dev', filename + '_std_dev',
+                               'PageRank STD dev ' + leagueName,
+                               'Sezona', 'PageRank STD dev', filename + '_std_dev',
                                seasons, stdDeviationCombined, colors, labels)
 
         # multi alpha PageRank entropy over time
         visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in entropyCombined), False,
-                               'PageRank Entropy ' + leagueName + ' ' + competitionStage,
-                               'Season', 'Entropy', filename + '_entropy',
+                               'Entropija PageRank ' + leagueName,
+                               'Sezona', 'Entropija', filename + '_entropy',
                                seasons, entropyCombined, colors, labels)
 
         # multi alpha PageRank relative entropy over time
         visualizer.createMultiGraph(0, max(max(arr[1:]) for arr in relativeEntropyCombined), False,
-                               'PageRank Rel. Entropy ' + leagueName + ' ' + competitionStage,
-                               'Season', 'Rel. Entropy', filename + '_relative_entropy',
+                               'PageRank Relativna Entropija',
+                               'Sezona', 'Relativna entropija PageRank', filename + '_relative_entropy',
                                seasons, relativeEntropyCombined, colors, labels)
 
     else:

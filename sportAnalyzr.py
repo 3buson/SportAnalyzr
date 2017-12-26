@@ -128,16 +128,16 @@ def analyze(connection, leagues, seasonsInput, isDirected, isWeighted, analyzeBy
         relativeEntropyRankGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy_rank'
         relativeEntropyLineFitGraphFilename = 'output/pageRank_over_time_multi_leagues_relative_entropy_line_fit'
 
-        visualizer.createMultiGraph(None, None, False, 'Relative PR Entropy of Leagues Over Time', 'Season',
-                                    'Relative PageRank Entropy', relativeEntropyGraphFilename, seasonsDoubleArray,
+        visualizer.createMultiGraph(None, None, False, 'Relativna entropija PageRank', 'Sezona',
+                                    'Relativna entropija PageRank', relativeEntropyGraphFilename, seasonsDoubleArray,
                                     relativeEntropies, colors, leagueStrings)
 
-        visualizer.createMultiGraphAppxWithDev(None, None, False, 'Relative PR Entropy of Leagues Over Time (Line Fit)', 'Season',
-                                         'Relative PageRank Entropy', relativeEntropyLineFitGraphFilename, seasonsDoubleArray,
+        visualizer.createMultiGraphAppxWithDev(None, None, False, 'Linearna regresija relativne entropije PageRank', 'Sezona',
+                                         'Relativna entropija PageRank', relativeEntropyLineFitGraphFilename, seasonsDoubleArray,
                                          relativeEntropies, colors, leagueStrings)
 
-        visualizer.createRanksMultiGraph(0, len(relativeEntropies) + 1, False, 'Rank According to Relative PR Entropy Over Time', 'Season',
-                                         'Relative PageRank Entropy Rank', relativeEntropyRankGraphFilename, seasonsDoubleArray,
+        visualizer.createRanksMultiGraph(0, len(relativeEntropies) + 1, False, 'Rang po relativni entropiji PageRank', 'Sezona',
+                                         'Rang po relativni entropiji PageRank', relativeEntropyRankGraphFilename, seasonsDoubleArray,
                                          relativeEntropies, colors, leagueStrings)
 
     totalTimeSpent = time.time() - timeStartInitial

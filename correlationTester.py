@@ -1,5 +1,8 @@
+# encoding=utf8
+
 import os
 import csv
+import sys
 
 import numpy
 
@@ -8,6 +11,9 @@ from Visualizer import visualizer
 from NetworkManipulator import networkBuilder
 from NetworkManipulator import networkAnalyzr
 from NetworkManipulator import correlationAnalyzr
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 __author__ = '3buson'
 
@@ -678,11 +684,11 @@ def main():
     filename_bets = 'bets_correlation_over_leagues'
     filename_league_value = 'league_value_correlation_over_leagues'
 
-    # visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game_networks, correlation_dict_per_game_networks, 'Uniformity per game from networks and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
-    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game, correlation_dict_per_game, 'Uniformity per game from bets and bets volume correlation Over Leagues', 'League', 'Uniformity and bets volume correlation per game')
-    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Attendance Correlation Over Leagues', 'League', 'Attendance Correlation')
-    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Players Value (average of club per league) Correlation Over Leagues', 'League', 'Players Value (average of club per league) Correlation')
-    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Bets Volume Correlation Over Leagues', 'League', 'Bets Volume Correlation')
+    # visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game_networks, correlation_dict_per_game_networks, 'Korelacija med volumnom stav in izenačenostjo', 'Ligs', 'Korelacija')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_uniformity_bets_per_game, correlation_dict_per_game, 'Korelacija med volumnom stav in izenačenostjo glede na kvote', 'Liga', 'Korelacija')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_attendance, attendanceCorrelationsDictionary, 'Korelacija med obiskom tekem in izenačenostjo', 'Liga', 'Korelacija')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_league_value, leagueValueCorrelationsDictionary, 'Korelacija med povprečjem tržne vrednosti igralcev in izenačenostjo', 'Liga', 'Korelacija')
+    visualizer.visualizeCorrelationAndIntervalsOverLeagues(folderName, filename_bets, betsCorrelationsDictionary, 'Korelacija med volumnom stav in izenačenostjo', 'Liga', 'Korelacija')
 
 
 if __name__ == "__main__":
